@@ -7,8 +7,8 @@ client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
 
 // Config
-const {prefix, token} = require('./config.json');
-
+const {prefix} = require('./config.json');
+const token = process.env.TOKEN;
 // Node modules
 const fs = require('fs');
 
@@ -16,14 +16,14 @@ const fs = require('fs');
 const commandFiles  = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-    const command = require(`./commands/${file}`)
+    const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    client.user.setPresence({ game: {name: "Under coding"}, status: "idle"})
+    client.user.setPresence({ game: {name: "with The Illuminati Gang"}, status: "online"})
         .catch(console.error)
 });
 
