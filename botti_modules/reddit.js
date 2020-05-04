@@ -15,7 +15,7 @@ module.exports = {
                 let data;
 
                 if(error) {
-                    data = "Tapahtui virhe:" + error
+                    return message.channel.send(`Tapahtui virhe: ${error}`)
                 }
                 else {
                     data = {
