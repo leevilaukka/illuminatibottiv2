@@ -35,12 +35,17 @@ client.on('message',message => {
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-    if (!command) return;
+    // Not a command
+    if (!command) {
+       return message.reply(`tuota komentoa ei löytynyt, kirjoita \`${prefix}help\` saadaksesi apua komentojen kanssa.`);
+    }
 
+    //guildOnly check
     if (command.guildOnly && message.channel.type !== "text") {
         return message.reply('En voi suorittaa tätä komentoa yksityiskeskustelussa!');
     }
 
+    //Args check
     if (command.args && !args.length) {
         let reply = `Anna puuttuvat argumentit, ${message.author}!`;
 
@@ -50,15 +55,16 @@ client.on('message',message => {
 
         return message.channel.send(reply);
     }
-
+    //Cooldowns
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection())
     }
-
+    //Timestamps
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
     const cooldownAmount = (command.cooldown || 3) * 1000;
 
+    //Cooldown check
     if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
 
@@ -71,6 +77,7 @@ client.on('message',message => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
+    //Execute command and catch errors
     try {
         command.execute(message, args);
     } catch (error) {
@@ -79,5 +86,5 @@ client.on('message',message => {
     }
 });
 
-
+//Bot client login
 client.login(token).then(() => console.log("Logged in!"));
