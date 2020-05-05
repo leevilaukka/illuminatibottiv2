@@ -12,7 +12,7 @@ module.exports = {
                 let postaajaurl = "https://www.reddit.com/user/" + name;
                 let nsfw = res.data[0].data.children[0].data.over_18;
                 let data;
-
+                console.log(res.data);
                 data = {
                     embed: {
                         title,
@@ -38,8 +38,13 @@ module.exports = {
                     ))
                     .catch(e => message.channel.send(e));
             }).catch(e => {
-                message.channel.send(`Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`);
-                console.error(e)
+                if (!e.response) {
+                    message.channel.send("Annettua subreddittiä ei löytynyt!")
+                }
+                else {
+                    message.channel.send(`Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`);
+                    console.error(e);
+                }
         });
     }
 };
