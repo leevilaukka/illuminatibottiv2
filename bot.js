@@ -8,7 +8,7 @@ const cooldowns = new Discord.Collection();
 
 // Config
 const {prefix} = require('./config.json');
-const token = process.env.TOKEN;
+const token = process.env.TOKEN || "NjcwMDE2MjkwODQwMzc5NDEx.XrCn6A.P5RyS9dU0DgSJ33uUHuVggg8ZPU";
 // Node modules
 const fs = require('fs');
 

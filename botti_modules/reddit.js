@@ -11,14 +11,9 @@ module.exports = {
                 // let created = res.data[0].data.children[0].data.created;
                 let postaajaurl = "https://www.reddit.com/user/" + name;
                 let nsfw = res.data[0].data.children[0].data.over_18;
-                let error = res.data.error;
                 let data;
 
-                if(error) {
-                    return message.channel.send(`Tapahtui virhe: ${error}`)
-                }
-                else {
-                    data = {
+                data = {
                     embed: {
                         title,
                         url,
@@ -36,13 +31,15 @@ module.exports = {
                             url: postaajaurl
                         }
                     }
-                }
-                }
+                };
                 message.channel.send(data)
                     .then(e => console.log(
                         "Näytettiin satunnainen postaus osoitteesta http://www.reddit.com/r/" + subreddit
                     ))
                     .catch(e => message.channel.send(e));
-            });
+            }).catch(e => {
+                message.channel.send(`Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`);
+                console.error(e)
+        });
     }
 };
