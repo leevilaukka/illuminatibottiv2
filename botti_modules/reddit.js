@@ -39,8 +39,13 @@ module.exports = {
                     .catch(e => message.channel.send(e));
                 })
                 .catch(e => {
-                    message.channel.send(`Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`);
-                    console.error(e)
+                    if (!e.response) {
+                        message.channel.send("Annettua subreddittiä ei löytynyt!")
+                    }
+                    else {
+                        message.channel.send(`Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`);
+                        console.error(e);
+                    }
                 });
     }
 };
