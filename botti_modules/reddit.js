@@ -13,6 +13,9 @@ module.exports = {
                 let nsfw = res.data[0].data.children[0].data.over_18;
                 let data;
                 console.log(res.data);
+                if (!message.channel.nsfw && nsfw) {
+                    return message.channel.send("En voi lähettää tätä sisältöä kuin NSFW-kanaville!");
+                }
                 data = {
                     embed: {
                         title,
