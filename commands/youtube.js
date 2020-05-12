@@ -1,5 +1,7 @@
 const axios = require("axios");
 const argsToString = require("../helpers/argsToString");
+const play = require("../helpers/playYt");
+
 module.exports = {
     name: "youtube",
     description: "Youtube juttu",
@@ -46,6 +48,7 @@ module.exports = {
             };
             // Send embed
             message.channel.send("Tässä hakemasi video!", embed);
+            play(message,url);
         })
             .catch(e => console.error(e))
     }
