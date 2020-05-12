@@ -1,5 +1,5 @@
 const axios = require("axios");
-
+const argsToString = require("../helpers/argsToString");
 module.exports = {
     name: "youtube",
     description: "Youtube juttu",
@@ -7,18 +7,23 @@ module.exports = {
     args: true,
     usage: '<hakutermi>',
     execute(message, args) {
+        // Google API token
         const token = process.env.GOOGLE_API;
-        const regex = /,/gi;
-        const search = args.toString().replace(regex, " ");
-        console.log(search);
+
+        // Convert args array to string
+        const search = argsToString(args);
+
+        // Dynamically Axios GET Google API with given search arguments
         axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search}&key=${token}&type=video`, {
             headers: {
                 "Accept": "application/json"
             }
         }).then(res => {
+            // Init video data variables
             const video = res.data.items[0];
             const url = `https://www.youtube.com/watch?v=${video.id.videoId}`;
-            console.log(video);
+
+            // Init embed object
             const embed = {
                 embed: {
                     title: video.snippet.title,
@@ -39,6 +44,7 @@ module.exports = {
                     }
                 }
             };
+            // Send embed
             message.channel.send("Tässä hakemasi video!", embed);
         })
             .catch(e => console.error(e))
