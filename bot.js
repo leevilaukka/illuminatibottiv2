@@ -1,4 +1,4 @@
-//Discord.js
+//Discord.js modules
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -9,7 +9,6 @@ const cooldowns = new Discord.Collection();
 // Config
 const {prefix} = require('./config.json');
 const token = process.env.TOKEN;
-
 // Node modules
 const fs = require('fs');
 
@@ -23,9 +22,6 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-
-    client.user.setPresence({game: {name: "with The Illuminati Gang"}, status: "online"})
-        .catch(console.error)
 });
 
 client.on('message',message => {
@@ -36,7 +32,7 @@ client.on('message',message => {
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-    // Not a command check
+    // Not a command
     if (!command) {
        return message.reply(`tuota komentoa ei löytynyt, kirjoita \`${prefix}help\` saadaksesi apua komentojen kanssa.`);
     }
