@@ -22,9 +22,6 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-
-    client.user.setPresence({ game: {name: "with The Illuminati Gang"}, status: "online"})
-        .catch(console.error)
 });
 
 client.on('message',message => {

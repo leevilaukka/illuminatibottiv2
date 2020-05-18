@@ -1,5 +1,6 @@
 const axios = require("axios");
 const argsToString = require("../helpers/argsToString");
+const umlautFix = require("../helpers/umlautRemover");
 const play = require("../helpers/playYt");
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
         const token = process.env.GOOGLE_API;
 
         // Convert args array to string
-        const search = argsToString(args);
+        const search = umlautFix(argsToString(args));
 
         // Dynamically Axios GET Google API with given search arguments
         axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search}&key=${token}&type=video`, {
@@ -50,6 +51,9 @@ module.exports = {
             message.channel.send("Tässä hakemasi video!", embed);
             play(message,url);
         })
-            .catch(e => console.error(e))
+            .catch(e => {
+                console.error(e);
+                message.channel.send(`Videota ei löytynyt. Tapahtui virhe ${e.message}`)
+            })
     }
 };
