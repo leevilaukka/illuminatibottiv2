@@ -5,24 +5,24 @@ module.exports = {
     name: "feature",
     description: "Ehdota uutta ominaisuutta tai ilmoita bugista",
     aliases: ["report","ilmoita"],
+    usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
     execute(message, args) {
-        // List of supported types (issue labels)
+        // Array of supported types (issue labels)
         const typelist = [
             "bug","enhancement","invalid","question"
         ];
+
         // Github API authentication object
         const password = process.env.GITHUB_KEY;
         const auth = {
             username: "leevilaukka",
             password
         };
+
         // Variables from arguments
         const typearg = args[0];
-        const desc = argsToString(args.slice(1)) + "\n\n > Tämä ilmoitus on lähetetty IlluminatiBotin kautta.";
-        // Title parsing
-        let title = desc + "";
-        title = title.substr(0,20) + "..";
+        let desc = argsToString(args.slice(1));
 
         // Check if typelist includes given type
         if(!typelist.includes(typearg)){
@@ -59,18 +59,20 @@ module.exports = {
                         message.channel.send({embed})
                 })
                     .catch(() => message.channel.send("Ilmoitusta ei löytynyt."))
-            }
-            // If typelist doesn't include given type send message
-            else return message.channel.send(`Tuo ei ole oikeantyyppinen ilmoitus! Oikeat tyypit ovat ${typelist.toString()}`)
+            }// If typelist doesn't include given type and typearg is not a number, send message
+            else return message.channel.send(`Tuo ei ole oikeantyyppinen ilmoitus! Oikeat tyypit ovat ${typelist.toString()}. Vaihtoehtoisesti voit antaa jonkun aiemman ilmoituksen numeron tyypin sijaan saadaksesi tietoja ilmoituksesta.`)
         }
-        // Init data for Axios POST
-        const data = {
-            title,
-            body: desc,
-            labels: [typearg]
-        };
+
         // If desc given and type is not a number, post the data to Github API
         if(desc && isNaN(typearg)){
+            // Init data for Axios POST
+            const body = desc + "\n\n > Tämä ilmoitus on lähetetty IlluminatiBotin kautta.";
+            let title = body.substr(0,10) + "..";
+            const data = {
+                title,
+                body,
+                labels: [typearg]
+            };
         axios.post("https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues", data, {
             auth
         })
