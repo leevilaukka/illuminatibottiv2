@@ -10,9 +10,15 @@ module.exports = {
         if (!update) {
             update = 0;
         }
-        axios.get('https://api.github.com/repos/leevilaukka/illuminatibottiv2/commits')
+        const password = process.env.GITHUB_KEY;
+        const auth = {
+            username: "leevilaukka",
+            password
+        };
+        axios.get('https://api.github.com/repos/leevilaukka/illuminatibottiv2/commits', {
+            auth
+        })
             .then(res => {
-
                 const commit = res.data[update].commit;
                 const committer = res.data[update].committer;
                 let embed = {
