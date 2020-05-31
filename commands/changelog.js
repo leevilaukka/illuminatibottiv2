@@ -4,7 +4,7 @@ module.exports = {
     name: "changelog",
     aliases: ["muutokset", "update"],
     description: "Näyttää botin GitHub-repon edellisen tai määritetyn commitin viestin, ajan ja tekijän",
-    usage: "[päivityksen numero -- 0 = uusin]",
+    usage: "<[päivityksen numero -- 0 = uusin]>",
     execute(message, args) {
         let update = args[0];
         if (!update) {
@@ -42,4 +42,5 @@ module.exports = {
             })
             .catch(() => message.channel.send(`Tapahtui virhe. Päivitystä ei välttämättä ole vielä olemassa.`))
     }
+>>>>>>> a5e12db900c789c5adf1047cf9f5025f7e5f15a5
 };

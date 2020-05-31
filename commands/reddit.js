@@ -25,6 +25,7 @@ module.exports = {
 
                 // Assing response data to variables
                 let title = res.data[0].data.children[0].data.title;
+                let thumb = res.data[0].data.children[0].data.thumbnail;
                 let kuva = res.data[0].data.children[0].data.url;
                 let url = "https://www.reddit.com" + res.data[0].data.children[0].data.permalink;
                 let name = res.data[0].data.children[0].data.author;
@@ -51,6 +52,9 @@ module.exports = {
                             icon_url: "https://i.redd.it/qupjfpl4gvoy.jpg",
                             text: "IlluminatiBotti x Reddit"
                         },
+                        thumbnail: {
+                            url:thumb && null
+                        },
                         image: {
                             url: kuva
                         },
@@ -63,7 +67,7 @@ module.exports = {
 
                 // Send embed
                 message.channel.send(data)
-                    .then(e => console.log(
+                    .then(() => console.log(
                         "Näytettiin satunnainen postaus osoitteesta http://www.reddit.com/r/" + subreddit
                     ))
                     // Catch errors with send and log

@@ -9,6 +9,7 @@ const play = async (message, url) => {
 
         dispatcher.on('finish', () => {
             console.log('Stream has finished playing!');
+            connection.disconnect();
         });
 
 // Always remember to handle errors appropriately!
