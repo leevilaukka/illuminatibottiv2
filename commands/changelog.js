@@ -42,5 +42,4 @@ module.exports = {
             })
             .catch(() => message.channel.send(`Tapahtui virhe. Päivitystä ei välttämättä ole vielä olemassa.`))
     }
->>>>>>> a5e12db900c789c5adf1047cf9f5025f7e5f15a5
 };

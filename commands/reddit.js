@@ -25,12 +25,17 @@ module.exports = {
 
                 // Assing response data to variables
                 let title = res.data[0].data.children[0].data.title;
+                if(title.length >= 255){
+                    title = title.substr(0,250) + "..."
+                }
                 let thumb = res.data[0].data.children[0].data.thumbnail;
                 let kuva = res.data[0].data.children[0].data.url;
                 let url = "https://www.reddit.com" + res.data[0].data.children[0].data.permalink;
                 let name = res.data[0].data.children[0].data.author;
                 let postaajaurl = "https://www.reddit.com/user/" + name;
                 let nsfw = res.data[0].data.children[0].data.over_18;
+                let flair = res.data[0].data.children[0].data.author_flair_text;
+                let flaircolor = res.data[0].data.children[0].data.link_flair_background_color;
 
 
                 //Skip NSFW check
@@ -42,12 +47,23 @@ module.exports = {
                 }
 
                 // Embed data init
+                let fields = [];
+                if(flair){
+                    fields.push({
+                        name: "Flair",
+                        value: flair
+                    })
+                }
+                let color = 0xff4500;
+                if(flaircolor){
+                    color = `0x${flaircolor}`
+                }
                 let data = {
                     embed: {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,
-                        color: 0xff4500,
+                        color,
                         footer: {
                             icon_url: "https://i.redd.it/qupjfpl4gvoy.jpg",
                             text: "IlluminatiBotti x Reddit"
@@ -61,7 +77,8 @@ module.exports = {
                         author: {
                             name,
                             url: postaajaurl
-                        }
+                        },
+                        fields
                     }
                 };
 
