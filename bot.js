@@ -9,6 +9,7 @@ const cooldowns = new Discord.Collection();
 // Config
 const {prefix} = require('./config.json');
 const token = process.env.TOKEN;
+
 // Node modules
 const fs = require('fs');
 
@@ -76,7 +77,9 @@ client.on('message',message => {
 
     //Execute command and catch errors
     try {
+        message.channel.startTyping();
         command.execute(message, args);
+        message.channel.stopTyping();
     } catch (error) {
         console.error(error);
         message.reply('komentoa suorittaessa tapahtui virhe');
