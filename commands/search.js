@@ -1,5 +1,5 @@
 const argsToString = require("../helpers/argsToString");
-const umlautRemover = require("../helpers/umlautRemover");
+
 const axios = require("axios");
 module.exports = {
     name: "search",
