@@ -33,7 +33,7 @@ module.exports = {
                     color: 0x22ff22,
                     fields,
                     image: {
-                        url: result.image.contentUrl
+                        url: result.image && result.image.contentUrl
                     },
                     footer:{
                         text: "IlluminatiBotti x Google"
