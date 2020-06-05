@@ -8,7 +8,10 @@ const randomArray = require("../helpers/randomArray");
 
 module.exports = {
     name: "places",
-    description: "",
+    description: "Hae paikkatietoja",
+    aliases: ["paikka", "p"],
+    usage: "<hakusana>",
+    cooldown: 7,
     execute(message, args) {
         const query = umlautRemover(argsToString(args));
 
