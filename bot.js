@@ -12,6 +12,7 @@ const token = process.env.TOKEN;
 
 // Node modules
 const fs = require('fs');
+const mongoose = require("mongoose");
 
 // Command import
 const commandFiles  = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -85,6 +86,11 @@ client.on('message',message => {
         message.reply('komentoa suorittaessa tapahtui virhe');
     }
 });
+// Connect to database
+mongoose.connect(process.env.MONGOURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, () => console.log("DB Connected!"));
 
 //Bot client login
 client.login(token).then(() => console.log("Logged in!"));
