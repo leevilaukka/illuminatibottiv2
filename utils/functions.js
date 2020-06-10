@@ -37,7 +37,6 @@ module.exports = client => {
 
     client.play = async (message, connection, url) => {
         let data = await client.getGuild(message.guild);
-        console.log(data);
         const volume = data.volume;
         client.dispatcher = connection.play(await ytdl(url), {type: 'opus', highWaterMark: 50, volume});
 
