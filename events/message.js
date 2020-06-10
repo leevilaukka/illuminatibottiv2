@@ -15,13 +15,19 @@ module.exports = async (client, message) => {
         console.error(e)
     }
 
-    if(!message.content.startsWith(settings.prefix) || message.author.bot) return;
+    const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    const args = message.content.slice(settings.prefix.length).split(/ +/);
+    const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`);
+
+    if (!prefixRegex.test(message.content)) return;
+
+    const [, matchedPrefix] = message.content.match(prefixRegex);
+
+    const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    const permissions = command.permissions;
+    const permissions = command.permissions ? command.permissions : null;
 
     // Not a command
     if (!command) {
@@ -32,7 +38,6 @@ module.exports = async (client, message) => {
     if (!message.member.hasPermission(permissions)){
         return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
     }
-
 
     //guildOnly check
     if (command.guildOnly && message.channel.type !== "text") {
@@ -53,6 +58,7 @@ module.exports = async (client, message) => {
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection())
     }
+
     //Timestamps
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);

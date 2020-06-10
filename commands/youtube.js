@@ -48,12 +48,7 @@ module.exports = {
             };
             // Send embed
             message.channel.send("Tässä hakemasi video!", embed);
-            if (message.member.voice.channel) {
-                const connection = await message.member.voice.channel.join();
-                await client.play(message, connection, url);
-            } else {
-                await message.channel.send("Et ole puhekanavalla, en voi liittyä");
-            }
+            client.play(message, url);
         })
             .catch(e => {
                 console.error(e);
