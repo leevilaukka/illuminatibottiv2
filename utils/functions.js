@@ -4,7 +4,8 @@ const Guild = require("../models/Guild");
 module.exports = client => {
 
     client.getGuild = async (guild) => {
-        let data = await Guild.findOne({ guildID: guild.id});
+        console.log("Getting guild data...");
+        let data = await Guild.findOne({ guildID: guild.id}).catch(e => console.error(e));
         if (data) return data;
         else return client.config.defaultSettings
     };
