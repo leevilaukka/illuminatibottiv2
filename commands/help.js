@@ -1,13 +1,13 @@
-const { prefix } = require('../config.json');
 module.exports = {
     name: 'help',
     description: 'List all of my commands or info about a specific command.',
     aliases: ['commands', 'apua'],
     usage: '[komento]',
     cooldown: 5,
-    execute(message, args) {
+    execute(message, args,settings) {
         const data = [];
         const { commands } = message.client;
+        const prefix = settings.prefix;
 
         if (!args.length) {
             // Valmistele komentojen lista

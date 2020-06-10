@@ -3,7 +3,7 @@ const argsToString = require("../helpers/argsToString");
 const axios = require("axios");
 module.exports = {
     name: "search",
-    aliases: ["hae", "s", "google"],
+    aliases: ["hae", "s", "google","g"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     execute(message, args) {
