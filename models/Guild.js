@@ -15,6 +15,10 @@ const GuildSchema = new Schema({
         type: String,
         default: defaults.prefix
     },
+    volume: {
+        type: String,
+        default: defaults.volume
+    },
     joinedAt: {
         type: Date,
         required: true

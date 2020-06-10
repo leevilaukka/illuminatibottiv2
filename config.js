@@ -1,6 +1,7 @@
 module.exports = {
     token: process.env.TOKEN,
     defaultSettings: {
-        prefix: "*"
+        prefix: "*",
+        volume: "1"
     }
 };

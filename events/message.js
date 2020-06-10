@@ -21,11 +21,18 @@ module.exports = async (client, message) => {
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    const permissions = command.permissions;
 
     // Not a command
     if (!command) {
         return message.reply(`tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`);
     }
+
+    //Permissons check
+    if (!message.member.hasPermission(permissions)){
+        return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
+    }
+
 
     //guildOnly check
     if (command.guildOnly && message.channel.type !== "text") {

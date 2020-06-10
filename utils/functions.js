@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
+const ytdl = require("ytdl-core-discord");
 const Guild = require("../models/Guild");
+const fs = require("fs");
 
 module.exports = client => {
 
@@ -32,5 +33,25 @@ module.exports = client => {
     client.deleteGuild = async (guild) => {
         await Guild.deleteOne({guildID: guild.id});
         console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`)
+    };
+
+    client.play = async (message, connection, url) => {
+        let data = await client.getGuild(message.guild);
+        console.log(data);
+        const volume = data.volume;
+        client.dispatcher = connection.play(await ytdl(url), {type: 'opus', highWaterMark: 50, volume});
+
+        //Import events
+        const dispatchEventFiles = fs.readdirSync('./events/dispatcher/').filter(file => file.endsWith('.js'));
+
+        for (const file of dispatchEventFiles) {
+            const dispatchEvt = require(`../events/dispatcher/${file}`);
+            let dispatchEvtName = file.split(".")[0];
+            console.log(`Loaded dispatcher evt: ${dispatchEvtName}`);
+            client.dispatcher.on(dispatchEvtName, dispatchEvt.bind(null, client, connection))
+        }
+
+        // Always remember to handle errors appropriately!
+        client.dispatcher.on('error', console.error);
     }
 };

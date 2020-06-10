@@ -1,7 +1,6 @@
 const axios = require("axios");
 const argsToString = require("../helpers/argsToString");
 const umlautFix = require("../helpers/umlautRemover");
-const play = require("../helpers/playYt");
 
 module.exports = {
     name: "youtube",
@@ -9,7 +8,7 @@ module.exports = {
     aliases: ['yt'],
     args: true,
     usage: '<hakutermi>',
-    execute(message, args) {
+    execute(message, args, settings, client) {
         // Google API token
         const token = process.env.GOOGLE_API;
 
@@ -21,7 +20,7 @@ module.exports = {
             headers: {
                 "Accept": "application/json"
             }
-        }).then(res => {
+        }).then(async res => {
             // Init video data variables
             const video = res.data.items[0];
             const url = `https://www.youtube.com/watch?v=${video.id.videoId}`;
@@ -49,7 +48,12 @@ module.exports = {
             };
             // Send embed
             message.channel.send("Tässä hakemasi video!", embed);
-            play(message,url);
+            if (message.member.voice.channel) {
+                const connection = await message.member.voice.channel.join();
+                await client.play(message, connection, url);
+            } else {
+                await message.channel.send("Et ole puhekanavalla, en voi liittyä");
+            }
         })
             .catch(e => {
                 console.error(e);

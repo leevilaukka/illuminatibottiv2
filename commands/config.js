@@ -1,11 +1,10 @@
 module.exports = {
     name: "config",
-    description: "",
+    description: "Tarkastele ja vaihda botin asetuksia palvelimellasi",
     guildOnly: true,
     aliases: ["asetus", "asetukset"],
+    permissions: ["MANAGE_GUILD"],
     async execute(message, args, settings, client) {
-        if (!message.member.hasPermission("MANAGE_GUILD")) return;
-
         const setting = args[0];
         const newSetting = args.slice(1).join(" ");
 
@@ -22,6 +21,19 @@ module.exports = {
                 }
                 break;
             }
+            case "volume":
+                if(!newSetting) {
+                    return message.channel.send(`Nykyinen oletusäänenvoimakkuus:\`${settings.volume}\``)
+                }
+                try{
+                    await client.updateGuild(message.guild, {
+                        volume: newSetting
+                    })
+                    message.channel.send("Oletusäänenvoimakkuus päivitetty");
+                }catch (e) {
+                    message.channel.send(`Tapahtui virhe: ${e.message}`)
+                }
+                break;
             default:{
                 const embed = {
                     title: "Kaikki botin asetukset",
@@ -29,13 +41,18 @@ module.exports = {
                     fields: [
                         {
                             name: "Prefix",
-                            value: `\`${settings.prefix}\``
+                            value: `\`${settings.prefix}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Oletusäänenvoimakkuus",
+                            value: `\`${(settings.volume * 100).toFixed(1)} %\``,
+                            inline: true
                         }
                     ]
                 };
                 return message.channel.send({embed})
             }
         }
-
     }
 };
