@@ -15,7 +15,6 @@ module.exports = {
     execute(message, args) {
         const query = umlautRemover(argsToString(args));
 
-
         // Get place id with query from Maps Places API
         axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=${process.env.GOOGLE_API}&inputtype=textquery&locationbias=point:60.400991,25.102139&input=${query}`)
             .then(res => {

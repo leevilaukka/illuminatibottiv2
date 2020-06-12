@@ -9,6 +9,9 @@ module.exports = {
         if(!volume){
            return message.channel.send(`Nykyinen äänenvoimakkuus: ${(settings.volume*100).toFixed(1)} %`)
         }
+        if(isNaN(volume)){
+            return message.reply(`äänenvoimakkuuden tulee olla numero`)
+        }
         if(volume > 2) {
             volume = 2;
             message.channel.send("Asetus liian suuri, äänenvoimakkuus rajoitettu 200%");
