@@ -27,7 +27,7 @@ module.exports = async (client, message) => {
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    const permissions = command.permissions ? command.permissions : null;
+    const permissions = command.permissions || null;
 
     // Not a command
     if (!command) {
@@ -35,8 +35,10 @@ module.exports = async (client, message) => {
     }
 
     //Permissons check
-    if (!message.member.hasPermission(permissions)){
-        return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
+    if(message.channel.type !== "dm") {
+        if (!message.member.hasPermission(permissions)) {
+            return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
+        }
     }
 
     //guildOnly check
