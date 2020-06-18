@@ -2,4 +2,5 @@ ecosystem.config.js
 /node_modules
 /.idea
 /pipes
+/logs
 package-lock.json
