@@ -50,7 +50,7 @@ module.exports = {
                         },
                         {
                             name: "Tyyppi",
-                            value: info.measure
+                            value: valueParser(info.measure)
                         },
                         {
                             name: "Järjestelmä",
