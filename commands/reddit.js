@@ -4,6 +4,7 @@ module.exports = {
     aliases: ['r', 'r/'],
     cooldown: 10,
     description: 'Lähettää annetusta subredditistä satunnaisen postauksen',
+    category: "other",
     execute(message, args) {
         // Command arguments
         let subreddit = args[0];

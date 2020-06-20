@@ -7,6 +7,7 @@ module.exports = {
     aliases: ["report","ilmoita"],
     usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
+    category: "general",
     execute(message, args) {
         // Array of supported types (issue labels)
         const typelist = [

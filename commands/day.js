@@ -5,6 +5,7 @@ module.exports = {
     name: "day",
     description: "Päivän kalenteritiedot",
     aliases: ["päivä", "kalenteri"],
+    category: "date",
     execute(message, args) {
         const date = moment().format("YYYY-MM-DD");
 

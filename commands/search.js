@@ -6,6 +6,7 @@ module.exports = {
     aliases: ["hae", "s", "google","g"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
+    category: "other",
     execute(message, args) {
         const query = argsToString(args);
         axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)

@@ -2,6 +2,7 @@ module.exports = {
     name: 'args-info',
     description: 'Information about the arguments provided.',
     args: true,
+    category: "config",
     usage: '<argumentti>',
     execute(message, args) {
         if (args[0] === 'foo') {

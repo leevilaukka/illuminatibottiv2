@@ -4,6 +4,7 @@ module.exports = {
     description: 'Poista jopa 99 viestiä.',
     args: true,
     usage: '<määrä>',
+    category: "general",
     cooldown: 5,
     execute(message, args) {
         const amount = parseInt(args[0]) + 1;

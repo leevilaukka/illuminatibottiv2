@@ -6,6 +6,7 @@ module.exports = {
     description: "Muunna yksiköitä. Saadaksesi tietoa saatavilla olevista yksiköistä, aja komento ilman argumentteja.",
     usage: "<määrä {alkuperäinen yksikkö} {uusi yksikkö}>",
     aliases: ["c", "muunna"],
+    category: "math",
     execute(message, args) {
         let result;
         if(!args.length){

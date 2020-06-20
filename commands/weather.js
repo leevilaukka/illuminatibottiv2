@@ -9,6 +9,7 @@ module.exports = {
     description: "Säätiedot",
     aliases: ["w","sää"],
     cooldown: 10,
+    category: "other",
     execute(message, args) {
         const query = umlautFix(argsToString(args));
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)

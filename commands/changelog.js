@@ -5,6 +5,7 @@ module.exports = {
     aliases: ["muutokset", "update"],
     description: "Näyttää botin GitHub-repon edellisen tai määritetyn commitin viestin, ajan ja tekijän",
     usage: "<[päivityksen numero -- 0 = uusin]>",
+    category: "config",
     execute(message, args) {
         let update = args[0];
         if (!update) {

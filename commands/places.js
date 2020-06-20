@@ -12,6 +12,7 @@ module.exports = {
     aliases: ["paikka", "p"],
     usage: "<hakusana>",
     cooldown: 7,
+    category: "maps",
     execute(message, args) {
         const query = umlautRemover(argsToString(args));
 

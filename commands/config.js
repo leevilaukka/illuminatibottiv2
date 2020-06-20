@@ -4,6 +4,7 @@ module.exports = {
     guildOnly: true,
     aliases: ["asetus", "asetukset"],
     permissions: ["MANAGE_GUILD"],
+    category: "config",
     async execute(message, args, settings, client) {
         const setting = args[0];
         let newSetting = args.slice(1).join(" ");

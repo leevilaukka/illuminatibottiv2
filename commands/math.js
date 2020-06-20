@@ -5,6 +5,7 @@ module.exports = {
     name: "math",
     description: "Matikkaaa!",
     args: true,
+    category: "math",
     execute(message, args) {
 
         if(!args.includes("x")){

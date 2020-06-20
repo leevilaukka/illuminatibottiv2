@@ -8,6 +8,7 @@ module.exports = {
     aliases: ['yt'],
     args: true,
     usage: '<hakutermi>',
+    category: "music",
     execute(message, args, settings, client) {
         // Google API token
         const token = process.env.GOOGLE_API;

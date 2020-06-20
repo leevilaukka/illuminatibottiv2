@@ -10,6 +10,7 @@ module.exports = {
     description: "Google Maps- integraatio",
     aliases: ["kartta"],
     usage: "<paikka>",
+    category: "maps",
     execute(message, args) {
         // Init variables
         const location = umlautFix(argsToString(args));

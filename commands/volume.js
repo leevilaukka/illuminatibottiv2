@@ -1,6 +1,7 @@
 module.exports = {
     name: "volume",
     description: "",
+    category: "music",
     execute(message, args, settings, client) {
         let volume = args[0];
         if(!client.dispatcher){
