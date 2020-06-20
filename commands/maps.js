@@ -1,5 +1,4 @@
-const umlautFix = require("../helpers/umlautRemover");
-const argsToString = require("../helpers/argsToString");
+const {umlautRemover, argsToString} = require("../helpers");
 
 const Discord = require("discord.js");
 const axios = require("axios");
@@ -13,7 +12,7 @@ module.exports = {
     category: "maps",
     execute(message, args) {
         // Init variables
-        const location = umlautFix(argsToString(args));
+        const location = umlautRemover(argsToString(args));
         const token = process.env.GOOGLE_API;
 
         // Fs writestream path and writer

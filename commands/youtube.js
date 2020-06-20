@@ -1,6 +1,6 @@
 const axios = require("axios");
-const argsToString = require("../helpers/argsToString");
-const umlautFix = require("../helpers/umlautRemover");
+const {argsToString, umlautRemover} = require("../helpers");
+
 
 module.exports = {
     name: "youtube",
@@ -14,7 +14,7 @@ module.exports = {
         const token = process.env.GOOGLE_API;
 
         // Convert args array to string
-        const search = umlautFix(argsToString(args));
+        const search = umlautRemover(argsToString(args));
 
         // Dynamically Axios GET Google API with given search arguments
         axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search}&key=${token}&type=video`, {

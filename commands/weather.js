@@ -1,8 +1,6 @@
 const axios = require("axios");
 
-const umlautFix = require("../helpers/umlautRemover");
-const argsToString = require("../helpers/argsToString");
-const formatDate = require("../helpers/formatDate");
+const {umlautRemover, argsToString, formatDate} = require("../helpers");
 
 module.exports = {
     name: "weather",
@@ -11,7 +9,7 @@ module.exports = {
     cooldown: 10,
     category: "other",
     execute(message, args) {
-        const query = umlautFix(argsToString(args));
+        const query = umlautRemover(argsToString(args));
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
             .then(res => {
                 const weather = res.data.weather[0];

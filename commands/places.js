@@ -1,10 +1,12 @@
 const axios = require("axios");
-const argsToString = require("../helpers/argsToString");
-const umlautRemover = require("../helpers/umlautRemover");
-const valueParser = require("../helpers/valueParser");
+const {
+    argsToString,
+    umlautRemover,
+    valueParser,
+    randomArray
+} = require("../helpers");
 const fs = require("fs");
 const Discord = require("discord.js");
-const randomArray = require("../helpers/randomArray");
 
 module.exports = {
     name: "places",
