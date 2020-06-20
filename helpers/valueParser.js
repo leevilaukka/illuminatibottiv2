@@ -104,8 +104,14 @@ const valueParser = (value) => {
             original: "angle",
             parsed: "Kulma"
         },
-
-
+        {
+            original: "metric",
+            parsed: "Metrinen"
+        },
+        {
+            original: "imperial",
+            parsed: "Brittiläinen"
+        },
     ];
 
     for(let i=0; i < array.length; i++){
