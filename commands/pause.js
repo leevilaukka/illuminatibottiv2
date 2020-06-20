@@ -3,10 +3,10 @@ module.exports = {
     description: "",
     category: "music",
     execute(message, args, settings, client) {
-    if(!client.dispatcher || client.dispatcher.paused){
-        return message.channel.send("Botti on jo tauolla!")
+        if (!client.dispatcher || client.dispatcher.paused) {
+            return message.channel.send("Botti on jo tauolla!")
+        }
+        client.dispatcher.pause(true);
+        message.channel.send("Tauko!");
     }
-    client.dispatcher.pause(true);
-    message.channel.send("Tauko!");
-}
 };

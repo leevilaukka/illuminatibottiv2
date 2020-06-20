@@ -3,7 +3,7 @@ module.exports = {
     description: "",
     category: "music",
     execute(message, args, settings, client) {
-        if(!client.dispatcher){
+        if (!client.dispatcher) {
             return message.channel.send("Botti ei soita mitään millään kanavalla")
         }
         client.voiceConnection.disconnect();

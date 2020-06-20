@@ -5,7 +5,7 @@ const cooldowns = new Discord.Collection();
 module.exports = async (client, message) => {
     let settings;
     try {
-        if(message.channel.type === "dm"){
+        if (message.channel.type === "dm") {
             settings = client.config.defaultSettings
         } else {
             settings = await client.getGuild(message.guild)
@@ -14,6 +14,8 @@ module.exports = async (client, message) => {
     } catch (e) {
         console.error(e)
     }
+
+    if (message.author.bot) return;
 
     const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -34,7 +36,7 @@ module.exports = async (client, message) => {
     }
 
     //Permissons check
-    if(command.permissions && message.channel.type !== "dm" && !message.member.hasPermission(command.permissions) ) {
+    if (command.permissions && message.channel.type !== "dm" && !message.member.hasPermission(command.permissions)) {
         return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
     }
 
@@ -47,7 +49,7 @@ module.exports = async (client, message) => {
     if (command.args && !args.length) {
         let reply = `Anna puuttuvat argumentit, ${message.author}!`;
 
-        if(command.usage) {
+        if (command.usage) {
             reply += `\nOikea käyttötapa olisi: \`${settings.prefix}${command.name} ${command.usage}\``
         }
 

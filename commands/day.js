@@ -12,8 +12,8 @@ module.exports = {
         axios.get("http://www.webcal.fi/cal.php?id=3&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
             .then(res => {
                 const holidays = res.data;
-                for(let i=0; i < holidays.length; i++){
-                    if(holidays[i].date === date){
+                for (let i = 0; i < holidays.length; i++) {
+                    if (holidays[i].date === date) {
                         const results = [holidays[i]];
                         console.log(results);
                         results.map(result => {
@@ -22,21 +22,21 @@ module.exports = {
                                 name: "Päivämäärä",
                                 value: parsedDate
                             }];
-                            if(result.alternate_names){
+                            if (result.alternate_names) {
                                 fields.push({
                                     name: "Muut nimet",
                                     value: result.alternate_names
                                 })
                             }
-                            if(result.age){
+                            if (result.age) {
                                 fields.push({
-                                    name:"Vietetty",
+                                    name: "Vietetty",
                                     value: `${result.age} vuotta`
                                 })
                             }
-                            if(result.flag_day === 1){
+                            if (result.flag_day === 1) {
                                 fields.push({
-                                    name:"Liputuspäivä",
+                                    name: "Liputuspäivä",
                                     value: ":flag_fi:"
                                 })
                             }

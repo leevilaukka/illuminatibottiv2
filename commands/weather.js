@@ -5,7 +5,7 @@ const {umlautRemover, argsToString, formatDate} = require("../helpers");
 module.exports = {
     name: "weather",
     description: "Säätiedot",
-    aliases: ["w","sää"],
+    aliases: ["w", "sää"],
     cooldown: 10,
     category: "other",
     execute(message, args) {
@@ -50,7 +50,7 @@ module.exports = {
                     },
                     {
                         name: "Pilvisyys :cloud:",
-                        value:`${res.data.clouds.all}%`,
+                        value: `${res.data.clouds.all}%`,
                     },
                 ];
                 if (res.data.sys.sunrise === res.data.sys.sunset) {
@@ -89,6 +89,6 @@ module.exports = {
 
                 message.channel.send(data);
             })
-            .catch(e => console.error(e) )
+            .catch(e => console.error(e))
     }
 };

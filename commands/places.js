@@ -22,7 +22,7 @@ module.exports = {
         axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=${process.env.GOOGLE_API}&inputtype=textquery&locationbias=point:60.400991,25.102139&input=${query}`)
             .then(res => {
                 // If no results, return error message
-                if(!res.data.candidates[0] && res.data.status === "ZERO_RESULTS"){
+                if (!res.data.candidates[0] && res.data.status === "ZERO_RESULTS") {
                     return message.channel.send("Antamaasi paikkaa ei löytynyt :cry:")
                 }
                 const place_id = res.data.candidates[0].place_id;
@@ -32,7 +32,7 @@ module.exports = {
                         // Variables for embed fields
                         const data = res.data.result;
                         const opening = data.opening_hours;
-                        const photos = data.photos
+                        const photos = data.photos;
 
                         // Populate embed fields
                         let fields = [
@@ -43,37 +43,37 @@ module.exports = {
                             }
                         ];
                         //If data has a phone number, push it to fields
-                        if(data.formatted_phone_number){
+                        if (data.formatted_phone_number) {
                             fields.push({
                                 name: "Puhelinnumero",
                                 value: data.formatted_phone_number,
-                                inline:true
+                                inline: true
                             })
                         }
                         //If data has a opening hours, push them to fields
-                        if(opening){
+                        if (opening) {
                             fields.push({
                                 name: "Aukioloajat",
                                 value: opening.weekday_text
                             })
                         }
                         //If data has a status, push it to fields
-                        if(data.business_status){
+                        if (data.business_status) {
                             fields.push({
                                 name: "Tila",
                                 value: valueParser(data.business_status),
                             })
                         }
                         //If data has a website, push it to fields
-                        if(data.website){
+                        if (data.website) {
                             fields.push({
                                 name: "Nettisivut",
                                 value: data.website,
-                                inline:true
+                                inline: true
                             })
                         }
                         // If data has the photos array, Axios GET random photo from array
-                        if(photos) {
+                        if (photos) {
                             const randomPhoto = randomArray(photos);
                             axios.get(`https://maps.googleapis.com/maps/api/place/photo?key=${process.env.GOOGLE_API}&photoreference=${randomPhoto.photo_reference}&maxwidth=600`,
                                 {
@@ -93,7 +93,7 @@ module.exports = {
                                         // Parse photographer name from HTML tag
                                         const photographer = randomPhoto.html_attributions[0].match("(?<=>)(.+?)(?=</a>)")[0];
                                         // If photographer is found, push it to embed fields
-                                        if(photographer){
+                                        if (photographer) {
                                             fields.push({
                                                 name: "Kuvan ottanut:",
                                                 value: photographer
@@ -118,8 +118,8 @@ module.exports = {
                                 })
                                 // Catch errors with getting the photo
                                 .catch(e => {
-                                message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
-                            });
+                                    message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+                                });
                         } else {
                             // If no photos found, send embed without photos
                             let embed = {
@@ -139,11 +139,11 @@ module.exports = {
                     })
                     // Catch errors getting Details data
                     .catch(e => {
-                            message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
-                        })
+                        message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+                    })
                 // Catch errors getting any data
             }).catch(e => {
-                message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+            message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
         })
     }
 };

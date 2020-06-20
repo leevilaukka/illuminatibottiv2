@@ -4,14 +4,14 @@ const axios = require("axios");
 module.exports = {
     name: "feature",
     description: "Ehdota uutta ominaisuutta tai ilmoita bugista",
-    aliases: ["report","ilmoita"],
+    aliases: ["report", "ilmoita"],
     usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
     category: "general",
     execute(message, args) {
         // Array of supported types (issue labels)
         const typelist = [
-            "bug","enhancement","invalid","question"
+            "bug", "enhancement", "invalid", "question"
         ];
 
         // Github API authentication object
@@ -26,7 +26,7 @@ module.exports = {
         let desc = argsToString(args.slice(1));
 
         // Check if typelist includes given type
-        if(!typelist.includes(typearg)){
+        if (!typelist.includes(typearg)) {
             // Check if typearg is a number
             if (!isNaN(typearg) && !desc) {
                 // Get Github API with issue number
@@ -58,29 +58,29 @@ module.exports = {
                         };
                         // Send embed and catch Axios errors
                         message.channel.send({embed})
-                })
+                    })
                     .catch(() => message.channel.send("Ilmoitusta ei löytynyt."))
             }// If typelist doesn't include given type and typearg is not a number, send message
             else return message.channel.send(`Tuo ei ole oikeantyyppinen ilmoitus! Oikeat tyypit ovat ${typelist.toString()}. Vaihtoehtoisesti voit antaa jonkun aiemman ilmoituksen numeron tyypin sijaan saadaksesi tietoja ilmoituksesta.`)
         }
 
         // If desc given and type is not a number, post the data to Github API
-        if(desc && isNaN(typearg)){
+        if (desc && isNaN(typearg)) {
             // Init data for Axios POST
             const body = desc + "\n\n > Tämä ilmoitus on lähetetty IlluminatiBotin kautta.";
-            let title = body.substr(0,10) + "..";
+            let title = body.substr(0, 10) + "..";
             const data = {
                 title,
                 body,
                 labels: [typearg]
             };
-        axios.post("https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues", data, {
-            auth
-        })
-            .then(res => {
-                console.log(res.data);
-                // Create embed from returned data
-                const embed = {
+            axios.post("https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues", data, {
+                auth
+            })
+                .then(res => {
+                    console.log(res.data);
+                    // Create embed from returned data
+                    const embed = {
                         title: "Uusi ilmoitus luotu!",
                         description: res.data.body,
                         url: res.data.html_url,
@@ -95,12 +95,12 @@ module.exports = {
                                 value: res.data.number
                             }
                         ],
-                        timestamp:Date.now()
+                        timestamp: Date.now()
                     };
-                // Send embed and catch Axios errors
-                message.channel.send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi",{embed})
-            })
-            .catch(e => message.channel.send("Tapahtui virhe: " + e.message))
+                    // Send embed and catch Axios errors
+                    message.channel.send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi", {embed})
+                })
+                .catch(e => message.channel.send("Tapahtui virhe: " + e.message))
         }
     }
 };

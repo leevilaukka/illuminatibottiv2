@@ -3,7 +3,7 @@ const {argsToString} = require("../helpers");
 const axios = require("axios");
 module.exports = {
     name: "search",
-    aliases: ["hae", "s", "google","g"],
+    aliases: ["hae", "s", "google", "g"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     category: "other",
@@ -11,7 +11,7 @@ module.exports = {
         const query = argsToString(args);
         axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
             .then(res => {
-                if(!res.data.itemListElement[0]){
+                if (!res.data.itemListElement[0]) {
                     return message.channel.send("Hakusanalla ei löytynyt kohteita :cry:")
                 }
                 const result = res.data.itemListElement[0].result;
@@ -21,7 +21,7 @@ module.exports = {
                         value: result.detailedDescription.articleBody
                     },
                 ];
-                if(result.url){
+                if (result.url) {
                     fields.push({
                         name: "Nettisivut",
                         value: result.url
@@ -36,7 +36,7 @@ module.exports = {
                     image: {
                         url: result.image && result.image.contentUrl
                     },
-                    footer:{
+                    footer: {
                         text: "IlluminatiBotti x Google"
                     }
                 };

@@ -1,11 +1,12 @@
 const ytdl = require("ytdl-core-discord");
 const Guild = require("../models/Guild");
 const fs = require("fs");
+const categories = require("./categories");
 
 module.exports = client => {
     //Get guild from database
     client.getGuild = async (guild) => {
-        let data = await Guild.findOne({ guildID: guild.id}).catch(e => console.error(e));
+        let data = await Guild.findOne({guildID: guild.id}).catch(e => console.error(e));
         if (data) return data;
         else return client.config.defaultSettings
     };
@@ -59,6 +60,5 @@ module.exports = client => {
         } else {
             await message.channel.send("Et ole puhekanavalla, en voi liittyä");
         }
-
     }
 };

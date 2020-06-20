@@ -8,11 +8,11 @@ module.exports = {
     category: "math",
     execute(message, args) {
 
-        if(!args.includes("x")){
+        if (!args.includes("x")) {
             args.unshift("x", "=")
         }
 
-        try{
+        try {
             const exp = new algebra.parse(argsToString(args));
             const ansX = exp.solveFor("x");
 
@@ -34,7 +34,7 @@ module.exports = {
                 },
                 fields,
             };
-            if(args.includes("y")){
+            if (args.includes("y")) {
                 const ansY = exp.solveFor("y");
                 fields.push({
                     name: "Y",
@@ -42,7 +42,7 @@ module.exports = {
                 })
             }
             message.channel.send({embed})
-        }catch (e) {
+        } catch (e) {
             return message.channel.send(e.message);
         }
     }

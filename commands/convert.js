@@ -9,7 +9,7 @@ module.exports = {
     category: "math",
     execute(message, args) {
         let result;
-        if(!args.length){
+        if (!args.length) {
             const measures = convert().measures();
             let fields = [
                 {
@@ -30,14 +30,14 @@ module.exports = {
                 description: "Tietoja yksikkömuuntimesta",
                 fields
             };
-           return message.channel.send({embed})
+            return message.channel.send({embed})
         }
 
         const [value, from, to] = args;
 
-        if (value === "info"){
+        if (value === "info") {
 
-            try{
+            try {
                 const info = convert().describe(from);
 
                 const embed = {
@@ -66,7 +66,7 @@ module.exports = {
 
         }
         if (!to) {
-            try{
+            try {
                 result = convert(value).from(from).toBest();
             } catch (e) {
                 return message.channel.send(e.message);
@@ -79,8 +79,8 @@ module.exports = {
                     description: "Annettu lukusi muutettiin parhaaseen mahdolliseen muotoon",
                     fields: [
                         {
-                          name: "Muutettava",
-                          value: argsToString(args)
+                            name: "Muutettava",
+                            value: argsToString(args)
                         },
                         {
                             name: "Tulos",
@@ -89,10 +89,10 @@ module.exports = {
                     ]
                 }
             };
-            return  message.channel.send(resEmbed)
+            return message.channel.send(resEmbed)
         }
 
-        try{
+        try {
             result = convert(value).from(from).to(to);
         } catch (e) {
             return message.channel.send(e.message);

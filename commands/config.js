@@ -14,22 +14,22 @@ module.exports = {
                 if (!newSetting) {
                     return message.channel.send(`Nykyinen prefix:\`${settings.prefix}\``)
                 }
-                try{
+                try {
                     await client.updateGuild(message.guild, {
                         prefix: newSetting
                     });
                     message.channel.send("Prefiksi päivitetty");
-                }catch (e) {
+                } catch (e) {
                     message.channel.send(`Tapahtui virhe: ${e.message}`)
                 }
                 break;
             }
             case "volume":
-                if(!newSetting) {
+                if (!newSetting) {
                     return message.channel.send(`Nykyinen oletusäänenvoimakkuus:\`${settings.volume}\``)
                 }
-                try{
-                    if(newSetting > 2){
+                try {
+                    if (newSetting > 2) {
                         newSetting = 2;
                         message.channel.send("Asetus liian suuri, äänenvoimakkuus rajoitettu 200%")
                     }
@@ -37,11 +37,11 @@ module.exports = {
                         volume: newSetting
                     });
                     message.channel.send("Oletusäänenvoimakkuus päivitetty");
-                }catch (e) {
+                } catch (e) {
                     message.channel.send(`Tapahtui virhe: ${e.message}`)
                 }
                 break;
-            default:{
+            default: {
                 const embed = {
                     title: "Kaikki botin asetukset",
                     description: "Voit vaihtaa asetusta antamalla asetuksen nimen ja uuden arvon. Tässä nykyiset arvot",

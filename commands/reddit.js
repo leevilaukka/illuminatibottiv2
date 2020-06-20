@@ -11,7 +11,7 @@ module.exports = {
         let skipnsfw = args[1];
 
         // Subreddit argument given check
-        if (!subreddit){
+        if (!subreddit) {
             return message.channel.send("Anna subreddit!")
                 .catch(e => message.channel.send(e))
         }
@@ -26,8 +26,8 @@ module.exports = {
 
                 // Assing response data to variables
                 let title = res.data[0].data.children[0].data.title;
-                if(title.length >= 255){
-                    title = title.substr(0,250) + "..."
+                if (title.length >= 255) {
+                    title = title.substr(0, 250) + "..."
                 }
                 let thumb = res.data[0].data.children[0].data.thumbnail;
                 let kuva = res.data[0].data.children[0].data.url;
@@ -49,14 +49,14 @@ module.exports = {
 
                 // Embed data init
                 let fields = [];
-                if(flair){
+                if (flair) {
                     fields.push({
                         name: "Flair",
                         value: flair
                     })
                 }
                 let color = 0xff4500;
-                if(flaircolor){
+                if (flaircolor) {
                     color = `0x${flaircolor}`
                 }
                 let data = {
@@ -70,7 +70,7 @@ module.exports = {
                             text: "IlluminatiBotti x Reddit"
                         },
                         thumbnail: {
-                            url:thumb && null
+                            url: thumb && null
                         },
                         image: {
                             url: kuva

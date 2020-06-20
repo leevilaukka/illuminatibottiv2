@@ -1,9 +1,9 @@
-module.exports =  async (client, guild) => {
+module.exports = async (client, guild) => {
     try {
-        if(guild.available){
+        if (guild.available) {
             await client.deleteGuild(guild);
         }
-    }catch (e) {
+    } catch (e) {
         console.error(e)
     }
 };
