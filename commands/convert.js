@@ -54,7 +54,7 @@ module.exports = {
                         },
                         {
                             name: "Järjestelmä",
-                            value: info.system
+                            value: valueParser(info.system)
                         }
                     ]
                 };
