@@ -8,6 +8,10 @@ module.exports = {
     async execute(message, args, settings, client) {
         const setting = args[0];
         let newSetting = args.slice(1).join(" ");
+        const author = {
+            name: "IlluminatiBotti",
+            icon_url: client.user.avatarURL()
+        };
 
         switch (setting) {
             case "prefix": {
@@ -56,7 +60,8 @@ module.exports = {
                             value: `\`${(settings.volume * 100).toFixed(1)} %\``,
                             inline: true
                         }
-                    ]
+                    ],
+                    author
                 };
                 return message.channel.send({embed})
             }

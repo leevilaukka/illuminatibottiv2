@@ -13,6 +13,11 @@ module.exports = {
         const {commands} = message.client;
         const prefix = settings.prefix;
 
+        const author = {
+            name: "IlluminatiBotti",
+            icon_url: client.user.avatarURL()
+        };
+
         if (!args.length) {
             let fields = [
             ];
@@ -20,7 +25,8 @@ module.exports = {
             const embed = {
                 title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
                 description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
-                fields
+                fields,
+                author
             };
 
 
@@ -82,7 +88,8 @@ module.exports = {
         });
         const embed = {
             title: "Tietoja komennosta",
-            fields
+            fields,
+            author
         };
 
         message.channel.send({embed});
