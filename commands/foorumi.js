@@ -2,7 +2,7 @@ module.exports = {
     name: "foorumi",
     description: "DiscordFoorumi-linkki",
     category: "other",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         const data = {
             embed: {
                 title: "DiscordFoorumi",
