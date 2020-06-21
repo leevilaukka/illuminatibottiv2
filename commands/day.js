@@ -15,7 +15,7 @@ module.exports = {
                 for (let i = 0; i < holidays.length; i++) {
                     if (holidays[i].date === date) {
                         const results = [holidays[i]];
-                        console.log(results);
+
                         results.map(result => {
                             const parsedDate = moment(result.date).format("DD.MM.YYYY");
                             const fields = [{

@@ -7,6 +7,5 @@ module.exports = {
     category: "general",
     execute(message, args) {
         message.channel.send(`Nimi: ${message.guild.name}\nJäseniä: ${message.guild.memberCount}`);
-        console.log(message.guild.members.cache)
     },
 };

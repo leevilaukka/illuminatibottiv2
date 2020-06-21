@@ -14,7 +14,6 @@ module.exports = {
                 for (let i = 0; i < names.length; i++) {
                     if (names[i].date === date) {
                         const results = [names[i]];
-                        console.log(results);
                         const embed = {
                             title: "Päivän nimipäivät",
                             url: results[0].url,

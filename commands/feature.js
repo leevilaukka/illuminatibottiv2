@@ -78,7 +78,6 @@ module.exports = {
                 auth
             })
                 .then(res => {
-                    console.log(res.data);
                     // Create embed from returned data
                     const embed = {
                         title: "Uusi ilmoitus luotu!",

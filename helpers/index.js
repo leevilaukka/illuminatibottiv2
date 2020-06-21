@@ -3,5 +3,6 @@ module.exports = {
     formatDate: require("./formatDate"),
     randomArray: require("./randomArray"),
     umlautRemover: require("./umlautRemover"),
-    valueParser: require("./valueParser")
+    valueParser: require("./valueParser"),
+    getCommandCategory: require("./getCommandCategory")
 };

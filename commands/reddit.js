@@ -85,9 +85,6 @@ module.exports = {
 
                 // Send embed
                 message.channel.send(data)
-                    .then(() => console.log(
-                        "Näytettiin satunnainen postaus osoitteesta http://www.reddit.com/r/" + subreddit
-                    ))
                     // Catch errors with send and log
                     .catch(e => console.error(e));
                 // Catch error with Axios GET
