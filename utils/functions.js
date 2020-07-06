@@ -1,8 +1,6 @@
 const ytdl = require("ytdl-core-discord");
 const Guild = require("../models/Guild");
 const fs = require("fs");
-const categories = require("./categories");
-
 module.exports = client => {
     //Get guild from database
     client.getGuild = async (guild) => {
@@ -30,6 +28,9 @@ module.exports = client => {
             .then(res => {
                 console.log(`Uusi palvelin luotu! Nimi: ${res.guildName} (${res.guildID})`)
             })
+            .catch(error => {
+                console.error(error)
+            })
     };
     // Delete guild from database
     client.deleteGuild = async (guild) => {
@@ -39,10 +40,11 @@ module.exports = client => {
     // Play YouTube video from given url
     client.play = async (message, url) => {
         if (message.member.voice.channel) {
-            client.voiceConnection = await message.member.voice.channel.join();
 
             let data = await client.getGuild(message.guild);
             const volume = data.volume;
+
+            client.voiceConnection = await message.member.voice.channel.join();
             client.dispatcher = client.voiceConnection.play(await ytdl(url), {type: 'opus', highWaterMark: 50, volume});
 
             //Import events
@@ -54,9 +56,6 @@ module.exports = client => {
                 console.log(`Loaded dispatcher evt: ${dispatchEvtName}`);
                 client.dispatcher.on(dispatchEvtName, dispatchEvt.bind(null, client))
             }
-
-            // Always remember to handle errors appropriately!
-            client.dispatcher.on('error', console.error);
         } else {
             await message.channel.send("Et ole puhekanavalla, en voi liittyä");
         }

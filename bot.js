@@ -7,6 +7,7 @@ client.commands = new Discord.Collection();
 require('./utils/functions')(client);
 client.config = require('./config');
 
+
 // Node modules
 const fs = require('fs');
 const mongoose = require("mongoose");

@@ -2,6 +2,17 @@ const axios = require("axios");
 const {argsToString, umlautRemover} = require("../helpers");
 
 
+/*
+* TODO: Queues and queuesaving to database, also save queues as playlists if possible
+* BS: Possible database structure (guilds document):
+*   (other fields...)
+*   queue: [{
+*       title: "Song Title",
+*       url: youtube url
+*   }]
+*   playlists: [ObjectIDs pointing to playlist document with saved queues]
+* */
+
 module.exports = {
     name: "youtube",
     description: "Youtube juttu",
@@ -17,7 +28,7 @@ module.exports = {
         const search = umlautRemover(argsToString(args));
 
         // Dynamically Axios GET Google API with given search arguments
-        axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search}&key=${token}&type=video`, {
+        axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search}&key=${token}&type=video&topicId=/m/04rlf`, {
             headers: {
                 "Accept": "application/json"
             }
