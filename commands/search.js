@@ -15,11 +15,8 @@ module.exports = {
                     return message.channel.send("Hakusanalla ei löytynyt kohteita :cry:")
                 }
                 const result = res.data.itemListElement[0].result;
+                console.log(result)
                 let fields = [
-                    {
-                        name: "Tarkempi kuvaus",
-                        value: result.detailedDescription.articleBody
-                    },
                 ];
                 if (result.url) {
                     fields.push({
@@ -27,9 +24,15 @@ module.exports = {
                         value: result.url
                     })
                 }
+                if (result.detailedDescription) {
+                    fields.push({
+                        name: "Tarkempi kuvaus",
+                        value: result.detailedDescription.articleBody
+                    })
+                }
                 const embed = {
                     title: result.name,
-                    url: result.detailedDescription.url,
+                    url: result.detailedDescription && result.detailedDescription.url ,
                     description: result.description,
                     color: 0x22ff22,
                     fields,
