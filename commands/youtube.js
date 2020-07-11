@@ -59,7 +59,8 @@ module.exports = {
                 }
             };
             // Send embed
-            message.channel.send("Tässä hakemasi video!", embed);
+
+            message.channel.send("Tässä hakemasi video!", embed).catch(e => console.error(e));
             await client.play(message, url);
         })
             .catch(e => {

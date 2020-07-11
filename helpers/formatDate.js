@@ -1,7 +1,7 @@
 const formatDate = date => {
     let newDate = new Date(date * 1000);
     // Hours part from the timestamp
-    let hours = newDate.getHours() + 3;
+    let hours = newDate.getHours();
     // Minutes part from the timestamp
     let minutes = "0" + newDate.getMinutes();
     // Seconds part from the timestamp
