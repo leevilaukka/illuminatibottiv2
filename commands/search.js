@@ -15,7 +15,7 @@ module.exports = {
                     return message.channel.send("Hakusanalla ei löytynyt kohteita :cry:")
                 }
                 const result = res.data.itemListElement[0].result;
-                console.log(result)
+
                 let fields = [
                 ];
                 if (result.url) {
