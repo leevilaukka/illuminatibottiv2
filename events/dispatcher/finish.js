@@ -1,4 +1,8 @@
-module.exports = async (client) => {
+module.exports = async (client, loop) => {
     console.log('Stream has finished playing!');
-    client.voiceConnection.disconnect();
+    if (loop.loop) {
+        client.play(loop.message, loop.url, loop.loop)
+    } else {
+        client.voiceConnection.disconnect();
+    }
 };

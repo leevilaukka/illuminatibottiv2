@@ -15,7 +15,7 @@ module.exports = {
     usage: "<hakusana>",
     cooldown: 7,
     category: "maps",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
 
         // Get place id with query from Maps Places API
