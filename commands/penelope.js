@@ -1,7 +1,7 @@
 module.exports = {
     name: "penelope",
     description: "Laita Penelope soimaa!!",
-    aliases: ["laitapenelopesoimaa"],
+    aliases: ["laita-penelope-soimaa", "pistä-penelope-soimaa"],
     cooldown: 7,
     category: "music",
     execute(message, args, settings, client) {
