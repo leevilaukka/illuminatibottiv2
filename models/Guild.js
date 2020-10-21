@@ -2,6 +2,14 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const {defaultSettings: defaults} = require('../config');
 
+const PlaceSchema = new Schema({
+    name: String,
+    coords: {
+        lat: String,
+        lon: String
+    }
+})
+
 const GuildSchema = new Schema({
     guildName: {
         type: String,
@@ -22,7 +30,10 @@ const GuildSchema = new Schema({
     joinedAt: {
         type: Date,
         required: true
-    }
+    },
+    places: [PlaceSchema]
 });
+
+
 
 module.exports = mongoose.model("Guild", GuildSchema);
