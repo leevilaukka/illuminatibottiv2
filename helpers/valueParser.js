@@ -112,6 +112,18 @@ const valueParser = (value) => {
             original: "imperial",
             parsed: "Brittiläinen"
         },
+        {
+            original: "WALK",
+            parsed: "Jalat"
+        },
+        {
+            original: "BUS",
+            parsed: "Bussi"
+        },
+        {
+            original: "RAIL",
+            parsed: "Juna"
+        },
     ];
 
     for (let i = 0; i < array.length; i++) {
