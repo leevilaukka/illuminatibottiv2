@@ -10,6 +10,7 @@ const PlaceSchema = new Schema({
     }
 })
 
+
 const GuildSchema = new Schema({
     guildName: {
         type: String,
@@ -31,7 +32,21 @@ const GuildSchema = new Schema({
         type: Date,
         required: true
     },
-    places: [PlaceSchema]
+    places: [PlaceSchema],
+    deletedMessages: [
+        {
+            message: String,
+            author: {
+                name: String,
+                discriminator: String,
+                id: String
+            },
+            timestamp: String,
+            messageID: String,
+            channelID: String,
+            embeds: Array
+        }
+    ]
 });
 
 
