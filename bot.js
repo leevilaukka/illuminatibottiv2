@@ -1,4 +1,6 @@
 //Discord.js modules
+import {Structures} from "discord.js";
+
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -21,6 +23,31 @@ for (const file of eventFiles) {
     console.log(`Loaded evt: ${evtName}`);
     client.on(evtName, evt.bind(null, client))
 }
+
+Structures.extend('Guild', function(Guild) {
+    class MusicGuild extends Guild {
+        constructor(client, data) {
+            super(client, data);
+            this.musicData = {
+                queue: [],
+                isPlaying: false,
+                nowPlaying: null,
+                songDispatcher: null,
+                skipTimer: false, // only skip if user used leave command
+                loopSong: false,
+                loopQueue: false,
+                volume: 1
+            };
+            this.triviaData = {
+                isTriviaRunning: false,
+                wasTriviaEndCalled: false,
+                triviaQueue: [],
+                triviaScore: new Map()
+            };
+        }
+    }
+    return MusicGuild;
+});
 
 // Command import
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
