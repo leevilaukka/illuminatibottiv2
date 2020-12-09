@@ -45,6 +45,18 @@ module.exports = {
                     message.channel.send(`Tapahtui virhe: ${e.message}`)
                 }
                 break;
+            case "removedChannel":
+                if (!newSetting) {
+                    return message.channel.send(`Nykyinen oletusäänenvoimakkuus:\`${settings.removedMemberChannel}\``)
+                }
+                try {
+                    await client.updateGuild(message.guild, {
+                        removedMemberChannel: newSetting
+                    });
+                    return message.channel.send(`Kanava muutettu: ${newSetting}`);
+                } catch (e) {
+                    return message.channel.send(`Tapahtui virhe: ${e.message}`)
+                }
             default: {
                 const embed = {
                     title: "Kaikki botin asetukset",
