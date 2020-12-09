@@ -10,6 +10,11 @@ const PlaceSchema = new Schema({
     }
 })
 
+const MemberSchema = new Schema({
+    name: String,
+    id: String
+})
+
 
 const GuildSchema = new Schema({
     guildName: {
@@ -33,6 +38,8 @@ const GuildSchema = new Schema({
         required: true
     },
     places: [PlaceSchema],
+    removedMemberChannel: String,
+    removedMembers: [MemberSchema],
     deletedMessages: [
         {
             message: String,
@@ -46,7 +53,8 @@ const GuildSchema = new Schema({
             channelID: String,
             embeds: Array
         }
-    ]
+    ],
+    throws: [String]
 });
 
 

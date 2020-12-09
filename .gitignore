@@ -4,3 +4,4 @@ ecosystem.config.js
 /pipes
 /logs
 package-lock.json
+/.vscode

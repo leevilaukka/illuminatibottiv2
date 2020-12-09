@@ -27,13 +27,14 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
+    console.log(`Loaded cmd: ${command.name}`)
 }
 
 // Connect to database
 mongoose.connect(process.env.MONGOURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}, () => console.log("DB Connected!"));
+}, (cb) => console.log("DB Connected!" + cb));
 
 //Bot client login
 client.login(client.config.token).then(() => console.log("Logged in!"));

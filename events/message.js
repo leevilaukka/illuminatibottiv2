@@ -17,6 +17,7 @@ module.exports = async (client, message) => {
 
     if (message.author.bot) return;
 
+    
     const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`);
@@ -77,6 +78,8 @@ module.exports = async (client, message) => {
 
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+    console.log(`Cmd ${command.name} called!`)
 
     //Execute command and catch errors
     try {
