@@ -6,6 +6,8 @@ module.exports = {
     description: 'Lisää heitto :D',
     category: "general",
     cooldown: 10,
+    args: true,
+    usage: '<kuvan url (png tai jpg)>',
     execute(message, args, settings, client) {
         const [heitto, ...rest] = args;
 
