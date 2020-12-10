@@ -1,7 +1,6 @@
 const Guild = require("../models/Guild")
 
 module.exports = async (client, deletedMessage) => {
-    console.log(deletedMessage)
 
     const newDoc = {
         author: {
@@ -16,8 +15,6 @@ module.exports = async (client, deletedMessage) => {
         embeds: deletedMessage.embeds ? deletedMessage.embeds : null
     }
 
-    console.log(newDoc)
-    console.log(deletedMessage.channel.guild.id)
     Guild.findOneAndUpdate({guildID: deletedMessage.channel.guild.id}, {
         $push: {deletedMessages: newDoc}
     }).catch(e => console.error(e))
