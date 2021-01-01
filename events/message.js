@@ -2,6 +2,8 @@ const Discord = require("discord.js");
 
 const cooldowns = new Discord.Collection();
 
+const isDevelopment = require("../helpers/nodeHelpers/isDevelopment")
+
 module.exports = async (client, message) => {
     let settings;
     try {
@@ -78,9 +80,9 @@ module.exports = async (client, message) => {
 
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-
-    console.log(`Cmd ${command.name} called!`)
-
+    
+    if(isDevelopment()) console.log(`Cmd ${command.name} called!`)
+    
     //Execute command and catch errors
     try {
         command.execute(message, args, settings, client);

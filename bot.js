@@ -10,6 +10,7 @@ client.config = require('./config');
 // Node modules
 const fs = require('fs');
 const mongoose = require("mongoose");
+const isDevelopment = require("./helpers/nodeHelpers/isDevelopment")
 
 // Event import
 const eventFiles = fs.readdirSync('./events/').filter(file => file.endsWith('.js'));
@@ -31,11 +32,20 @@ for (const file of commandFiles) {
 }
 
 // Connect to database
-console.log(process.env.MONGOURI)
 mongoose.connect(process.env.MONGOURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}, (cb) => console.log("DB Connected!" + cb));
+}, cb => {
+    if (cb ==! null && isDevelopment()) {
+        console.error(cb)
+    } else console.log("DB Connected!")
+});
 
 //Bot client login
-client.login(client.config.token).then(() => console.log("Logged in!"));
+client.login(client.config.token).then(() => {
+    if (isDevelopment()) {
+        console.log("Logged in as development version")
+    } else {
+        console.log("Logged in!")
+    }
+});
