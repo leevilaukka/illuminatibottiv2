@@ -16,6 +16,9 @@ module.exports = {
                lon
            }
        }
+       if (isNaN(lat) || isNaN(lon)) {
+           return message.reply("koordinaattien tulee olla numeroita esim 123.45")
+       }
        Guild.findOneAndUpdate({guildID: message.guild.id}, {
            $push: {places: newSettings}
        })

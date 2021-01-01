@@ -1,6 +1,17 @@
 const Guild = require("../models/Guild")
+const message = require("./message")
 
 module.exports = async (client, deletedMessage) => {
+
+    if(!deletedMessage.guild) return;
+    
+    const fetchedLogs = await deletedMessage.guild.fetchAuditLogs({
+       limit: 1,
+       type: "MESSAGE_DELETE"
+    });
+
+    const deletedLog = fetchedLogs.entries.first();
+    const {executor} = deletedLog;
 
     const newDoc = {
         author: {
@@ -8,6 +19,11 @@ module.exports = async (client, deletedMessage) => {
             discriminator: deletedMessage.author.discriminator,
             id: deletedMessage.author.id
         },
+        deletor: executor ? {
+            name: executor.username,
+            discriminator: executor.discriminator,
+            id: executor.id
+        } : null,
         message: deletedMessage.content,
         timestamp: new Date(Date.now()),
         messageID: deletedMessage.id,
