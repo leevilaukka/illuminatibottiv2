@@ -10,25 +10,34 @@ module.exports = async (client, deletedMessage) => {
        type: "MESSAGE_DELETE"
     });
 
+    // Pick first entry from deletedLog and destructure executor out
     const deletedLog = fetchedLogs.entries.first();
     const {executor} = deletedLog;
 
+    // If executor is a bot account, return
+    if(executor.bot) return;
+
+    console.log(deletedMessage)
+    const {author, content: message, id: messageID, channel, embeds} = deletedMessage;
     const newDoc = {
         author: {
-            name: deletedMessage.author.username,
-            discriminator: deletedMessage.author.discriminator,
-            id: deletedMessage.author.id
+            name: author.username,
+            discriminator: author.discriminator,
+            id: author.id
         },
         deletor: executor ? {
             name: executor.username,
             discriminator: executor.discriminator,
             id: executor.id
         } : null,
-        message: deletedMessage.content,
+        message,
         timestamp: new Date(Date.now()),
-        messageID: deletedMessage.id,
-        channelID: deletedMessage.channel.id,
-        embeds: deletedMessage.embeds ? deletedMessage.embeds : null
+        messageID,
+        channel: {
+            name: channel.name,
+            id: channel.id
+        },
+        embeds
     }
 
     Guild.findOneAndUpdate({guildID: deletedMessage.channel.guild.id}, {

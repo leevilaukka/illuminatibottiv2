@@ -16,15 +16,20 @@ const MemberSchema = new Schema({
   discriminator: String
 });
 
+const TextChannelSchema = new Schema({
+  name: String,
+  id: String
+})
+
 const DeletedMessageSchema = new Schema({
     message: String,
     author: MemberSchema,
     deletor: MemberSchema,
     timestamp: Date,
     messageID: String,
-    channelID: String,
+    channel: TextChannelSchema,
     embeds: Array,
-},)
+})
 
 const GuildSchema = new Schema({
   guildName: {

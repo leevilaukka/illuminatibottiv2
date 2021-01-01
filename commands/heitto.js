@@ -28,9 +28,6 @@ module.exports = {
             return newArr;
         }
 
-        //purkkaa
-
-
         client.getGuild(message.guild)
             .then(res => {
                 const imgs = res.throws
