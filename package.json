@@ -10,7 +10,7 @@
   "author": "leevilaukka",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.2.1",
+    "@discordjs/opus": "^0.3.3",
     "algebra": "^1.0.1",
     "algebra.js": "^0.2.6",
     "axios": "^0.21.1",
