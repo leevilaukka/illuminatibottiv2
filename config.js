@@ -1,5 +1,7 @@
 module.exports = {
   token: process.env.TOKEN,
+  devServerID: process.env.DEVSERVERID,
+  ownerID: process.env.OWNERID,
   defaultSettings: {
     prefix: "*",
     volume: "1",

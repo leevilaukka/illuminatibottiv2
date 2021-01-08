@@ -10,7 +10,8 @@ client.config = require('./config');
 // Node modules
 const fs = require('fs');
 const mongoose = require("mongoose");
-const isDevelopment = require("./helpers/nodeHelpers/isDevelopment")
+const config = require("./config");
+const { isDevelopment } = require("./helpers/nodeHelpers")
 
 // Event import
 const eventFiles = fs.readdirSync('./events/').filter(file => file.endsWith('.js'));
@@ -41,11 +42,12 @@ mongoose.connect(process.env.MONGOURI, {
     } else console.log("DB Connected!")
 });
 
-//Bot client login
+//Bot client login, check if ownerID given
+if(!config.ownerID) throw new Error("No ownerID given!")
 client.login(client.config.token).then(() => {
     if (isDevelopment()) {
-        console.log("Logged in as development version")
+        console.log("Logged in as development version");
     } else {
-        console.log("Logged in!")
+        console.log("Logged in!");
     }
 });
