@@ -29,7 +29,7 @@ const DeletedMessageSchema = new Schema({
     messageID: String,
     channel: TextChannelSchema,
     embeds: Array,
-})
+});
 
 const GuildSchema = new Schema({
   guildName: {

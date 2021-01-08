@@ -1,5 +1,4 @@
 const Guild = require("../models/Guild")
-const message = require("./message")
 
 module.exports = async (client, deletedMessage) => {
 

@@ -1,3 +1,5 @@
+const { isDevelopment } = require("../../helpers/nodeHelpers");
+
 module.exports = async (client) => {
-    console.log('Stream is now playing!');
+    if(isDevelopment) console.log('Stream is now playing!');
 };
