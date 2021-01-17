@@ -1,4 +1,4 @@
-//Discord.js modules
+// Discord.js modules
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -29,20 +29,20 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
-    console.log(`Loaded cmd: ${command.name}`)
+    if (isDevelopment()) console.log(`Loaded cmd: ${command.name}`)
 }
-
+    if (!isDevelopment()) console.log("Commands loaded!")
 // Connect to database
 mongoose.connect(process.env.MONGOURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, cb => {
-    if (cb ==! null && isDevelopment()) {
+    if (cb ==! null) {
         console.error(cb)
     } else console.log("DB Connected!")
 });
 
-//Bot client login, check if ownerID given
+// Bot client login, check if ownerID given
 if(!config.ownerID) throw new Error("No ownerID given!")
 client.login(client.config.token).then(() => {
     if (isDevelopment()) {
