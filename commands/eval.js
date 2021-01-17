@@ -4,6 +4,7 @@ module.exports = {
     name: 'eval',
     description: 'Evaluate JavaScript expressions',
     ownerOnly: true,
+    args: true,
     execute(message, args, settings, client) {
         try {
             const code = argsToString(args)

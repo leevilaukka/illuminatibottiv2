@@ -1,6 +1,11 @@
 const ytdl = require("ytdl-core-discord");
 const Guild = require("../models/Guild");
 const fs = require("fs");
+
+const dispatchEventFiles = fs.readdirSync("./events/dispatcher/").filter((file) =>
+          file.endsWith(".js")
+        );
+
 module.exports = (client) => {
   //Get guild from database
   client.getGuild = async (guild) => {
@@ -47,42 +52,63 @@ module.exports = (client) => {
   // Play YouTube video from given url
   client.play = async (message, url, loop) => {
     if (message.member.voice.channel) {
-      let data = await client.getGuild(message.guild);
-      const volume = data.volume;
+      try {
+        let data = await client.getGuild(message.guild);
+        const volume = data.volume;
 
-      if (loop) {
-        loop = {
-          loop,
-          url,
-          message,
-        };
-      }
+        if (loop) {
+          loop = {
+            loop,
+            url,
+            message,
+          };
+        }
 
-      client.voiceConnection = await message.member.voice.channel.join();
-      client.dispatcher = client.voiceConnection.play(await ytdl(url), {
-        type: "opus",
-        highWaterMark: 50,
-        volume,
-      });
+        for (const file of dispatchEventFiles) {
+          const dispatchEvt = require(`../events/dispatcher/${file}`);
+          let dispatchEvtName = file.split(".")[0];
+          console.log(`Loaded dispatcher evt: ${dispatchEvtName}`);
+          client.dispatcher.on(
+            dispatchEvtName,
+            dispatchEvt.bind(null, client, loop)
+          );
+        }
 
-      //Import events
-      const dispatchEventFiles = fs
-        .readdirSync("./events/dispatcher/")
-        .filter((file) => file.endsWith(".js"));
-
-      for (const file of dispatchEventFiles) {
-        const dispatchEvt = require(`../events/dispatcher/${file}`);
-        let dispatchEvtName = file.split(".")[0];
-        console.log(`Loaded dispatcher evt: ${dispatchEvtName}`);
-        client.dispatcher.on(
-          dispatchEvtName,
-          dispatchEvt.bind(null, client, loop)
-        );
+        client.voiceConnection = await message.member.voice.channel.join();
+        client.dispatcher = client.voiceConnection
+          .play(await ytdl(url), {
+            type: "opus",
+            highWaterMark: 50,
+            volume,
+          })
+          .catch(console.error);
+      } catch (e) {
+        console.error(e);
+        message.channel.send(`Tapahtui virhe: ${e.message}`);
       }
     } else {
       await message.channel.send("Et ole puhekanavalla, en voi liittyä");
     }
   };
+  client.playFile = async (message, file) => {
+    client.voiceConnection = await message.member.voice.channel.join();
+    try {    
+      const dispatcher = client.voiceConnection.play(file);
+
+      for (const file of dispatchEventFiles) {
+        const dispatchEvt = require(`../events/dispatcher/${file}`);
+        let dispatchEvtName = file.split(".")[0];
+        console.log(`Loaded dispatcher evt: ${dispatchEvtName}`);
+        dispatcher.on(
+          dispatchEvtName,
+          dispatchEvt.bind(null, client, loop = false)
+        );
+      }
+    } catch(e) {
+      console.error(e)
+    }
+  };
+
   client.clean = (text) => {
     if (typeof text === "string")
       return text
