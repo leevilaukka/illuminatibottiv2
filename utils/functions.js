@@ -90,10 +90,14 @@ module.exports = (client) => {
       await message.channel.send("Et ole puhekanavalla, en voi liittyä");
     }
   };
-  client.playFile = async (message, file) => {
+  client.playFile = async (message, file, settings) => {
     client.voiceConnection = await message.member.voice.channel.join();
     try {    
-      const dispatcher = client.voiceConnection.play(file);
+      const data = await client.getGuild(message.guild);
+      const volume = settings.volume || data.volume
+      const dispatcher = client.voiceConnection.play(file, {
+        volume
+      });
 
       for (const file of dispatchEventFiles) {
         const dispatchEvt = require(`../events/dispatcher/${file}`);
