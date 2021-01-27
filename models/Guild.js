@@ -60,6 +60,10 @@ const GuildSchema = new Schema({
     type: Array,
     default: defaults.throws,
   },
+  mcdefaults: {
+    action: String,
+    host: String
+  }
 });
 
 module.exports = mongoose.model("Guild", GuildSchema);

@@ -5,6 +5,10 @@ module.exports = {
   defaultSettings: {
     prefix: "*",
     volume: "1",
+    mcdefaults: {
+      action: "status",
+      host: "illuminati.serveminecraft.net",
+    },
     throws: [
       "https://i.imgur.com/qrzJlKR.jpg",
       "https://i.imgur.com/K5WcvWk.png",
