@@ -119,11 +119,13 @@ module.exports = {
                         if (ping.data.status === "OK") {
                             axios
                                 .post(
-                                    `http://illuminati.serveminecraft.net:25555/run`
+                                    `http://illuminati.serveminecraft.net:25555/run`, {author: message.author.username}
                                 )
                                 .then((res) => {
                                     message.reply(res.data.message);
                                 });
+                        } else {
+                            return message.reply(`servukone ei oo päällä, valita Laukalle!`)
                         }
                     })
                     .catch((err) => console.error(err));
