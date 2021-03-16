@@ -14,6 +14,7 @@ module.exports = {
     };
 
     switch (setting) {
+      // Prefix setting
       case "prefix": {
         if (!newSetting) {
           return message.channel.send(`Nykyinen prefix:\`${settings.prefix}\``);
@@ -28,6 +29,7 @@ module.exports = {
         }
         break;
       }
+      // Volume setting
       case "volume":
         if (!newSetting) {
           return message.channel.send(
@@ -44,15 +46,15 @@ module.exports = {
           await client.updateGuild(message.guild, {
             volume: newSetting,
           });
-          message.channel.send("Oletusäänenvoimakkuus päivitetty");
+          return message.channel.send("Oletusäänenvoimakkuus päivitetty");
         } catch (e) {
-          message.channel.send(`Tapahtui virhe: ${e.message}`);
+          return  message.channel.send(`Tapahtui virhe: ${e.message}`);
         }
-        break;
+      // Removed channel setting
       case "removedChannel":
         if (!newSetting) {
           return message.channel.send(
-            `Nykyinen oletusäänenvoimakkuus:\`${settings.removedMemberChannel}\``
+            `Nykyinen kanava:\`${settings.removedMemberChannel}\``
           );
         }
         try {
@@ -63,6 +65,7 @@ module.exports = {
         } catch (e) {
           return message.channel.send(`Tapahtui virhe: ${e.message}`);
         }
+      // Minecraft command default action setting
       case "mcdefault":
         if (!newSetting) {
           return message.channel.send(
@@ -81,7 +84,7 @@ module.exports = {
         } else {
             console.log("kiinni jäi")
         }
-
+        // Minecraft command default host setting
         case "mchost":
         if (!newSetting) {
           return message.channel.send(

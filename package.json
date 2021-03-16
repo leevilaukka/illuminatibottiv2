@@ -19,6 +19,7 @@
     "discord.js": "^12.5.1",
     "ffmpeg-binaries": "^4.0.0",
     "ffmpeg-static": "^4.2.0",
+    "genius-lyrics-api": "^3.0.6",
     "graphql": "^15.3.0",
     "graphql-request": "^3.2.0",
     "minecraft-server-util": "^3.4.2",
