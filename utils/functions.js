@@ -50,11 +50,11 @@ module.exports = (client) => {
     console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
   };
   // Play YouTube video from given url
-  client.play = async (message, url, loop) => {
+  client.play = async (message, url, loop, options) => {
     if (message.member.voice.channel) {
       try {
         let data = await client.getGuild(message.guild);
-        const volume = data.volume;
+        const volume = options.volume || data.volume;
 
         if (loop) {
           loop = {

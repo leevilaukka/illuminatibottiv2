@@ -6,7 +6,7 @@ module.exports = {
         const data = {
             embed: {
                 title: "DiscordFoorumi",
-                url: "https://foorumi.leevila.me",
+                url: "https://foorumi.leevila.fi",
                 description: "Käy chekkaa DiscordFoorumi",
                 color: 0x0000FF,
                 author: {
