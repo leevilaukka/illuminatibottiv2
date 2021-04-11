@@ -1,16 +1,32 @@
-const { getSong } = require("genius-lyrics-api");
-
+const { getSong, getLyrics } = require("genius-lyrics-api");
+const argsToString = require("../helpers/argsToString");
 module.exports = {
     name: "lyrics",
     description: "Search Genius for lyrics",
     execute(message, args, settings, client) {
-        const [artist, title, ...rest] = args;
+        const [artist, ...title] = args;
 
-        !title && artist === title;
         const options = {
-            apiKey: "",
+            apiKey: process.env.GENIUSKEY,
+            title: argsToString(title) || artist,
+            artist,
+            optimizeQuery: true,
         };
-        const embed = {};
-        return message.reply("komento ei ole vielä valmis!");
+
+        getLyrics(options).then((lyrics) => {
+            console.log(lyrics);
+            getSong(options).then((song) => {
+                console.log("Song:", song);
+                const embed = {
+                    title: "Lyriikkasi!",
+                    thumbnail: {
+                        url: song.albumArt,
+                    },
+                    description: lyrics,
+                };
+
+                message.channel.send({ embed });
+            });
+        });
     },
 };
