@@ -16,11 +16,12 @@ module.exports = {
         getLyrics(options).then((lyrics) => {
             console.log(lyrics);
             getSong(options).then((song) => {
+                if(!song) return message.reply("kappaletta ei löytynyt!")
                 console.log("Song:", song);
                 const embed = {
                     title: "Lyriikkasi!",
                     thumbnail: {
-                        url: song.albumArt && song.albumArt,
+                        url: song.albumArt,
                     },
                     description: lyrics,
                 };
