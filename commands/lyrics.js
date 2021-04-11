@@ -20,7 +20,7 @@ module.exports = {
                 const embed = {
                     title: "Lyriikkasi!",
                     thumbnail: {
-                        url: song.albumArt,
+                        url: song.albumArt && song.albumArt,
                     },
                     description: lyrics,
                 };
