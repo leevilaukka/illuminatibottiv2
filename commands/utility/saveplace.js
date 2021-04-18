@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Guild = require('../models/Guild')
+const Guild = require('../../models/Guild')
 
 module.exports = {
     name: 'saveplace',

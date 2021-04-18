@@ -1,7 +1,7 @@
-const { formatDate } = require("../helpers");
-const { valueParser } = require("../helpers");
+const { formatDate } = require("../../helpers");
+const { valueParser } = require("../../helpers");
 const { gql, request } = require("graphql-request");
-const { isDevelopment } = require("../helpers/nodeHelpers");
+const { isDevelopment } = require("../../helpers/nodeHelpers");
 
 module.exports = {
     name: "reitti",

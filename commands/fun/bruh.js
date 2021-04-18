@@ -1,6 +1,7 @@
 module.exports = {
   name: "bruh",
   description: "bruh",
+  category: "other",
   async execute(message, args, settings, client) {
     let [volume] = args
     if (volume > 2 || isNaN(volume)) {

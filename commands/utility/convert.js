@@ -1,5 +1,5 @@
 const convert = require("convert-units");
-const {argsToString, valueParser} = require("../helpers");
+const {argsToString, valueParser} = require("../../helpers");
 
 module.exports = {
     name: "convert",

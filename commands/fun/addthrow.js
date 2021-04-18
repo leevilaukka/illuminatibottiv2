@@ -1,4 +1,4 @@
-const Guild = require("../models/Guild")
+const Guild = require("../../models/Guild")
 
 module.exports = {
     name: 'addthrow',

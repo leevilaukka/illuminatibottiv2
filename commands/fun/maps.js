@@ -1,4 +1,4 @@
-const {umlautRemover, argsToString} = require("../helpers");
+const {umlautRemover, argsToString} = require("../../helpers");
 
 const Discord = require("discord.js");
 const axios = require("axios");
