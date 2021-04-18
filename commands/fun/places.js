@@ -4,7 +4,7 @@ const {
     umlautRemover,
     valueParser,
     randomArray
-} = require("../helpers");
+} = require("../../helpers");
 const fs = require("fs");
 const Discord = require("discord.js");
 

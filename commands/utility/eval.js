@@ -1,11 +1,12 @@
-const {argsToString} = require("../helpers")
+const {argsToString} = require("../../helpers")
 
 module.exports = {
     name: 'eval',
     description: 'Evaluate JavaScript expressions',
     ownerOnly: true,
     args: true,
-    execute(message, args, settings, client) {
+    category: "config",
+    execute(message, args, _settings, client) {
         try {
             const code = argsToString(args)
             let evaled = eval(code)

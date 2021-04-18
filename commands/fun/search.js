@@ -1,4 +1,4 @@
-const {argsToString} = require("../helpers");
+const {argsToString} = require("../../helpers");
 
 const axios = require("axios");
 module.exports = {

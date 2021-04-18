@@ -1,7 +1,12 @@
+// Structures
+const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
+
 // Discord.js modules
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+client.player = new IlluminatiPlayer()
+
 
 // Config
 require("./utils/functions")(client);
@@ -13,8 +18,13 @@ const mongoose = require("mongoose");
 const config = require("./config");
 const { isDevelopment } = require("./helpers/nodeHelpers");
 
+
+
+
 // Check if ownerID given
-if (!config.ownerID) throw new Error("No ownerID given!");
+if (!config.ownerID) throw new Error("No ownerID given! Check env variables.");
+
+
 
 // Event import
 const eventFiles = fs
@@ -29,14 +39,17 @@ for (const file of eventFiles) {
 }
 
 // Command import
-const commandFiles = fs
-    .readdirSync("./commands")
-    .filter((file) => file.endsWith(".js"));
+const commandFolders = fs.readdirSync("./commands")
+for(folder of commandFolders) {
+    const commandFiles = fs
+        .readdirSync(`./commands/${folder}`)
+        .filter((file) => file.endsWith(".js"));
 
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-    if (isDevelopment()) console.log(`Loaded cmd: ${command.name}`);
+    for (const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        client.commands.set(command.name, command);
+        if (isDevelopment()) console.log(`Loaded cmd: ${folder}/${file}`);
+    }
 }
 if (!isDevelopment()) console.log("Commands loaded!");
 

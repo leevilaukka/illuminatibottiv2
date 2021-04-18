@@ -1,5 +1,5 @@
-const categories = require("../utils/categories");
-const {getCommandCategory} = require("../helpers");
+const categories = require("../../utils/categories");
+const {getCommandCategory} = require("../../helpers");
 
 module.exports = {
     name: `help`,

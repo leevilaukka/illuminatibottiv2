@@ -1,5 +1,5 @@
 const axios = require("axios");
-const {argsToString, umlautRemover} = require("../helpers");
+const {argsToString, umlautRemover} = require("../../helpers");
 
 
 /*

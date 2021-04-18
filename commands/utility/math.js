@@ -1,5 +1,5 @@
 const algebra = require("algebra.js");
-const {argsToString} = require("../helpers");
+const {argsToString} = require("../../helpers");
 
 module.exports = {
     name: "math",

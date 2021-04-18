@@ -1,13 +1,15 @@
 const util = require("minecraft-server-util");
-const { isDevelopment } = require("../helpers/nodeHelpers");
-const argsToString = require("../helpers/argsToString");
+const { isDevelopment } = require("../../helpers/nodeHelpers");
+const argsToString = require("../../helpers/argsToString");
 const { default: axios } = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "minecraft",
     description: "Minecraft Server Info ja muita juttuja :D",
     aliases: ["mc", "mine"],
     cooldown: 15,
+    category: "other",
     execute(message, args, settings, client) {
         // Variables for subcommand and server host
         const [subcommand, ...rest] = args;
@@ -62,7 +64,7 @@ module.exports = {
                     .queryFull(host)
                     .then((res) => {
                         if (isDevelopment()) console.log(res);
-                        const embed = {
+                        const embed = new IlluminatiEmbed(message.author, {
                             title: res.host,
                             fields: [
                                 {
@@ -78,10 +80,8 @@ module.exports = {
                                     value: res.gameType,
                                 },
                             ],
-                            footer: {
-                                text: `FullQuery - ${res.host}`,
-                            },
-                        };
+                           
+                        }, client);
                         // If res.players isn't empty, push players to embed
                         if (res.players) {
                             embed.fields.push({
@@ -89,7 +89,7 @@ module.exports = {
                                 value: res.players,
                             });
                         }
-                        message.channel.send({ embed });
+                        embed.send(message.channel)
                     })
                     .catch((e) => {
                         message.reply(

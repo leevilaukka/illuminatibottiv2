@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const {umlautRemover, argsToString, formatDate} = require("../helpers");
+const {umlautRemover, argsToString, formatDate} = require("../../helpers");
 
 module.exports = {
     name: "weather",
