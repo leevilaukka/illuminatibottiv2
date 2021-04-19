@@ -1,10 +1,12 @@
-// Structures
-const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
 
 // Discord.js modules
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
+// Structures
+const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
+
 client.player = new IlluminatiPlayer()
 
 
