@@ -27,6 +27,8 @@ module.exports = class IlluminatiPlayer {
      */
 
     async join(message) {
+        this.message = message
+        
         if (message.member.voice.channel) {
             this.connection = await message.member.voice.channel.join();
             return this.connection;
@@ -43,8 +45,6 @@ module.exports = class IlluminatiPlayer {
      */
 
     async play(url, message) {
-        this.message = message
-
         if (this.connection) {
             if (this.playing) {
                 this.queue = [...this.queue, url]
