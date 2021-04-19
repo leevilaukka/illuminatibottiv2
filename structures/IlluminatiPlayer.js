@@ -46,7 +46,7 @@ module.exports = class IlluminatiPlayer {
     async play(url, message) {
         this.message = message
 
-        const guildOpts = await client.getGuild(message.guild)
+        const guildOpts = await this.client.getGuild(message.guild)
 
         let opts = {...this.options, volume: guildOpts.volume }
 
