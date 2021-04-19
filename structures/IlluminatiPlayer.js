@@ -10,7 +10,7 @@ const ytdl = require("ytdl-core");
  */
 
 module.exports = class IlluminatiPlayer {
-    constructor(client, options) {
+    constructor(options) {
         this.client = client
         this.options = options;
         this.connection = VoiceConnection;
@@ -32,7 +32,7 @@ module.exports = class IlluminatiPlayer {
             this.connection = await message.member.voice.channel.join();
             return this.connection;
         } else {
-            this.message.reply("et ole puhekanavalla.");
+            message.reply("et ole puhekanavalla.");
         }
     }
 
@@ -46,17 +46,13 @@ module.exports = class IlluminatiPlayer {
     async play(url, message) {
         this.message = message
 
-        const guildOpts = await this.client.getGuild(message.guild)
-
-        let opts = {...this.options, volume: guildOpts.volume }
-
         if (this.connection) {
             if (this.playing) {
                 this.queue = [...this.queue, url]
             } else {
                 this.dispatcher = this.connection.play(
                     await ytdl(url),
-                    opts
+                    this.options
                 );               
                 this.playing = true;
                 return this.dispatcher;

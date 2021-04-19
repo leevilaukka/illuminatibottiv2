@@ -15,7 +15,7 @@ require("./utils/functions")(client);
 client.config = require("./config");
 
 // Player
-client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
+client.player = new IlluminatiPlayer({highWaterMark: 50})
 
 
 // Node modules
