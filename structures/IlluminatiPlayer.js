@@ -11,7 +11,6 @@ const ytdl = require("ytdl-core");
 
 module.exports = class IlluminatiPlayer {
     constructor(options) {
-        this.client = client
         this.options = options;
         this.connection = VoiceConnection;
         this.dispatcher = StreamDispatcher;
