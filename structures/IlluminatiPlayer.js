@@ -28,7 +28,7 @@ module.exports = class IlluminatiPlayer {
 
     async join(message) {
         this.message = message
-        
+
         if (message.member.voice.channel) {
             this.connection = await message.member.voice.channel.join();
             return this.connection;
@@ -73,9 +73,9 @@ module.exports = class IlluminatiPlayer {
      */
 
     async skip() {
-        this.message.channel.send("Skipataan..")
         this.playing = false
         if(this.queue.length > 0) {
+            this.message.channel.send("Skipataan..")
             await this.play(this.queue[0], this.message)
             this.queue.shift();
         } else this.stop()
