@@ -5,12 +5,15 @@ const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
-client.player = new IlluminatiPlayer()
 
 
 // Config
 require("./utils/functions")(client);
 client.config = require("./config");
+
+// Player
+client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
+
 
 // Node modules
 const fs = require("fs");

@@ -1,7 +1,7 @@
-
 module.exports = {
     name: 'play',
-    description: 'desc',
+    description: 'Soita kappaleita Youtubesta',
+    aliases: ["p", "soita"],
     execute(message, args, settings, client) {
         client.player.play(args[0], message)
     }
