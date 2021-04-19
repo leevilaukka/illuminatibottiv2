@@ -14,6 +14,10 @@ client.player = new IlluminatiPlayer()
 require("./utils/functions")(client);
 client.config = require("./config");
 
+// Player
+client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
+
+
 // Node modules
 const fs = require("fs");
 const mongoose = require("mongoose");

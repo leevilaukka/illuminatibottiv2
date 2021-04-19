@@ -2,13 +2,16 @@ const { VoiceConnection, StreamDispatcher, Message } = require("discord.js");
 const ytdl = require("ytdl-core");
 
 /**
+ * IlluminatiPlayer
+ * 
  * Custom VoiceConnection and StreamDispatcher handler for playing Youtube audio
  * @constructor
- * @param {object} options Options to pass to YTDL 
+ * @param {object} options Options to pass to player 
  */
 
 module.exports = class IlluminatiPlayer {
-    constructor(options) {
+    constructor(client, options) {
+        this.client = client
         this.options = options;
         this.connection = VoiceConnection;
         this.dispatcher = StreamDispatcher;
@@ -43,12 +46,17 @@ module.exports = class IlluminatiPlayer {
     async play(url, message) {
         this.message = message
 
+        const guildOpts = await client.getGuild(message.guild)
+
+        let opts = {...this.options, volume: guildOpts.volume }
+
         if (this.connection) {
             if (this.playing) {
                 this.queue = [...this.queue, url]
             } else {
                 this.dispatcher = this.connection.play(
-                    await ytdl(url, this.options)
+                    await ytdl(url),
+                    opts
                 );               
                 this.playing = true;
                 return this.dispatcher;
@@ -57,23 +65,33 @@ module.exports = class IlluminatiPlayer {
             await this.join(message);
             await this.play(url);
         }
-        console.log(this);
-        this.dispatcher.on("start", () => {console.log("MOI");})
+        
+        this.dispatcher.on("start", () => {message.channel.send(`Now playing! :notes:`)})
         this.dispatcher.on("finish", async () => {
             this.skip()
         })
     }
 
+    /**
+     * @method
+     * Skip currently playing song and play next from queue
+     */
+
     async skip() {
+        this.message.channel.send("Skipataan..")
         this.playing = false
         if(this.queue.length > 0) {
-            console.log("test")
             await this.play(this.queue[0], this.message)
             this.queue.shift();
         } else this.stop()
     }
 
+    /**
+     * @method
+     * Stop playback and reset player state
+     */
     stop() {
+        this.message.channel.send("Se on loppu ny.")
         this.connection && this.connection.disconnect();
         this.connection = null
         this.dispatcher = null
@@ -91,5 +109,10 @@ module.exports = class IlluminatiPlayer {
 
     resume() {
         this.dispatcher?.resume();
+    }
+
+    setVolume(vol) {
+        if(isNaN(vol)) return 
+        this.dispatcher?.setVolume(vol)
     }
 };
