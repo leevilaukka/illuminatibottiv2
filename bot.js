@@ -1,19 +1,15 @@
 // Structures
-const IlluminatiClient = require("./structures/IlluminatiClient")
+const IlluminatiClient = require("./structures/IlluminatiClient");
 
-const client = new IlluminatiClient
+const client = new IlluminatiClient();
 
 // Node modules
 const fs = require("fs");
 const mongoose = require("mongoose");
-const config = require("./config");
 const { isDevelopment } = require("./helpers/nodeHelpers");
 
-
-
-
 // Check if ownerID given
-if (!config.ownerID) throw new Error("No ownerID given! Check env variables.");
+if (!client.config.ownerID) throw new Error("No ownerID given! Check env variables.");
 
 // Event import
 const eventFiles = fs

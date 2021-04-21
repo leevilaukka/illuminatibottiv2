@@ -9,10 +9,16 @@ module.exports = class IlluminatiClient extends Discord.Client {
         this.player = new IlluminatiPlayer(this, {highWaterMark: 50})
         this.config = require("../config")
         this.commands = new Discord.Collection();
-        console.log(this)
     }
 
-    getGuild = async (guild) => {
+    /**
+     * Get Guild settings from database
+     * @method
+     * @param {Discord.Guild} guild Discord Guild object
+     * @returns Guild settings *or* Default settings
+     */
+
+    async getGuild (guild) {
         let data = await Guild.findOne({ guildID: guild.id }).catch((e) =>
           console.error(e)
         );
@@ -20,7 +26,15 @@ module.exports = class IlluminatiClient extends Discord.Client {
         else return client.config.defaultSettings;
     };
 
-    updateGuild = async (guild, settings) => {
+    /**
+     * Update Guild settings to database     ' 
+     * @method
+     * @param {Discord.Guild} guild Discord Guild object
+     * @param {object} settings New settings
+     * @returns Updated guild settings
+     */
+
+    async updateGuild (guild, settings) {
         let data = await client.getGuild(guild);
     
         if (typeof data !== "object") data = {};
@@ -35,7 +49,14 @@ module.exports = class IlluminatiClient extends Discord.Client {
         return await data.updateOne(settings).catch((e) => console.error(e));
     };
 
-    createGuild = async (settings) => {
+    /**
+     * Create new Guild to database
+     * @method
+     * @param {object} settings Guild settings
+     * @returns New database guild settings
+     */
+
+    async createGuild (settings) {
         const newGuild = await new Guild(settings);
         return newGuild
           .save()
@@ -49,12 +70,26 @@ module.exports = class IlluminatiClient extends Discord.Client {
           });
       };
 
-    deleteGuild = async (guild) => {
+
+    /**
+     * Delete guild from database
+     * @method
+     * @param {Discord.Guild} guild Discord Guild object
+     */
+
+    async deleteGuild (guild) {
         await Guild.deleteOne({ guildID: guild.id });
         console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
     }; 
     
-    clean = (text) => {
+    /**
+     * Clean text
+     * @method
+     * @param {String} text 
+     * @returns 
+     */
+
+    clean (text) {
         if (typeof text === "string")
           return text
             .replace(/`/g, "`" + String.fromCharCode(8203))
