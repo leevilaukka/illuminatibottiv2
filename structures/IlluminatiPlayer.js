@@ -72,6 +72,8 @@ module.exports = class IlluminatiPlayer {
                 const minutes = Math.floor(videoDetails.lengthSeconds / 60)
                 const seconds = videoDetails.lengthSeconds % 60
 
+                const views = videoDetails.viewCount.toString().replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
+           
                 const embed = {
                     title: `:notes: Nyt toistetaan: ${videoDetails.title}`,
                     url: videoDetails.video_url,
@@ -88,7 +90,7 @@ module.exports = class IlluminatiPlayer {
                         },
                         {
                             name: "Näyttökerrat",
-                            value: videoDetails.viewCount
+                            value: views
                         },
                         {
                             name: "Kesto",
