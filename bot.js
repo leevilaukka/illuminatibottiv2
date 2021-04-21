@@ -6,7 +6,6 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-
 // Config
 require("./utils/functions")(client);
 client.config = require("./config");
@@ -14,20 +13,14 @@ client.config = require("./config");
 // Player
 client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
 
-
 // Node modules
 const fs = require("fs");
 const mongoose = require("mongoose");
 const config = require("./config");
 const { isDevelopment } = require("./helpers/nodeHelpers");
 
-
-
-
 // Check if ownerID given
 if (!config.ownerID) throw new Error("No ownerID given! Check env variables.");
-
-
 
 // Event import
 const eventFiles = fs

@@ -101,7 +101,6 @@ module.exports = class IlluminatiPlayer {
         return this;
     }
 
-
     /**
      * @method
      * Clear player queue
@@ -110,7 +109,6 @@ module.exports = class IlluminatiPlayer {
     async clearQueue() {
         this.queue = []
     }
-
 
     /**
      * @method
