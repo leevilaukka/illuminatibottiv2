@@ -19,6 +19,7 @@ module.exports = class IlluminatiPlayer {
         this.message = null;
     }
 
+
     /**
      * @method
      * @param {Message} message Discord.js Message 
@@ -30,7 +31,7 @@ module.exports = class IlluminatiPlayer {
 
         if (message.member.voice.channel) {
             this.connection = await message.member.voice.channel.join();
-            return this
+            return this.connection;
         } else {
             message.reply("et ole puhekanavalla.");
         }
@@ -40,7 +41,7 @@ module.exports = class IlluminatiPlayer {
      * @method
      * @param {URL} url Youtube URL
      * @param {Message} message Discord.js Message
-     * @returns IlluminatiPlayer object
+     * @returns dispatcher
      */
 
     async play(url, message) {
@@ -53,6 +54,7 @@ module.exports = class IlluminatiPlayer {
                     this.options
                 );               
                 this.playing = true;
+                return this.dispatcher;
             }
         } else {
             await this.join(message);
@@ -63,7 +65,6 @@ module.exports = class IlluminatiPlayer {
         this.dispatcher.on("finish", async () => {
             this.skip()
         })
-        return this
     }
 
     /**
@@ -78,60 +79,32 @@ module.exports = class IlluminatiPlayer {
             await this.play(this.queue[0], this.message)
             this.queue.shift();
         } else this.stop()
-        return this
     }
 
     /**
      * @method
      * Stop playback and reset player state
      */
-
-    async stop() {
-        await this.message.channel.send("Se on loppu ny.")
-        await this.reset()
-        this.connection && await this.connection.disconnect();
-        return this
-    }
-
-    async reset() {
-        await this.clearQueue();
+    stop() {
+        this.message.channel.send("Se on loppu ny.")
+        this.connection && this.connection.disconnect();
         this.connection = null
         this.dispatcher = null
         this.playing = false;
-        return this;
-    }
-
-    /**
-     * @method
-     * Clear player queue
-     */
-
-    async clearQueue() {
         this.queue = []
     }
 
-    /**
-     * @method
-     * Pause player playback
-     */
+    clearQueue() {
+        this.queue = []
+    }
 
     pause() {
         this.dispatcher?.pause();
     }
 
-    /**
-     * @method
-     * Resume player playback
-     */
-
     resume() {
         this.dispatcher?.resume();
     }
-
-    /**
-     * @method
-     * Set player playback volume
-     */
 
     setVolume(vol) {
         if(isNaN(vol)) return 
