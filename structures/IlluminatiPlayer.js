@@ -86,7 +86,7 @@ module.exports = class IlluminatiPlayer {
                         },
                         {
                             name: "Julkaisupvm.",
-                            value: moment(videoDetails.publishDate, "DD.MM.YYYY"),
+                            value: moment(videoDetails.publishDate, "MM-DD-YYYY").format("DD.MM.YYYY"),
                             inline: true
                         },
                         {
