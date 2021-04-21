@@ -1,5 +1,7 @@
+const { default: axios } = require("axios");
 const { VoiceConnection, StreamDispatcher, Message } = require("discord.js");
 const ytdl = require("ytdl-core");
+const { umlautRemover } = require("../helpers");
 
 /**
  * IlluminatiPlayer
@@ -46,6 +48,11 @@ module.exports = class IlluminatiPlayer {
 
     async play(url, message) {
         if (this.connection) {
+            const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
+            console.log(regex)
+            if (!regex) url = await this.searchVideo(url)
+            console.log(url)
+
             const {videoDetails} = await ytdl.getInfo(url)
             
             console.log(videoDetails)
@@ -103,13 +110,27 @@ module.exports = class IlluminatiPlayer {
         })
     }
 
+    async searchVideo(search) {
+        const token = process.env.GOOGLE_API;
+
+        return axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${umlautRemover(search)}&key=${token}&type=video&topicId=/m/04rlf`)
+        .then(res => {
+            console.log("video",res.data.items[0].id.videoId)
+            return `https://www.youtube.com/watch?v=${res.data.items[0].id.videoId}`
+        })
+        .catch(err => {
+            console.error(err)
+            return search
+        })
+    }
+
     async sendQueue(message) {
         if(!this.queue) return message.reply(", jono on tyhjä. Pistä bileet pystyyn!");
         let fields = [];
         this.queue.forEach((song, i) => {
             fields.push({
                 name: i + 1,
-                value: `${song.info.title} - ${videoDetails.ownerChannelName}`
+                value: `${song.info.title} - ${song.info.ownerChannelName}`
             })
         })
 
@@ -130,7 +151,7 @@ module.exports = class IlluminatiPlayer {
         this.playing = false
         console.log(this.queue)
         if(this.queue.length > 0) {
-            this.message.channel.send("Skipataan..")
+            await this.message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, this.message)
             this.queue.shift();
         } else this.stop()
@@ -140,8 +161,8 @@ module.exports = class IlluminatiPlayer {
      * @method
      * Stop playback and reset player state
      */
-    stop() {
-        this.message.channel.send("Se on loppu ny.")
+    async stop() {
+        await this.message.channel.send("Se on loppu ny.")
         this.connection && this.connection.disconnect();
         this.connection = null
         this.dispatcher = null
