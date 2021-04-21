@@ -1,48 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 // Structures
-const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
-=======
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-=======
->>>>>>> parent of f46fad4 (Merge branch 'dev')
+const IlluminatiClient = require("./structures/IlluminatiClient")
 
-// Discord.js modules
-const Discord = require("discord.js");
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-// Structures
-const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
-
-client.player = new IlluminatiPlayer()
-
-
-<<<<<<< HEAD
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-=======
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-// Config
-require("./utils/functions")(client);
-client.config = require("./config");
-
-// Player
-<<<<<<< HEAD
-<<<<<<< HEAD
-client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
-=======
-client.player = new IlluminatiPlayer({highWaterMark: 50})
-
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-=======
-client.player = new IlluminatiPlayer({highWaterMark: 50})
-
->>>>>>> parent of f46fad4 (Merge branch 'dev')
+const client = new IlluminatiClient
 
 // Node modules
 const fs = require("fs");
@@ -55,16 +14,6 @@ const { isDevelopment } = require("./helpers/nodeHelpers");
 
 // Check if ownerID given
 if (!config.ownerID) throw new Error("No ownerID given! Check env variables.");
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-
->>>>>>> parent of f46fad4 (Merge branch 'dev')
-=======
-
-
->>>>>>> parent of f46fad4 (Merge branch 'dev')
 
 // Event import
 const eventFiles = fs
