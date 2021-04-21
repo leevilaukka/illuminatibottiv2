@@ -1,16 +1,33 @@
 // Structures
-const IlluminatiClient = require("./structures/IlluminatiClient");
+const IlluminatiPlayer = require("./structures/IlluminatiPlayer");
 
 // Discord.js modules
-const client = new IlluminatiClient();
+const Discord = require("discord.js");
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+
+// Config
+require("./utils/functions")(client);
+client.config = require("./config");
+
+// Player
+client.player = new IlluminatiPlayer(client, {highWaterMark: 50})
+
 
 // Node modules
 const fs = require("fs");
 const mongoose = require("mongoose");
+const config = require("./config");
 const { isDevelopment } = require("./helpers/nodeHelpers");
 
+
+
+
 // Check if ownerID given
-if (!client.config.ownerID) throw new Error("No ownerID given! Check env variables.");
+if (!config.ownerID) throw new Error("No ownerID given! Check env variables.");
+
+
 
 // Event import
 const eventFiles = fs
@@ -47,7 +64,7 @@ mongoose.connect(
         useUnifiedTopology: true,
     },
     (cb) => {
-        if (cb) {
+        if (cb == !null) {
             console.error(cb);
         } else console.log("DB Connected!");
     }
@@ -60,5 +77,4 @@ client.login(client.config.token).then(() => {
     } else {
         console.log("Logged in!");
     }
-    client.user.setPresence({activity: {name: `Online on ${client.guilds.cache.size} servers`}, status: "online"})
 });
