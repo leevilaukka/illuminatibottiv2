@@ -59,7 +59,7 @@ module.exports = class IlluminatiPlayer {
             await this.play(url);
         }
         
-        this.dispatcher.on("start", () => {await message?.channel.send(`Now playing! :notes:`)})
+        this.dispatcher.on("start", () => {message?.channel.send(`Now playing! :notes:`)})
         this.dispatcher.on("finish", async () => {
             this.skip()
         })
