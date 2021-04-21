@@ -109,7 +109,7 @@ module.exports = class IlluminatiPlayer {
         this.queue.forEach((song, i) => {
             fields.push({
                 name: i + 1,
-                value: `${song.info.title} - ${videoDetails.ownerChannelName}`
+                value: `${song.info.title} - ${song.info.ownerChannelName}`
             })
         })
 
