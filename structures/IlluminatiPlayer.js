@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
 const { VoiceConnection, StreamDispatcher, Message } = require("discord.js");
+const moment = require("moment");
 const ytdl = require("ytdl-core");
 const { umlautRemover } = require("../helpers");
 
@@ -85,7 +86,7 @@ module.exports = class IlluminatiPlayer {
                         },
                         {
                             name: "Julkaisupvm.",
-                            value: videoDetails.publishDate,
+                            value: moment(videoDetails.publishDate, "DD.MM.YYYY"),
                             inline: true
                         },
                         {
