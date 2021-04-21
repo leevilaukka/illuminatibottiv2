@@ -71,7 +71,11 @@ module.exports = class IlluminatiPlayer {
                 this.playing = true;
 
                 const minutes = Math.floor(videoDetails.lengthSeconds / 60)
-                const seconds = videoDetails.lengthSeconds % 60
+                let seconds = videoDetails.lengthSeconds % 60;
+                
+                if (seconds < 10) {
+                    seconds = `0${seconds}`
+                }
 
                 const views = videoDetails.viewCount.toString().replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
            
