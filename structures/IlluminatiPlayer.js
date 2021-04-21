@@ -55,7 +55,8 @@ module.exports = class IlluminatiPlayer {
                 this.playing = true;
             }
         } else {
-            await this.join(message).play(url);
+            await this.join(message);
+            await this.play(url);
         }
         
         this.dispatcher.on("start", () => {message.channel.send(`Now playing! :notes:`)})
