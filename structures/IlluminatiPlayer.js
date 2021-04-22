@@ -32,7 +32,6 @@ module.exports = class IlluminatiPlayer {
      */
 
     async join(message) {
-        this.message = message
 
         if (message.member.voice.channel) {
             this.connection = await message.member.voice.channel.join();
@@ -51,6 +50,7 @@ module.exports = class IlluminatiPlayer {
      */
 
     async play(url, message) {
+        this.message = message
         if (this.connection) {
             const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
             if (!regex) url = await this.searchVideo(url)
@@ -116,7 +116,7 @@ module.exports = class IlluminatiPlayer {
         }
         
         this.dispatcher.on("finish", async () => {
-            await this.skip()
+            await this.skip(message)
         })
     }
 
@@ -208,7 +208,7 @@ module.exports = class IlluminatiPlayer {
     async skip(message) {
         this.playing = false
         if(this.queue.length > 0) {
-            await this.message.channel.send("Skipataan..")
+            await message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
