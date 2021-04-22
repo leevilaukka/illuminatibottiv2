@@ -20,8 +20,10 @@ module.exports = class IlluminatiPlayer {
         this.connection = VoiceConnection;
         this.dispatcher = StreamDispatcher;
         this.queue = [];
+        this.nowPlaying; 
         this.playing = false;
         this.message = null;
+        this.loop = false;
     }
 
 
@@ -47,66 +49,29 @@ module.exports = class IlluminatiPlayer {
      * @method
      * @param {URL} url Youtube URL
      * @param {Message} message Discord.js Message
+     * @param {Boolean} skipQueue Skip current Queue
      * @returns dispatcher
      */
 
-    async play(url, message) {
+    async play(url, message, skipQueue) {
         if (this.connection) {
             const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
             if (!regex) url = await this.searchVideo(url)
 
             const {videoDetails} = await ytdl.getInfo(url)
             
-            if (this.playing) {
-                this.queue = [...this.queue, {
-                    url,
-                    info: videoDetails
-                }]
-                this.message.channel.send(`Lisätty jonoon: ${videoDetails.title}`)
+            if (this.playing && !skipQueue) {
+                this.queueAdd(url, videoDetails)
             } else {
                 this.dispatcher = this.connection.play(
-                    await ytdl(url),
+                    ytdl(url),
                     this.options
                 );      
                 this.playing = true;
 
-                let seconds = videoDetails.lengthSeconds % 60;
-                
-                if (seconds < 10) {
-                    seconds = `0${seconds}`
-                }
+                this.nowPlaying = videoDetails
 
-                const views = videoDetails.viewCount.toString().replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
-           
-                new IlluminatiEmbed(message, {
-                    title: `:notes: Nyt toistetaan: ${videoDetails.title}`,
-                    url: videoDetails.video_url,
-                    fields: [
-                        {
-                            name: "Kanava",
-                            value: videoDetails.ownerChannelName,
-                            inline: true
-                        },
-                        {
-                            name: "Julkaisupvm.",
-                            value: moment(videoDetails.publishDate, "YYYY-MM-DD").format("DD.MM.YYYY"),
-                            inline: true
-                        },
-                        {
-                            name: "Näyttökerrat",
-                            value: views,
-                            inline: true
-                        },
-                        {
-                            name: "Kesto",
-                            value: `${Math.floor(videoDetails.lengthSeconds / 60)}:${seconds}`,
-                            inline: true
-                        }
-                    ],
-                    thumbnail: {
-                        url: videoDetails.thumbnails[0].url
-                    }
-                }, this.client).send()
+                this.sendVideoEmbed(message, `:notes: Nyt toistetaan: ${videoDetails.title}`, videoDetails)
 
                 return this;
             }
@@ -116,8 +81,22 @@ module.exports = class IlluminatiPlayer {
         }
         
         this.dispatcher.on("finish", async () => {
+            if(this.loop) {
+                return this.play(url, message, true)
+            }
             await this.skip()
         })
+    }
+
+    async playSkip(url, message) {
+        this.queue = []
+        await this.play(url, message, true)
+        return this
+    } 
+
+    toggleLoop(message) {
+        this.loop = !this.loop
+        message.channel.send(`Loop: ${this.loop ? "**päällä**" : "**pois**"}`)
     }
 
     /**
@@ -126,7 +105,7 @@ module.exports = class IlluminatiPlayer {
      * @param {Message} message 
      */
 
-    async playFile(file, message) {
+    playFile(file, message) {
         if(this.connection) {
             this.connection.play(file)
         }
@@ -154,6 +133,15 @@ module.exports = class IlluminatiPlayer {
         })
     }
 
+    queueAdd(url, videoDetails) {
+        this.queue = [...this.queue, {
+            url,
+            info: videoDetails
+        }]
+
+        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
+    }
+
     /**
      * 
      * @param {number} index Song position in queue
@@ -162,7 +150,7 @@ module.exports = class IlluminatiPlayer {
      */
 
     async queueDelete(index, message) {
-        if(!this.queue) return message.reply(", jono on tyhjä.");
+        if(!this.queue.length) return message.reply(", jono on tyhjä.");
         if (!this.queue[index - 1]) return this.message.reply(", kappaletta ei löytynyt!")
         await message.channel.send(`Kappale ${this.queue[index - 1].info.title} poistettu`)
 
@@ -170,11 +158,9 @@ module.exports = class IlluminatiPlayer {
         return this
     }
 
-    async playSkip(url, message) {
+    clearQueue() {
         this.queue = []
-        await this.play(url, message)
-        return this
-    } 
+    }
 
     /**
      * Send player queue to channel
@@ -183,8 +169,14 @@ module.exports = class IlluminatiPlayer {
      */
 
     async sendQueue(message) {
-        if(!this.queue) return message.reply(", jono on tyhjä. Pistä bileet pystyyn!");
+        if(!this.queue.length) return message.reply(", jono on tyhjä. Pistä bileet pystyyn!");
         let fields = [];
+
+        this.nowPlaying && this.playing && fields.push({
+            name: "Nyt soi:",
+            value: this.nowPlaying.title
+        })
+
         this.queue.forEach((song, i) => {
             fields.push({
                 name: i + 1,
@@ -198,6 +190,46 @@ module.exports = class IlluminatiPlayer {
         }, this.client).send()
 
         return this
+    }
+
+    async sendVideoEmbed(message, title, videoData) {
+        let seconds = videoData.lengthSeconds % 60;
+        
+        if (seconds < 10) {
+            seconds = `0${seconds}`
+        }
+
+        const views = videoData.viewCount.toString().replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
+    
+        new IlluminatiEmbed(message, {
+            title,
+            url: videoData.video_url,
+            fields: [
+                {
+                    name: "Kanava",
+                    value: videoData.ownerChannelName,
+                    inline: true
+                },
+                {
+                    name: "Julkaisupvm.",
+                    value: moment(videoData.publishDate, "YYYY-MM-DD").format("DD.MM.YYYY"),
+                    inline: true
+                },
+                {
+                    name: "Näyttökerrat",
+                    value: views,
+                    inline: true
+                },
+                {
+                    name: "Kesto",
+                    value: `${Math.floor(videoData.lengthSeconds / 60)}:${seconds}`,
+                    inline: true
+                }
+            ],
+            thumbnail: {
+                url: videoData.thumbnails[0].url
+            }
+        }, this.client).send()
     }
 
     /**
@@ -229,9 +261,7 @@ module.exports = class IlluminatiPlayer {
         this.queue = []
     }
 
-    clearQueue() {
-        this.queue = []
-    }
+    
 
     pause() {
         this.dispatcher?.pause();
