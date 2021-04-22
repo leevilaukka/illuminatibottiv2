@@ -6,7 +6,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
     constructor(options) {
         super(options)
 
-        this.player = new IlluminatiPlayer(this, {highWaterMark: 50})
+        this.player = new IlluminatiPlayer(this, {highWaterMark: 25})
         this.config = require("../config")
         this.commands = new Discord.Collection();
     }
@@ -20,7 +20,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
 
     async getGuild (guild) {
         let data = await Guild.findOne({ guildID: guild.id }).catch((e) =>
-          console.error(e)
+            console.error(e)
         );
         if (data) return data;
         else return client.config.defaultSettings;
@@ -39,8 +39,8 @@ module.exports = class IlluminatiClient extends Discord.Client {
     
         if (typeof data !== "object") data = {};
         for (const key in settings) {
-          if (data[key] !== settings[key]) data[key] = settings[key];
-          else return;
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
         }
     
         console.log(
@@ -85,7 +85,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
     /**
      * Clean text
      * @method
-     * @param {String} text 
+     * @param {String} text
      * @returns 
      */
 

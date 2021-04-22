@@ -3,6 +3,7 @@ const { VoiceConnection, StreamDispatcher, Message } = require("discord.js");
 const moment = require("moment");
 const ytdl = require("ytdl-core");
 const { umlautRemover } = require("../helpers");
+const IlluminatiEmbed = require("./IlluminatiEmbed");
 
 /**
  * IlluminatiPlayer
@@ -13,7 +14,8 @@ const { umlautRemover } = require("../helpers");
  */
 
 module.exports = class IlluminatiPlayer {
-    constructor(options) {
+    constructor(client, options) {
+        this.client = client
         this.options = options;
         this.connection = VoiceConnection;
         this.dispatcher = StreamDispatcher;
@@ -26,7 +28,7 @@ module.exports = class IlluminatiPlayer {
     /**
      * @method
      * @param {Message} message Discord.js Message 
-     * @returns connection
+     * @returns {VoiceConnection} connection
      */
 
     async join(message) {
@@ -38,6 +40,7 @@ module.exports = class IlluminatiPlayer {
         } else {
             message.reply("et ole puhekanavalla.");
         }
+        return this
     }
 
     /**
@@ -50,13 +53,10 @@ module.exports = class IlluminatiPlayer {
     async play(url, message) {
         if (this.connection) {
             const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
-            console.log(regex)
             if (!regex) url = await this.searchVideo(url)
-            console.log(url)
 
             const {videoDetails} = await ytdl.getInfo(url)
             
-            console.log(videoDetails)
             if (this.playing) {
                 this.queue = [...this.queue, {
                     url,
@@ -70,7 +70,6 @@ module.exports = class IlluminatiPlayer {
                 );      
                 this.playing = true;
 
-                const minutes = Math.floor(videoDetails.lengthSeconds / 60)
                 let seconds = videoDetails.lengthSeconds % 60;
                 
                 if (seconds < 10) {
@@ -79,7 +78,7 @@ module.exports = class IlluminatiPlayer {
 
                 const views = videoDetails.viewCount.toString().replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, ' ');
            
-                const embed = {
+                new IlluminatiEmbed(message, {
                     title: `:notes: Nyt toistetaan: ${videoDetails.title}`,
                     url: videoDetails.video_url,
                     fields: [
@@ -95,44 +94,77 @@ module.exports = class IlluminatiPlayer {
                         },
                         {
                             name: "Näyttökerrat",
-                            value: views
+                            value: views,
+                            inline: true
                         },
                         {
                             name: "Kesto",
-                            value: `${minutes}:${seconds}`,
+                            value: `${Math.floor(videoDetails.lengthSeconds / 60)}:${seconds}`,
                             inline: true
                         }
                     ],
                     thumbnail: {
                         url: videoDetails.thumbnails[0].url
                     }
-                }
-                this.message.channel.send({embed})
-                return this.dispatcher;
+                }, this.client).send()
+
+                return this;
             }
         } else {
             await this.join(message);
-            await this.play(url);
+            await this.play(url, message);
         }
         
         this.dispatcher.on("finish", async () => {
-            this.skip()
+            await this.skip()
         })
     }
-
+    
+    /**
+     * @method
+     * @param {string} search Search query
+     * @returns first search result from YouTube list
+     */
+    
     async searchVideo(search) {
         const token = process.env.GOOGLE_API;
 
         return axios.get(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${umlautRemover(search)}&key=${token}&type=video&topicId=/m/04rlf`)
         .then(res => {
-            console.log("video",res.data.items[0].id.videoId)
             return `https://www.youtube.com/watch?v=${res.data.items[0].id.videoId}`
         })
-        .catch(err => {
-            console.error(err)
+        .catch(() => {
             return search
         })
     }
+
+    /**
+     * 
+     * @param {number} index Song position in queue
+     * @param {Message} message Discord.js Message object
+     * @returns IlluminatiPlayer object
+     */
+
+    async queueDelete(index, message) {
+        if(!this.queue) return message.reply(", jono on tyhjä.");
+        if (!this.queue[index - 1]) return this.message.reply(", kappaletta ei löytynyt!")
+        await message.channel.send(`Kappale ${this.queue[index - 1].info.title} poistettu`)
+
+        this.queue = this.queue.splice(index - 1, 1);
+        return this
+    }
+
+    async playSkip(url, message) {
+        this.queue = []
+        await this.play(url, message)
+        return this
+    } 
+
+    /**
+     * Send player queue to channel
+     * @param {Message} message 
+     * @returns IlluminatiPlayer object
+     */
 
     async sendQueue(message) {
         if(!this.queue) return message.reply(", jono on tyhjä. Pistä bileet pystyyn!");
@@ -144,12 +176,12 @@ module.exports = class IlluminatiPlayer {
             })
         })
 
-        const embed = {
+        new IlluminatiEmbed(message, {
             title: "Jono :notes:",
             fields
-        }
+        }, this.client).send()
 
-        message.channel.send({embed})
+        return this
     }
 
     /**
@@ -159,18 +191,19 @@ module.exports = class IlluminatiPlayer {
 
     async skip() {
         this.playing = false
-        console.log(this.queue)
         if(this.queue.length > 0) {
             await this.message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, this.message)
             this.queue.shift();
         } else this.stop()
+        return this
     }
 
     /**
      * @method
      * Stop playback and reset player state
      */
+
     async stop() {
         await this.message.channel.send("Se on loppu ny.")
         this.connection && this.connection.disconnect();

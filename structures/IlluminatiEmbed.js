@@ -1,24 +1,29 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, Message } = require("discord.js");
+const IlluminatiClient = require("./IlluminatiClient");
 
 /**
  * A MessageEmbed with the default fields already filled
  * @constructor
- * @param {User} [user] - The user that executed the command that resulted in this embed
+ * @param {Message} [message] - The user that executed the command that resulted in this embed
  * @param {object} [data] - Data to set in the rich embed
+ * @param {IlluminatiClient} client Discord Bot Client
  */
 module.exports = class IlluminatiEmbed extends MessageEmbed {
     constructor(message, data = {}, client) {
         super(data)
-        this.setColor(!data.color && 0x00FFFF)
-        this.setAuthor("IlluminatiBotti", client?.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png")
-        if (message.user) this.setFooter(message.user.tag)
+        this.message = message
+        this.setColor(data.color || 0x229924)
+        this.setAuthor(client.user.username, client?.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png")
+        if (message.author) this.setFooter(message.author.tag, `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.png`)
+
+        console.log(message)
     }
 
     /**
-     * 
-     * @param {DiscordChannel} channel Discord channel ID
+     * Send to channel
+     * @param {string} text Text to send with embed
      */
-    send(channel) {
-        channel.send({embed: this})
+    async send(text) {
+        await this.message.channel.send(text, {embed: this})
     }
 }
