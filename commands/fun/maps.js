@@ -3,6 +3,7 @@ const {umlautRemover, argsToString} = require("../../helpers");
 const Discord = require("discord.js");
 const axios = require("axios");
 const fs = require("fs");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "maps",
@@ -10,7 +11,7 @@ module.exports = {
     aliases: ["kartta"],
     usage: "<paikka>",
     category: "maps",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         // Init variables
         const location = umlautRemover(argsToString(args));
         const token = process.env.GOOGLE_API;
@@ -31,7 +32,7 @@ module.exports = {
                 writer.on('finish', resolve => {
                     const file = new Discord.MessageAttachment('./pipes/maps.png');
 
-                    let embed = {
+                    let embed = new IlluminatiEmbed(message, {
                         title: `Karttasi!`,
                         image: {
                             url: 'attachment://maps.png'
@@ -41,7 +42,7 @@ module.exports = {
                             icon_url: "https://cdn.vox-cdn.com/thumbor/pOMbzDvdEWS8NIeUuhxp23wi_cU=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/19700731/googlemaps.png"
                         },
                         timestamp: Date.now()
-                    };
+                    }, client) ;
                     // Send embed
                     message.channel.send({files: [file], embed});
                 })

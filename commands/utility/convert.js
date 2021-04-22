@@ -1,5 +1,6 @@
 const convert = require("convert-units");
 const {argsToString, valueParser} = require("../../helpers");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "convert",
@@ -7,7 +8,7 @@ module.exports = {
     usage: "<määrä {alkuperäinen yksikkö} {uusi yksikkö}>",
     aliases: ["c", "muunna"],
     category: "math",
-    execute(message, args) {
+    execute(message, args, _settings, client) {
         let result;
         if (!args.length) {
             const measures = convert().measures();
@@ -25,12 +26,11 @@ module.exports = {
                 })
             };
             measures.forEach(measuresToFields);
-            const embed = {
+            return new IlluminatiEmbed(message, {
                 title: "Yksikkömuunnin",
                 description: "Tietoja yksikkömuuntimesta",
                 fields
-            };
-            return message.channel.send({embed})
+            }, client).send()
         }
 
         const [value, from, to] = args;
@@ -40,7 +40,7 @@ module.exports = {
             try {
                 const info = convert().describe(from);
 
-                const embed = {
+                return new IlluminatiEmbed(message, {
                     title: "Tietoa yksiköstä",
                     description: "Tietoja antamastasi yksiköstä",
                     fields: [
@@ -57,8 +57,7 @@ module.exports = {
                             value: valueParser(info.system)
                         }
                     ]
-                };
-                return message.channel.send({embed})
+                }, client).send()
             } catch (e) {
                 return message.channel.send(e.message);
             }
@@ -73,8 +72,8 @@ module.exports = {
             }
 
             const fieldValue = `${result.val} ${result.unit}`;
-            const resEmbed = {
-                embed: {
+            return new IlluminatiEmbed(message, {
+                
                     title: "Muunnos",
                     description: "Annettu lukusi muutettiin parhaaseen mahdolliseen muotoon",
                     fields: [
@@ -87,9 +86,7 @@ module.exports = {
                             value: fieldValue
                         }
                     ]
-                }
-            };
-            return message.channel.send(resEmbed)
+            }, client).send();
         }
 
         try {
@@ -98,7 +95,7 @@ module.exports = {
             return message.channel.send(e.message);
         }
 
-        const embed = {
+        new IlluminatiEmbed(message, {
             title: "Muunnos",
             description: "Annettu lukusi muutettiin haluaamasi muotoon",
             fields: [
@@ -111,7 +108,6 @@ module.exports = {
                     value: `${result} ${to}`
                 }
             ]
-        };
-        message.channel.send({embed})
+        }, client).send();
     }
 };

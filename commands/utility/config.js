@@ -1,3 +1,5 @@
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
+
 module.exports = {
   name: "config",
   description: "Tarkastele ja vaihda botin asetuksia palvelimellasi",
@@ -8,10 +10,6 @@ module.exports = {
   async execute(message, args, settings, client) {
     const setting = args[0];
     let newSetting = args.slice(1).join(" ");
-    const author = {
-      name: "IlluminatiBotti",
-      icon_url: client.user.avatarURL(),
-    };
 
     switch (setting) {
       // Prefix setting
@@ -101,25 +99,22 @@ module.exports = {
               }
 
       default: {
-        const embed = {
-          title: "Kaikki botin asetukset",
-          description:
-            "Voit vaihtaa asetusta antamalla asetuksen nimen ja uuden arvon. Tässä nykyiset arvot",
-          fields: [
-            {
-              name: "Prefix",
-              value: `\`${settings.prefix}\``,
-              inline: true,
-            },
-            {
-              name: "Oletusäänenvoimakkuus",
-              value: `\`${(settings.volume * 100).toFixed(1)} %\``,
-              inline: true,
-            },
-          ],
-          author,
-        };
-        return message.channel.send({ embed });
+        return new IlluminatiEmbed(message, {
+            title: "Kaikki botin asetukset",
+            description: "Voit vaihtaa asetusta antamalla asetuksen nimen ja uuden arvon. Tässä nykyiset arvot",
+            fields: [
+              {
+                name: "Prefix",
+                value: `\`${settings.prefix}\``,
+                inline: true,
+              },
+              {
+                name: "Oletusäänenvoimakkuus",
+                value: `\`${(settings.volume * 100).toFixed(1)} %\``,
+                inline: true,
+              },
+            ],
+        }, client).send();
       }
     }
   },

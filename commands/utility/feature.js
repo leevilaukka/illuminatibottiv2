@@ -1,5 +1,6 @@
 const {argsToString} = require("../../helpers");
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "feature",
@@ -8,7 +9,7 @@ module.exports = {
     usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
     category: "general",
-    execute(message, args) {
+    execute(message, args, _settings, client) {
         // Array of supported types (issue labels)
         const typelist = [
             "bug", "enhancement", "invalid", "question"
@@ -35,7 +36,7 @@ module.exports = {
                 })
                     .then(res => {
                         // Create embed from returned data
-                        const embed = {
+                        new IlluminatiEmbed(message, {
                             title: res.data.title,
                             description: res.data.body,
                             url: res.data.html_url,
@@ -55,9 +56,7 @@ module.exports = {
                                 }
                             ],
                             timestamp: res.data.updated_at
-                        };
-                        // Send embed and catch Axios errors
-                        message.channel.send({embed})
+                        }, client).send();
                     })
                     .catch(() => message.channel.send("Ilmoitusta ei löytynyt."))
             }// If typelist doesn't include given type and typearg is not a number, send message
@@ -79,7 +78,7 @@ module.exports = {
             })
                 .then(res => {
                     // Create embed from returned data
-                    const embed = {
+                    new IlluminatiEmbed(message, {
                         title: "Uusi ilmoitus luotu!",
                         description: res.data.body,
                         url: res.data.html_url,
@@ -95,9 +94,7 @@ module.exports = {
                             }
                         ],
                         timestamp: Date.now()
-                    };
-                    // Send embed and catch Axios errors
-                    message.channel.send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi", {embed})
+                    }, client).send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi");
                 })
                 .catch(e => message.channel.send("Tapahtui virhe: " + e.message))
         }

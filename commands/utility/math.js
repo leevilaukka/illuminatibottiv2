@@ -1,5 +1,6 @@
 const algebra = require("algebra.js");
 const {argsToString} = require("../../helpers");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "math",
@@ -27,13 +28,6 @@ module.exports = {
                     value: ansX
                 }
             ];
-            const embed = {
-                name: "Vastaus",
-                image: {
-                    url: image
-                },
-                fields,
-            };
             if (args.includes("y")) {
                 const ansY = exp.solveFor("y");
                 fields.push({
@@ -41,7 +35,13 @@ module.exports = {
                     value: ansY
                 })
             }
-            message.channel.send({embed})
+            new IlluminatiEmbed(message, {
+                name: "Vastaus",
+                image: {
+                    url: image
+                },
+                fields,
+            }, client).send();
         } catch (e) {
             return message.channel.send(e.message);
         }

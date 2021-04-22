@@ -1,5 +1,6 @@
 const categories = require("../../utils/categories");
 const {getCommandCategory} = require("../../helpers");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: `help`,
@@ -22,12 +23,12 @@ module.exports = {
             let fields = [
             ];
 
-            const embed = {
+            const embed = new IlluminatiEmbed(message, {
                 title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
                 description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
                 fields,
                 author
-            };
+            }, client);
 
 
             // Valmistele komentojen lista

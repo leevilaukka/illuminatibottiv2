@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 const {umlautRemover, argsToString, formatDate} = require("../../helpers");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "weather",
@@ -8,7 +9,7 @@ module.exports = {
     aliases: ["w", "sää"],
     cooldown: 10,
     category: "other",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
             .then(res => {
@@ -72,22 +73,17 @@ module.exports = {
                         });
                 }
 
-                let data = {
-                    embed: {
-                        title: `Kaupungin ${res.data.name}, ${res.data.sys.country} sää`,
-                        description: `**${weather.description}**`,
-                        color: 0x32a895,
-                        fields,
-                        footer: {
-                            icon_url: `http://openweathermap.org/img/wn/${weather.icon}@2x.png`,
-                            text: "Sää"
-                        },
-                        timestamp: Date.now()
-                    }
-                };
-
-
-                message.channel.send(data);
+                new IlluminatiEmbed(message,{
+                    title: `Kaupungin ${res.data.name}, ${res.data.sys.country} sää`,
+                    description: `**${weather.description}**`,
+                    color: 0x32a895,
+                    fields,
+                    footer: {
+                        icon_url: `http://openweathermap.org/img/wn/${weather.icon}@2x.png`,
+                        text: "Sää"
+                    },
+                    timestamp: Date.now()
+                }, client).send()
             })
             .catch(e => console.error(e))
     }

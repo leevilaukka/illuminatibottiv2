@@ -5,7 +5,10 @@ module.exports = {
     cooldown: 7,
     category: "music",
     execute(message, args, settings, client) {
-        client.play(message, "https://www.youtube.com/watch?v=1V60dbu-Qyw", true)
-        message.reply("no laitetaa!")
-    }
-}
+        message.reply("no laitetaa!");
+        client.player.play(
+            "https://www.youtube.com/watch?v=1V60dbu-Qyw",
+            message
+        );
+    },
+};

@@ -7,6 +7,7 @@ const {
 } = require("../../helpers");
 const fs = require("fs");
 const Discord = require("discord.js");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "places",
@@ -101,7 +102,7 @@ module.exports = {
                                         }
 
                                         // Send embed with photo
-                                        let embed = {
+                                        let embed = new IlluminatiEmbed(message, {
                                             title: data.name,
                                             url: data.url,
                                             image: {
@@ -112,7 +113,7 @@ module.exports = {
                                                 text: "IlluminatiBotti x Maps"
                                             },
                                             fields
-                                        };
+                                        }, client);
                                         message.channel.send({files: [file], embed})
                                     })
                                 })
@@ -122,7 +123,7 @@ module.exports = {
                                 });
                         } else {
                             // If no photos found, send embed without photos
-                            let embed = {
+                            new IlluminatiEmbed(message, {
                                 title: data.name,
                                 url: data.url,
                                 image: {
@@ -133,8 +134,7 @@ module.exports = {
                                     text: "IlluminatiBotti x Maps"
                                 },
                                 fields
-                            };
-                            message.channel.send({embed})
+                            }, client).send();
                         }
                     })
                     // Catch errors getting Details data

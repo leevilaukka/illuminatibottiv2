@@ -1,11 +1,12 @@
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 module.exports = {
     name: "reddit",
     aliases: ["r", "r/"],
     cooldown: 3,
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         // Command arguments
         let subreddit = args[0];
         let skipnsfw = args[1];
@@ -26,24 +27,16 @@ module.exports = {
                     return message.channel.send("Subreddittiä ei löytynyt!");
                 }
 
-                // Assing response data to variables
-                let title = res.data[0].data.children[0].data.title;
-                if (title.length >= 255) {
-                    title = title.substr(0, 250) + "...";
-                }
-                let thumb = res.data[0].data.children[0].data.thumbnail;
-                let kuva = res.data[0].data.children[0].data.url;
-                let url =
-                    "https://www.reddit.com" +
-                    res.data[0].data.children[0].data.permalink;
-                let name = res.data[0].data.children[0].data.author;
-                let postaajaurl = "https://www.reddit.com/user/" + name;
-                let nsfw = res.data[0].data.children[0].data.over_18;
-                let flair = res.data[0].data.children[0].data.author_flair_text;
-                let flaircolor =
-                    res.data[0].data.children[0].data
-                        .link_flair_background_color;
-
+                const {
+                    title, 
+                    thumbnail: thumb, url: kuva, permalink, author: name, 
+                    over_18: nsfw, author_flair_text: flair,
+                    link_flair_background_color: flaircolor
+                } = res.data[0].data.children[0].data
+                
+                const url = "https://www.reddit.com" + permalink;
+                const postaajaurl = "https://www.reddit.com/user/" + name;
+        
                 //Skip NSFW check
                 if (skipnsfw !== "-s") {
                     // NSFW check
@@ -62,16 +55,12 @@ module.exports = {
                         value: flair,
                     });
                 }
-                let color = 0xff4500;
-                if (flaircolor) {
-                    color = `0x${flaircolor}`;
-                }
-                let data = {
-                    embed: {
+            
+                new IlluminatiEmbed(message, {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,
-                        color,
+                        color: flaircolor ? `0x${flaircolor}` : 0xff4500,
                         footer: {
                             icon_url: "https://i.redd.it/qupjfpl4gvoy.jpg",
                             text: "IlluminatiBotti x Reddit",
@@ -87,16 +76,9 @@ module.exports = {
                             url: postaajaurl,
                         },
                         fields,
-                    },
-                };
-
-                // Send embed
-                message.channel
-                    .send(data)
-                    // Catch errors with send and log
-                    .catch((e) => console.error(e));
-                // Catch error with Axios GET
+                    }, client).send();                    
             })
+            // Catch error with Axios GET
             .catch((e) => {
                 // Send error response to channel
                 if (e.response) {

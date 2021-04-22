@@ -1,12 +1,13 @@
 const moment = require("moment");
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "day",
     description: "Päivän kalenteritiedot",
     aliases: ["päivä", "kalenteri"],
     category: "date",
-    execute(message, args) {
+    execute(message, args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
 
         axios
@@ -47,15 +48,14 @@ module.exports = {
                                     value: ":flag_fi:",
                                 });
                             }
-                            const embed = {
+                            new IlluminatiEmbed(message, {
                                 title: result.name,
                                 url: result.url,
                                 description: result.description
                                     ? result.description
                                     : null,
                                 fields,
-                            };
-                            message.channel.send({ embed });
+                            }, client).send();
                         });
                     }
                 }

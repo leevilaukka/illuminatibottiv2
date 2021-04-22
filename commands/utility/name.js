@@ -1,5 +1,6 @@
 const moment = require("moment");
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "name",
@@ -14,7 +15,7 @@ module.exports = {
                 for (let i = 0; i < names.length; i++) {
                     if (names[i].date === date) {
                         const results = [names[i]];
-                        const embed = {
+                        new IlluminatiEmbed(message, {
                             title: "Päivän nimipäivät",
                             url: results[0].url,
                             description: results[0].name,
@@ -24,8 +25,7 @@ module.exports = {
                                     value: moment(results[0].date).format("DD.MM.YYYY")
                                 }
                             ]
-                        };
-                        message.channel.send({embed})
+                        }, client).send();
                     }
                 }
 

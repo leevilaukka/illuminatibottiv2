@@ -119,6 +119,22 @@ module.exports = class IlluminatiPlayer {
             await this.skip()
         })
     }
+
+    /**
+     * Play from file
+     * @param {FilePath} file 
+     * @param {Message} message 
+     */
+
+    async playFile(file, message) {
+        if(this.connection) {
+            this.connection.play(file)
+        }
+        else {
+            this.join(message)
+            this.playFile(file, message)
+        }
+    }
     
     /**
      * @method
@@ -189,11 +205,11 @@ module.exports = class IlluminatiPlayer {
      * Skip currently playing song and play next from queue
      */
 
-    async skip() {
+    async skip(message) {
         this.playing = false
         if(this.queue.length > 0) {
             await this.message.channel.send("Skipataan..")
-            await this.play(this.queue[0].url, this.message)
+            await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
         return this

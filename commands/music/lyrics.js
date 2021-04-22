@@ -16,19 +16,15 @@ module.exports = {
         };
 
         getLyrics(options).then((lyrics) => {
-            console.log(lyrics);
             getSong(options).then((song) => {
                 if(!song) return message.reply("kappaletta ei löytynyt!")
-                console.log("Song:", song);
-                const embed = new IlluminatiEmbed(message.author, {
+                new IlluminatiEmbed(message, {
                     title: "Lyriikkasi!",
                     thumbnail: {
                         url: song.albumArt,
                     },
                     description: lyrics,
-                }, client);
-
-                message.channel.send({ embed });
+                }, client).send();
             });
         });
     },

@@ -1,9 +1,9 @@
 module.exports = {
     name: "volume",
-    description: "",
+    description: "Set volume",
     category: "music",
     execute(message, args, settings, client) {
-        let volume = args[0];
+        const [volume] = args;
         client.player.setVolume(volume)
     }
 };

@@ -1,4 +1,5 @@
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "changelog",
@@ -6,8 +7,8 @@ module.exports = {
     description: "Näyttää botin GitHub-repon edellisen tai määritetyn commitin viestin, ajan ja tekijän",
     usage: "<[päivityksen numero -- 0 = uusin]>",
     category: "config",
-    execute(message, args) {
-        let update = args[0];
+    execute(message, args, _settings, client) {
+        let [update] = args;
         if (!update) {
             update = 0;
         }
@@ -20,26 +21,17 @@ module.exports = {
             auth
         })
             .then(res => {
-                const commit = res.data[update].commit;
-                const committer = res.data[update].committer;
-                let embed = {
-                    embed: {
-                        title: "IlluminatiBotti v2",
-                        url: res.data[update].html_url,
-                        description: commit.message,
-                        author: {
-                            name: commit.author.name,
-                            url: committer.html_url
-                        },
-                        footer: {
-                            icon_url: committer.avatar_url,
-                            text: res.data[update].author.login
-                        },
-                        timestamp: commit.author.date
-                    }
-                };
-
-                message.channel.send(embed)
+                const {commit, committer} = res.data[update];
+                new IlluminatiEmbed(message, {
+                    title: "IlluminatiBotti v2",
+                    url: res.data[update].html_url,
+                    description: commit.message,
+                    author: {
+                        name: commit.author.name,
+                        url: committer.html_url
+                    },
+                    timestamp: commit.author.date
+                }, client).send();
             })
             .catch(() => message.channel.send(`Tapahtui virhe. Päivitystä ei välttämättä ole vielä olemassa.`))
     }

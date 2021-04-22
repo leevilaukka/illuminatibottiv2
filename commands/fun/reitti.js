@@ -2,6 +2,7 @@ const { formatDate } = require("../../helpers");
 const { valueParser } = require("../../helpers");
 const { gql, request } = require("graphql-request");
 const { isDevelopment } = require("../../helpers/nodeHelpers");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "reitti",
@@ -61,7 +62,7 @@ module.exports = {
             route.legs.map((leg, index) => {
                 const startTime = new Date(leg.startTime);
                 const endTime = new Date(leg.endTime);
-                const embed = {
+                const embed = new IlluminatiEmbed(message, {
                     title: `Vaihe ${index + 1}`,
                     fields: [
                         {
@@ -94,7 +95,7 @@ module.exports = {
                             inline: true,
                         },
                     ],
-                };
+                }, client);
                 if (leg.trip) {
                     embed.fields.push({
                         name: "Trip",

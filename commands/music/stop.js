@@ -1,6 +1,6 @@
 module.exports = {
     name: "stop",
-    description: "",
+    description: "Stop playback",
     category: "music",
     execute(message, args, settings, client) {
         client.player.stop();

@@ -1,13 +1,14 @@
 const {argsToString} = require("../../helpers");
 
 const axios = require("axios");
+const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 module.exports = {
     name: "search",
     aliases: ["hae", "s", "google", "g"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     category: "other",
-    execute(message, args) {
+    execute(message, args, settings, client) {
         const query = argsToString(args);
         axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
             .then(res => {
@@ -16,8 +17,8 @@ module.exports = {
                 }
                 const result = res.data.itemListElement[0].result;
 
-                let fields = [
-                ];
+                let fields = [];
+
                 if (result.url) {
                     fields.push({
                         name: "Nettisivut",
@@ -30,7 +31,7 @@ module.exports = {
                         value: result.detailedDescription.articleBody
                     })
                 }
-                const embed = {
+                new IlluminatiEmbed(message, {
                     title: result.name,
                     url: result.detailedDescription && result.detailedDescription.url ,
                     description: result.description,
@@ -42,8 +43,7 @@ module.exports = {
                     footer: {
                         text: "IlluminatiBotti x Google"
                     }
-                };
-                message.channel.send({embed})
+                }, client).send();
             })
             .catch(e => {
                 console.error(e);
