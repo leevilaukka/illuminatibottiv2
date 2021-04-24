@@ -65,12 +65,13 @@ module.exports = class IlluminatiPlayer {
             if (this.playing && !skipQueue) {
                 this.queueAdd(url, videoDetails, message)
             } else {
-                this.playing = true;
 
-                this.dispatcher = this.connection.play(
+                this.dispatcher =  this.connection.play(
                     ytdl(url),
                     this.options
-                );      
+                );    
+                
+                this.playing = true;
 
                 this.nowPlaying = videoDetails
 
@@ -99,9 +100,9 @@ module.exports = class IlluminatiPlayer {
      */
 
     async skip(message, fromUser) {
-        this.playing = false
         if(this.queue.length > 0) {
-            if(fromUser) await message.channel.send("Skipataan..")
+            this.playing = false
+            if(fromUser) message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
