@@ -87,7 +87,7 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            await this.skip(message, false)
+            this.skip(message, false)
         })
     }
 
