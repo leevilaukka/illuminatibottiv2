@@ -101,8 +101,8 @@ module.exports = class IlluminatiPlayer {
      */
 
     async skip(message) {
+        this.playing = false
         if(this.queue.length > 0) {
-            this.playing = false
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
