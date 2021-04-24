@@ -155,7 +155,7 @@ module.exports = class IlluminatiPlayer {
             info: videoDetails
         }]
 
-        await this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
+        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
         return this
     }
 
