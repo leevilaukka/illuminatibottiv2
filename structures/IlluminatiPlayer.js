@@ -84,7 +84,7 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            await this.skip()
+            else this.skip()
         })
     }
 
@@ -260,8 +260,6 @@ module.exports = class IlluminatiPlayer {
         this.playing = false;
         this.queue = []
     }
-
-    
 
     pause() {
         this.dispatcher?.pause();
