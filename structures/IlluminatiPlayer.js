@@ -72,7 +72,7 @@ module.exports = class IlluminatiPlayer {
 
                 this.nowPlaying = videoDetails
 
-                await this.sendVideoEmbed(message, `:notes: Nyt toistetaan: ${videoDetails.title}`, videoDetails)
+                this.sendVideoEmbed(message, `:notes: Nyt toistetaan: ${videoDetails.title}`, videoDetails)
 
                 return this;
             }
