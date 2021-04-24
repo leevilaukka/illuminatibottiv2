@@ -55,6 +55,8 @@ module.exports = class IlluminatiPlayer {
 
     async play(url, message, skipQueue) {
         if (this.connection) {
+            this.message = message
+
             const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
             if (!regex) url = await this.searchVideo(url)
 
@@ -85,7 +87,7 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            else this.skip(message, false)
+            await this.skip(message, false)
         })
     }
 
@@ -99,7 +101,7 @@ module.exports = class IlluminatiPlayer {
     async skip(message, fromUser) {
         this.playing = false
         if(this.queue.length > 0) {
-            fromUser && await message.channel.send("Skipataan..")
+            if(fromUser) await message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
