@@ -115,8 +115,7 @@ module.exports = class IlluminatiPlayer {
             info: videoDetails
         }]
 
-        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
-        return this
+        return this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
     }
 
     async playSkip(url, message) {
