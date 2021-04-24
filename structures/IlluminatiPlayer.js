@@ -80,15 +80,16 @@ module.exports = class IlluminatiPlayer {
                 return this;
             }
         } else {
-            await this.join(message);
+            this.join(message);
             await this.play(url, message);
         }
-        
+
+        // Playback ends
         this.dispatcher.on("finish", async () => {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            this.skip(message, false)
+            return this.skip(message, false)
         })
     }
 
@@ -99,13 +100,22 @@ module.exports = class IlluminatiPlayer {
      * @param {boolean} fromUser Set to true, if skipping is requested by user
      */
 
-    async skip(message, fromUser) {
+    async skip(message) {
         if(this.queue.length > 0) {
             this.playing = false
-            if(fromUser) message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
+        return this
+    }
+
+    async queueAdd(url, videoDetails, message) {
+        this.queue = [...this.queue, {
+            url,
+            info: videoDetails
+        }]
+
+        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
         return this
     }
 
@@ -154,15 +164,7 @@ module.exports = class IlluminatiPlayer {
         })
     }
 
-    queueAdd(url, videoDetails, message) {
-        this.queue = [...this.queue, {
-            url,
-            info: videoDetails
-        }]
-
-        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
-        return this
-    }
+    
 
     /**
      * 
