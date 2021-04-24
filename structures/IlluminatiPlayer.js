@@ -61,7 +61,7 @@ module.exports = class IlluminatiPlayer {
             const {videoDetails} = await ytdl.getInfo(url)
             
             if (this.playing && !skipQueue) {
-                this.queueAdd(url, videoDetails)
+                this.queueAdd(url, videoDetails, message)
             } else {
                 this.playing = true;
 
@@ -151,7 +151,7 @@ module.exports = class IlluminatiPlayer {
         })
     }
 
-    queueAdd(url, videoDetails) {
+    queueAdd(url, videoDetails, message) {
         this.queue = [...this.queue, {
             url,
             info: videoDetails
