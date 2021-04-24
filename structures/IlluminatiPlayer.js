@@ -63,15 +63,16 @@ module.exports = class IlluminatiPlayer {
             if (this.playing && !skipQueue) {
                 this.queueAdd(url, videoDetails)
             } else {
+                this.playing = true;
+
                 this.dispatcher = this.connection.play(
                     ytdl(url),
                     this.options
                 );      
-                this.playing = true;
 
                 this.nowPlaying = videoDetails
 
-                this.sendVideoEmbed(message, `:notes: Nyt toistetaan: ${videoDetails.title}`, videoDetails)
+                await this.sendVideoEmbed(message, `:notes: Nyt toistetaan: ${videoDetails.title}`, videoDetails)
 
                 return this;
             }
@@ -84,8 +85,23 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            else this.skip()
+            else this.skip(message)
         })
+    }
+
+    /**
+     * @method
+     * Skip currently playing song and play next from queue
+     */
+
+    async skip(message) {
+        this.playing = false
+        if(this.queue.length > 0) {
+            await message.channel.send("Skipataan..")
+            await this.play(this.queue[0].url, message)
+            this.queue.shift();
+        } else this.stop()
+        return this
     }
 
     async playSkip(url, message) {
@@ -233,20 +249,7 @@ module.exports = class IlluminatiPlayer {
         }, this.client).send()
     }
 
-    /**
-     * @method
-     * Skip currently playing song and play next from queue
-     */
-
-    async skip(message) {
-        this.playing = false
-        if(this.queue.length > 0) {
-            await this.message.channel.send("Skipataan..")
-            await this.play(this.queue[0].url, message)
-            this.queue.shift();
-        } else this.stop()
-        return this
-    }
+    
 
     /**
      * @method
