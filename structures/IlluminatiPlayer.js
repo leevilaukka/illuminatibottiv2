@@ -89,7 +89,7 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            return this.skip(message, false)
+            return this.skip(message)
         })
     }
 
@@ -103,10 +103,10 @@ module.exports = class IlluminatiPlayer {
     async skip(message) {
         this.playing = false
         if(this.queue.length > 0) {
-            await this.play(this.queue[0].url, message)
+            this.play(this.queue[0].url, message)
             this.queue.shift();
+            return this
         } else this.stop()
-        return this
     }
 
     async queueAdd(url, videoDetails, message) {
