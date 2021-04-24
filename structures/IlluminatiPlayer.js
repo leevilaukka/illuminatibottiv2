@@ -85,19 +85,21 @@ module.exports = class IlluminatiPlayer {
             if(this.loop) {
                 return this.play(url, message, true)
             }
-            else this.skip(message)
+            else this.skip(message, false)
         })
     }
 
     /**
      * @method
      * Skip currently playing song and play next from queue
+     * @param {Message} message Discord Message
+     * @param {boolean} fromUser Set to true, if skipping is requested by user
      */
 
-    async skip(message) {
+    async skip(message, fromUser) {
         this.playing = false
         if(this.queue.length > 0) {
-            await message.channel.send("Skipataan..")
+            fromUser && await message.channel.send("Skipataan..")
             await this.play(this.queue[0].url, message)
             this.queue.shift();
         } else this.stop()
