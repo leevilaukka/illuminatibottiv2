@@ -55,22 +55,18 @@ module.exports = class IlluminatiPlayer {
 
     async play(url, message, skipQueue) {
         if (this.connection) {
-            this.message = message
-
             const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url)
             if (!regex) url = await this.searchVideo(url)
 
             const {videoDetails} = await ytdl.getInfo(url)
             
             if (this.playing && !skipQueue) {
-                this.queueAdd(url, videoDetails, message)
+                this.queueAdd(url, videoDetails)
             } else {
-
-                this.dispatcher =  this.connection.play(
+                this.dispatcher = this.connection.play(
                     ytdl(url),
                     this.options
-                );    
-                
+                );      
                 this.playing = true;
 
                 this.nowPlaying = videoDetails
@@ -83,36 +79,13 @@ module.exports = class IlluminatiPlayer {
             await this.join(message);
             await this.play(url, message);
         }
-
-        // Playback ends
+        
         this.dispatcher.on("finish", async () => {
             if(this.loop) {
                 return this.play(url, message, true)
-            } else this.skip(message)
+            }
+            await this.skip()
         })
-    }
-
-    /**
-     * @method
-     * Skip currently playing song and play next from queue
-     */
-
-    async skip(message) {
-        this.playing = false
-        if(this.queue.length > 0) {
-            await this.play(this.queue[0].url, message)
-            this.queue.shift();
-            return this
-        } else this.stop()
-    }
-
-    async queueAdd(url, videoDetails, message) {
-        this.queue = [...this.queue, {
-            url,
-            info: videoDetails
-        }]
-
-        return this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
     }
 
     async playSkip(url, message) {
@@ -160,7 +133,14 @@ module.exports = class IlluminatiPlayer {
         })
     }
 
-    
+    queueAdd(url, videoDetails) {
+        this.queue = [...this.queue, {
+            url,
+            info: videoDetails
+        }]
+
+        this.sendVideoEmbed(message, `:notes: Lisätty jonoon: ${videoDetails.title}`, videoDetails)
+    }
 
     /**
      * 
@@ -252,7 +232,20 @@ module.exports = class IlluminatiPlayer {
         }, this.client).send()
     }
 
-    
+    /**
+     * @method
+     * Skip currently playing song and play next from queue
+     */
+
+    async skip(message) {
+        this.playing = false
+        if(this.queue.length > 0) {
+            await this.message.channel.send("Skipataan..")
+            await this.play(this.queue[0].url, message)
+            this.queue.shift();
+        } else this.stop()
+        return this
+    }
 
     /**
      * @method
