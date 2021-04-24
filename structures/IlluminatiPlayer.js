@@ -88,8 +88,7 @@ module.exports = class IlluminatiPlayer {
         this.dispatcher.on("finish", async () => {
             if(this.loop) {
                 return this.play(url, message, true)
-            }
-            return this.skip(message)
+            } else this.skip(message)
         })
     }
 
