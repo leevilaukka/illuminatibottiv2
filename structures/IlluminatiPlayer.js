@@ -80,7 +80,7 @@ module.exports = class IlluminatiPlayer {
                 return this;
             }
         } else {
-            this.join(message);
+            await this.join(message);
             await this.play(url, message);
         }
 
