@@ -12,7 +12,7 @@ const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 module.exports = {
     name: "places",
     description: "Hae paikkatietoja",
-    aliases: ["paikka", "p"],
+    aliases: ["paikka"],
     usage: "<hakusana>",
     cooldown: 7,
     category: "maps",
