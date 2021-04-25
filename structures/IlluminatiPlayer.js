@@ -128,7 +128,8 @@ module.exports = class IlluminatiPlayer {
         .then(res => {
             return `https://www.youtube.com/watch?v=${res.data.items[0].id.videoId}`
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error(err)
             return search
         })
     }
