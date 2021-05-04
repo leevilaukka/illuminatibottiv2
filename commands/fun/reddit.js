@@ -3,7 +3,6 @@ const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 module.exports = {
     name: "reddit",
     aliases: ["r", "r/"],
-    cooldown: 3,
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
     execute(message, args, settings, client) {
@@ -22,6 +21,7 @@ module.exports = {
         axios
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)
             .then((res) => {
+                console.log(res)
                 // Subreddit found check
                 if (!res.data[0]) {
                     return message.channel.send("Subreddittiä ei löytynyt!");
@@ -31,11 +31,12 @@ module.exports = {
                     title, 
                     thumbnail: thumb, url: kuva, permalink, author: name, 
                     over_18: nsfw, author_flair_text: flair,
-                    link_flair_background_color: flaircolor
+                    link_flair_background_color: flaircolor, subreddit
                 } = res.data[0].data.children[0].data
-                
-                const url = "https://www.reddit.com" + permalink;
-                const postaajaurl = "https://www.reddit.com/user/" + name;
+                const rURL = "https://www.reddit.com"
+                const url = rURL + permalink;
+                const subURL = rURL + `/r/${subreddit}`
+                const postaajaurl = "https://www.reddit.com/u/" + name;
         
                 //Skip NSFW check
                 if (skipnsfw !== "-s") {
@@ -48,26 +49,31 @@ module.exports = {
                 }
 
                 // Embed data init
-                let fields = [];
+                let fields = [
+                    {
+                        name: "Lähettäjä", 
+                        value: `[${name}](${postaajaurl})`,
+                        inline: true
+                    },
+                    {
+                        name: "Subreddit",
+                        value: `[${subreddit}](${subURL})`,
+                        inline: true
+
+                    }
+                ];
                 if (flair) {
                     fields.push({
                         name: "Flair",
                         value: flair,
                     });
                 }
-            
+                
                 new IlluminatiEmbed(message, {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,
                         color: flaircolor ? `0x${flaircolor}` : 0xff4500,
-                        footer: {
-                            icon_url: "https://i.redd.it/qupjfpl4gvoy.jpg",
-                            text: "IlluminatiBotti x Reddit",
-                        },
-                        thumbnail: {
-                            url: thumb && null,
-                        },
                         image: {
                             url: kuva,
                         },
