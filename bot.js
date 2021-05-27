@@ -46,10 +46,10 @@ for(folder of commandFolders) {
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
         client.commands.set(command.name, command);
-        if (client.isDevelopment()) console.log(`Loaded cmd: ${folder}/${file}`);
+        if (client.isDevelopment) console.log(`Loaded cmd: ${folder}/${file}`);
     }
 }
-if (!client.isDevelopment()) console.log("Commands loaded!");
+if (!client.isDevelopment) console.log("Commands loaded!");
 
 // Connect to database
 mongoose.connect(
@@ -68,7 +68,7 @@ mongoose.connect(
 
 // Bot client login
 client.login(client.config.token).then(() => {
-    if (client.isDevelopment()) {
+    if (client.isDevelopment) {
         console.log("Logged in as development version");
         console.log(client)
     } else {
