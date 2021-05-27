@@ -1,4 +1,3 @@
-const IlluminatiPlayer = require("../../structures/IlluminatiPlayer")
 
 module.exports = {
     name: 'join',
