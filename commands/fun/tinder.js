@@ -68,11 +68,8 @@ module.exports = {
                 tMessage.awaitReactions(filter, { time: timeout ? timeout * 1000 : 10000 })
                     .then(collected => {
                         // Lähetä request
-
                         const likeCount = collected.get("👍") ? collected.get("👍").count - 1 : 0
                         const nopeCount = collected.get("👎") ? collected.get("👎").count - 1 : 0
-
-                        console.log(collected)
                         
                         if(likeCount > nopeCount) {
                             axios.get(`https://api.gotinder.com/like/${current.user._id}`, config)
@@ -83,7 +80,10 @@ module.exports = {
                         if(maxCount > count) {
                             tMessage.delete()
                             createNewVote(count + 1)
-                        } else return message.channel.send("se oli siinä!").then(m => m.delete(5000))
+                        } else return message.channel.send("se oli siinä!").then(m => {
+                            tMessage.delete()
+                            setTimeout(() => m.delete(), 5000)
+                        })
                     })
                     .catch(collected => {
                         console.error(collected)
