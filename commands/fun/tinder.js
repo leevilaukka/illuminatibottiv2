@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
 const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
+const { options } = require("./reddit");
 
 module.exports = {
     name: "tinder",
@@ -82,7 +83,7 @@ module.exports = {
                         if(maxCount > count) {
                             tMessage.delete()
                             createNewVote(count + 1)
-                        } else return
+                        } else return message.channel.send("se oli siinä!").then(m => m.delete(5000))
                     })
                     .catch(collected => {
                         console.error(collected)
