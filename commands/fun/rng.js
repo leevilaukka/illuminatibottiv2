@@ -22,7 +22,7 @@ module.exports = {
 
         const rnd = Math.floor(Math.random()*(max-min+1)+min);
         sender.reply(
-            `Satunnaislukusi on ${rnd}`
+            `satunnaislukusi on ${rnd}`
         )
     }
 }
