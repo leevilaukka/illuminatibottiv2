@@ -6,18 +6,26 @@ module.exports = {
     usage: '<määrä>',
     category: "general",
     cooldown: 5,
-    execute(message, args) {
+    enableSlash: true, 
+    options: [{
+        name: "count",
+        type: "INTEGER",
+        description: "Poistettavien viestien määrä",
+        required: true
+    }],
+    execute(message, args, client, settings, interaction) {
         const amount = parseInt(args[0]) + 1;
+        const sender = interaction || message
 
         if (isNaN(amount)) {
-            return message.reply('tuo ei taida olla oikea luku.');
+            return sender.reply('tuo ei taida olla oikea luku.');
         } else if (amount <= 1 || amount > 100) {
-            return message.reply('anna luku 1 ja 99 väliltä.');
+            return sender.reply('anna luku 1 ja 99 väliltä.');
         }
 
-        message.channel.bulkDelete(amount, true).catch(err => {
+        sender.channel.bulkDelete(amount, true).catch(err => {
             console.error(err);
-            message.channel.send('tapahtui virhe!');
+            sender.channel.send('tapahtui virhe!');
         });
     },
 };

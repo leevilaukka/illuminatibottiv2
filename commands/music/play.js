@@ -4,7 +4,7 @@ module.exports = {
     name: 'play',
     description: 'Soita kappaleita Youtubesta',
     aliases: ["p", "soita"],
-    execute(message, args, settings, client) {
-        client.player.play(argsToString(args), message)
+    async execute(message, args, settings, client) {
+        client.player.play(message, args[0])
     }
 }

@@ -5,7 +5,23 @@ module.exports = {
     aliases: ["r", "r/"],
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
-    execute(message, args, settings, client) {
+    enableSlash: false,
+    options: [
+        {
+            name: "subreddit" ,
+            description: "Name of subreddit",
+            type: "STRING",
+            required: true
+        },
+        {
+            name: "skip",
+            description: "Skip NSFW channel test",
+            type: "STRING"
+        }
+    ],
+    execute(message, args, settings, client, interaction) {
+        const sender = message || interaction;
+
         // Command arguments
         let subreddit = args[0];
         let skipnsfw = args[1];
@@ -24,7 +40,7 @@ module.exports = {
                 console.log(res)
                 // Subreddit found check
                 if (!res.data[0]) {
-                    return message.channel.send("Subreddittiä ei löytynyt!");
+                    return sender.reply("Subreddittiä ei löytynyt!");
                 }
 
                 const {
@@ -41,8 +57,8 @@ module.exports = {
                 //Skip NSFW check
                 if (skipnsfw !== "-s") {
                     // NSFW check
-                    if (!message.channel.nsfw && nsfw) {
-                        return message.channel.send(
+                    if (!interaction && !message.channel.nsfw && nsfw ) {
+                        return sender.reply(
                             "En voi lähettää tätä sisältöä kuin NSFW-kanaville!"
                         );
                     }
@@ -69,7 +85,7 @@ module.exports = {
                     });
                 }
                 
-                new IlluminatiEmbed(message, {
+                const embed = new IlluminatiEmbed(message || interaction, {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,
@@ -82,13 +98,15 @@ module.exports = {
                             url: postaajaurl,
                         },
                         fields,
-                    }, client).send();                    
+                }, client);
+                
+                sender.reply({embed})
             })
             // Catch error with Axios GET
             .catch((e) => {
                 // Send error response to channel
                 if (e.response) {
-                    message.channel.send(
+                    sender.reply(
                         `Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`
                     );
                 }

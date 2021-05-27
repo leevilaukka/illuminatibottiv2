@@ -4,7 +4,15 @@ module.exports = {
     guildOnly: true,
     category: "general",
     cooldown: 5,
-    execute(message, _args, _settings, client) {
-        message.channel.send(`Pong! Viive on ${Math.ceil(client.ws.ping)}ms`)        
+    options: [{
+        name: "input",
+        type: "STRING",
+        description: "Input"
+    }],
+    enableSlash: true,
+    execute(message, args, _settings, client, interaction) {
+        const sender = interaction || message
+        
+        sender.reply(`Pong! Viive on ${Math.ceil(client.ws.ping)}ms. Ensimmäinen argumentti oli ${args[0]}`)        
     },
 };

@@ -1,14 +1,17 @@
 const Discord = require("discord.js") 
 const {Guild} = require("../models")
-const IlluminatiPlayer = require("./IlluminatiPlayer")
+const { Player } = require("discord-player")
+const { isDevelopment } = require("../helpers/nodeHelpers")
+
 
 module.exports = class IlluminatiClient extends Discord.Client {
     constructor(options) {
         super(options)
 
-        this.player = new IlluminatiPlayer(this, {highWaterMark: 25})
+        this.player = new Player(this, {})
         this.config = require("../config")
         this.commands = new Discord.Collection();
+        this.isDevelopment = isDevelopment()
     }
 
     /**
