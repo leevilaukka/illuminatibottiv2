@@ -3,19 +3,21 @@ const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
     name: "tinder",
-    description: "Tinder",
+    description: "Tinder-äänestys",
     args: true,
-    usage: "<token>",
+    usage: "<määrä> <token> <aika>",
     cooldown: 10,
     async execute(message, args, settings,client, interaction) {
         message.delete()
-        let [maxCount, token] = args;
+        let [maxCount, token, timeout] = args;
         maxCount = maxCount - 1;
         maxCount < 1 ? maxCount = 1 : maxCount = maxCount;
 
-        const config = {headers: {
-            'X-Auth-Token': token
-        }}
+        const config = { 
+            headers: {
+                'X-Auth-Token': token
+            }
+        }
 
         const { data: { data: { results } } } = await axios.get("https://api.gotinder.com/v2/recs/core?locale=en", config)
         
@@ -52,7 +54,6 @@ module.exports = {
                     url: current.user.photos[0].url
                 },
                 fields,
-
             }, client)
 
             message.channel.send({ embed }).then(async (tMessage) => {
@@ -63,7 +64,7 @@ module.exports = {
                     return ['👍', '👎'].includes(reaction.emoji.name) && !user.bot;
                 };
 
-                tMessage.awaitReactions(filter, { time: 10000 })
+                tMessage.awaitReactions(filter, { time: timeout ? timeout * 1000 : 10000 })
                     .then(collected => {
                         // Lähetä request
 
@@ -79,6 +80,7 @@ module.exports = {
                         } 
 
                         if(maxCount > count) {
+                            tMessage.delete()
                             createNewVote(count + 1)
                         } else return
                     })
@@ -87,7 +89,6 @@ module.exports = {
                     });
             })
         }
-
         createNewVote();
     }
 }
