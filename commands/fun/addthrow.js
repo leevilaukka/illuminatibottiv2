@@ -11,7 +11,7 @@ module.exports = {
     execute(message, args, settings, client) {
         const [heitto, ...rest] = args;
 
-        if (heitto.endsWith(".png")||heitto.endsWith(".jpg") || heitto.endsWith(".gif")){
+        if (heitto.endsWith(".png") || heitto.endsWith(".jpg") || heitto.endsWith(".gif")){
             Guild.findOneAndUpdate({guildID: message.guild.id}, {
                 $push: {throws: heitto}
             })

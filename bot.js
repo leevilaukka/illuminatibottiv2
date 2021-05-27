@@ -12,7 +12,6 @@ client.player.on("error", (error, message) => {
 // Node modules
 const fs = require("fs");
 const mongoose = require("mongoose");
-const { isDevelopment } = require("./helpers/nodeHelpers");
 
 // Check if ownerID given
 if (!client.config.ownerID) throw new Error("No ownerID given! Check env variables.");
@@ -47,10 +46,10 @@ for(folder of commandFolders) {
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
         client.commands.set(command.name, command);
-        if (isDevelopment()) console.log(`Loaded cmd: ${folder}/${file}`);
+        if (client.isDevelopment()) console.log(`Loaded cmd: ${folder}/${file}`);
     }
 }
-if (!isDevelopment()) console.log("Commands loaded!");
+if (!client.isDevelopment()) console.log("Commands loaded!");
 
 // Connect to database
 mongoose.connect(
@@ -58,6 +57,7 @@ mongoose.connect(
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: false
     },
     (cb) => {
         if (cb == !null) {
@@ -68,7 +68,7 @@ mongoose.connect(
 
 // Bot client login
 client.login(client.config.token).then(() => {
-    if (isDevelopment()) {
+    if (client.isDevelopment()) {
         console.log("Logged in as development version");
         console.log(client)
     } else {

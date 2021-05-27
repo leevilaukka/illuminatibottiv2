@@ -4,6 +4,7 @@ module.exports = async (client, deletedMessage) => {
 
     if(!deletedMessage.guild) return;
     
+    
     const fetchedLogs = await deletedMessage.guild.fetchAuditLogs({
        limit: 1,
        type: "MESSAGE_DELETE"
@@ -11,6 +12,7 @@ module.exports = async (client, deletedMessage) => {
 
     // Pick first entry from deletedLog and destructure executor out
     const deletedLog = fetchedLogs.entries.first();
+    if(!deletedLog) return;
     const {executor} = deletedLog;
 
     // If executor is a bot account, return
