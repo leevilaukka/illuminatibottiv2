@@ -1,7 +1,6 @@
 const { default: axios } = require("axios");
 const Discord = require("discord.js")
 const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
-const { options } = require("./reddit");
 const fs = require("fs")
 
 module.exports = {
@@ -10,7 +9,7 @@ module.exports = {
     args: true,
     usage: "<määrä> <token> <aika>",
     cooldown: 10,
-    async execute(message, args, settings,client, interaction) {
+    async execute(message, args, settings, client, interaction) {
         message.delete()
         let [maxCount, token, timeout] = args;
         let easyMode;
@@ -125,7 +124,7 @@ module.exports = {
                         if(maxCount > count) {
                             tMessage.delete()
                             createNewVote(count + 1)
-                        } else return message.channel.send("se oli siinä!").then(m => {
+                        } else return message.channel.send("Se oli siinä!").then(m => {
                             tMessage.delete()
                             easyMode.delete()
                             setTimeout(() => m.delete(), 5000)

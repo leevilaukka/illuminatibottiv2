@@ -1,7 +1,6 @@
 const { formatDate } = require("../../helpers");
 const { valueParser } = require("../../helpers");
 const { gql, request } = require("graphql-request");
-const { isDevelopment } = require("../../helpers/nodeHelpers");
 const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
 
 module.exports = {
@@ -56,7 +55,7 @@ module.exports = {
             "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql",
             query
         ).then((data) => {
-            isDevelopment() && console.log(data.plan.itineraries[0]);
+            client.isDevelopment && console.log(data.plan.itineraries[0]);
             const route = data.plan.itineraries[0];
             message.channel.send("Reittisi!");
             route.legs.map((leg, index) => {

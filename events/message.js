@@ -3,8 +3,6 @@ const config = require("../config");
 
 const cooldowns = new Discord.Collection();
 
-const { isDevelopment } = require("../helpers/nodeHelpers");
-
 module.exports = async (client, message) => {
     let settings;
     try {
@@ -106,7 +104,7 @@ module.exports = async (client, message) => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-    if (isDevelopment()) console.log(`Cmd ${command.name} called!`);
+    if (client.isDevelopment) console.log(`Cmd ${command.name} called!`);
 
     //Execute command and catch errors
     try {
@@ -115,6 +113,7 @@ module.exports = async (client, message) => {
         message.channel.stopTyping(true);
     } catch (error) {
         console.error(error);
-        await message.reply("komentoa suorittaessa tapahtui virhe");
+        const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");
+        setTimeout(() => errorMessage.delete(), 5000);
     }
 };

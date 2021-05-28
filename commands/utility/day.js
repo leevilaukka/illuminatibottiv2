@@ -24,30 +24,35 @@ module.exports = {
                             const parsedDate = moment(result.date).format(
                                 "DD.MM.YYYY"
                             );
+                            
                             const fields = [
                                 {
                                     name: "Päivämäärä",
                                     value: parsedDate,
                                 },
                             ];
+
                             if (result.alternate_names) {
                                 fields.push({
                                     name: "Muut nimet",
                                     value: result.alternate_names,
                                 });
                             }
+
                             if (result.age) {
                                 fields.push({
                                     name: "Vietetty",
                                     value: `${result.age} vuotta`,
                                 });
                             }
+
                             if (result.flag_day === 1) {
                                 fields.push({
                                     name: "Liputuspäivä",
                                     value: ":flag_fi:",
                                 });
                             }
+
                             new IlluminatiEmbed(message, {
                                 title: result.name,
                                 url: result.url,

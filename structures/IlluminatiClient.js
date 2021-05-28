@@ -1,17 +1,16 @@
-const Discord = require("discord.js") 
-const {Guild} = require("../models")
+const Discord = require("discord.js")
+const { Guild } = require("../models")
 const { Player } = require("discord-player")
-const { isDevelopment } = require("../helpers/nodeHelpers")
-
 
 module.exports = class IlluminatiClient extends Discord.Client {
     constructor(options) {
         super(options)
 
-        this.player = new Player(this, {})
-        this.config = require("../config")
+        this.player = new Player(this)
+        this.config = require("../config");
         this.commands = new Discord.Collection();
-        this.isDevelopment = isDevelopment()
+        this.isDevelopment = (process.env.NODE_ENV === "development");
+        this.env = process.env.NODE_ENV
     }
 
     /**
@@ -21,7 +20,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
      * @returns Guild settings *or* Default settings
      */
 
-    async getGuild (guild) {
+    async getGuild(guild) {
         let data = await Guild.findOne({ guildID: guild.id }).catch((e) =>
             console.error(e)
         );
@@ -37,17 +36,17 @@ module.exports = class IlluminatiClient extends Discord.Client {
      * @returns Updated guild settings
      */
 
-    async updateGuild (guild, settings) {
+    async updateGuild(guild, settings) {
         let data = await client.getGuild(guild);
-    
+
         if (typeof data !== "object") data = {};
         for (const key in settings) {
             if (data[key] !== settings[key]) data[key] = settings[key];
             else return;
         }
-    
+
         console.log(
-          `Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`
+            `Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`
         );
         return await data.updateOne(settings).catch((e) => console.error(e));
     };
@@ -59,19 +58,19 @@ module.exports = class IlluminatiClient extends Discord.Client {
      * @returns New database guild settings
      */
 
-    async createGuild (settings) {
+    async createGuild(settings) {
         const newGuild = await new Guild(settings);
         return newGuild
-          .save()
-          .then((res) => {
-            console.log(
-              `Uusi palvelin luotu! Nimi: ${res.guildName} (${res.guildID})`
-            );
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      };
+            .save()
+            .then((res) => {
+                console.log(
+                    `Uusi palvelin luotu! Nimi: ${res.guildName} (${res.guildID})`
+                );
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
 
     /**
@@ -80,11 +79,11 @@ module.exports = class IlluminatiClient extends Discord.Client {
      * @param {Discord.Guild} guild Discord Guild object
      */
 
-    async deleteGuild (guild) {
+    async deleteGuild(guild) {
         await Guild.deleteOne({ guildID: guild.id });
         console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
-    }; 
-    
+    };
+
     /**
      * Clean text
      * @method
@@ -92,11 +91,11 @@ module.exports = class IlluminatiClient extends Discord.Client {
      * @returns 
      */
 
-    clean (text) {
+    clean(text) {
         if (typeof text === "string")
-          return text
-            .replace(/`/g, "`" + String.fromCharCode(8203))
-            .replace(/@/g, "@" + String.fromCharCode(8203));
+            return text
+                .replace(/`/g, "`" + String.fromCharCode(8203))
+                .replace(/@/g, "@" + String.fromCharCode(8203));
         else return text;
-    };   
+    };
 }

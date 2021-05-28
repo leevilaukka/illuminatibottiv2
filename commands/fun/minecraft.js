@@ -1,5 +1,4 @@
 const util = require("minecraft-server-util");
-const { isDevelopment } = require("../../helpers/nodeHelpers");
 const argsToString = require("../../helpers/argsToString");
 const { default: axios } = require("axios");
 const IlluminatiEmbed = require("../../structures/IlluminatiEmbed");
@@ -34,7 +33,7 @@ module.exports = {
                 return util
                     .status(host)
                     .then((res) => {
-                        if (isDevelopment()) console.log(res);
+                        if (client.isDevelopment) console.log(res);
                         const embed = {
                             title: res.host,
                             fields: [
@@ -63,7 +62,7 @@ module.exports = {
                 return util
                     .queryFull(host)
                     .then((res) => {
-                        if (isDevelopment()) console.log(res);
+                        if (client.isDevelopment) console.log(res);
                         const embed = new IlluminatiEmbed(message.author, {
                             title: res.host,
                             fields: [
@@ -95,7 +94,7 @@ module.exports = {
                         message.reply(
                             `nyt kävi virhe :( - Palvelinta ei oletettavasti löytynyt tai se on offline-tilassa - ${e}`
                         );
-                        isDevelopment() && console.error(e);
+                        client.isDevelopment && console.error(e);
                     });
             case "say":
                 const mcmessage = argsToString(rest);

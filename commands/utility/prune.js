@@ -16,13 +16,13 @@ module.exports = {
     execute(message, args, client, settings, interaction) {
         const amount = parseInt(args[0]) + 1;
         const sender = interaction || message
-
+        
         if (isNaN(amount)) {
             return sender.reply('tuo ei taida olla oikea luku.');
         } else if (amount <= 1 || amount > 100) {
             return sender.reply('anna luku 1 ja 99 väliltä.');
         }
-
+        
         sender.channel.bulkDelete(amount, true).catch(err => {
             console.error(err);
             sender.channel.send('tapahtui virhe!');

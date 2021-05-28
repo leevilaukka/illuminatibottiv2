@@ -70,7 +70,7 @@ mongoose.connect(
 client.login(client.config.token).then(() => {
     if (client.isDevelopment) {
         console.log("Logged in as development version");
-        console.log(client)
+        console.log("Client:", client)
     } else {
         console.log("Logged in!");
     }
