@@ -37,7 +37,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
      */
 
     async updateGuild(guild, settings) {
-        let data = await client.getGuild(guild);
+        let data = await this.getGuild(guild);
 
         if (typeof data !== "object") data = {};
         for (const key in settings) {

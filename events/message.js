@@ -18,7 +18,7 @@ module.exports = async (client, message) => {
 
     if (message.author.bot) return;
 
-    messageCheck(message);
+    if(settings.randomMessages) messageCheck(message);
 
     const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

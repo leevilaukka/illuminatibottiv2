@@ -3,22 +3,22 @@ const Schema = mongoose.Schema;
 const { defaultSettings: defaults } = require("../config");
 
 const PlaceSchema = new Schema({
-  name: String,
-  coords: {
-    lat: Number,
-    lon: Number,
-  },
+    name: String,
+    coords: {
+        lat: Number,
+        lon: Number,
+    },
 });
 
 const MemberSchema = new Schema({
-  name: String,
-  id: String,
-  discriminator: String
+    name: String,
+    id: String,
+    discriminator: String
 });
 
 const TextChannelSchema = new Schema({
-  name: String,
-  id: String
+    name: String,
+    id: String
 })
 
 const DeletedMessageSchema = new Schema({
@@ -32,38 +32,42 @@ const DeletedMessageSchema = new Schema({
 });
 
 const GuildSchema = new Schema({
-  guildName: {
-    type: String,
-    required: true,
-  },
-  guildID: {
-    type: String,
-    required: true,
-  },
-  prefix: {
-    type: String,
-    default: defaults.prefix,
-  },
-  volume: {
-    type: String,
-    default: defaults.volume,
-  },
-  joinedAt: {
-    type: Date,
-    required: true,
-  },
-  places: [PlaceSchema],
-  removedMemberChannel: String,
-  removedMembers: [MemberSchema],
-  deletedMessages: [DeletedMessageSchema],
-  throws: {
-    type: Array,
-    default: defaults.throws,
-  },
-  mcdefaults: {
-    action: String,
-    host: String
-  }
+    guildName: {
+        type: String,
+        required: true,
+    },
+    guildID: {
+        type: String,
+        required: true,
+    },
+    prefix: {
+        type: String,
+        default: defaults.prefix,
+    },
+    volume: {
+        type: String,
+        default: defaults.volume,
+    },
+    joinedAt: {
+        type: Date,
+        required: true,
+    },
+    places: [PlaceSchema],
+    removedMemberChannel: String,
+    removedMembers: [MemberSchema],
+    deletedMessages: [DeletedMessageSchema],
+    randomMessages: {
+        type: Boolean,
+        default: true
+    },
+    throws: {
+        type: Array,
+        default: defaults.throws,
+    },
+    mcdefaults: {
+        action: String,
+        host: String
+    }
 });
 
 module.exports = mongoose.model("Guild", GuildSchema);

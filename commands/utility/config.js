@@ -98,6 +98,22 @@ module.exports = {
                 return message.channel.send(`Tapahtui virhe: ${e.message}`);
               }
 
+      case "randomMessages":
+        if (!newSetting) {
+            return message.channel.send(
+                `Nykyinen asetus:\`${settings.randomMessages}\``
+            );
+        }
+        
+        try {
+            await client.updateGuild(message.guild, {
+              randomMessages: newSetting,
+            });
+            return message.channel.send(`Oletus muutettu: ${newSetting}`);
+        } catch (e) {
+            console.error(e)
+            return message.channel.send(`Tapahtui virhe: ${e.message}`);
+        }
       default: {
         return new IlluminatiEmbed(message, {
             title: "Kaikki botin asetukset",
@@ -112,6 +128,15 @@ module.exports = {
                 name: "Oletusäänenvoimakkuus",
                 value: `\`${(settings.volume * 100).toFixed(1)} %\``,
                 inline: true,
+              },
+              {
+                name: "Satunnaiset viestit",
+                value:  `\`${settings.randomMessages ? "Päällä" : "Pois"}\``,
+                inline: true,
+              },
+              {
+                name: "Minecraft-servu",
+                value: `\`${settings.mcdefaults.host}\``,
               },
             ],
         }, client).send();
