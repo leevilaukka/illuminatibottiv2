@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const config = require("../config");
+const { messageCheck } = require("../utils/messageCheck");
 
 const cooldowns = new Discord.Collection();
 
@@ -16,6 +17,8 @@ module.exports = async (client, message) => {
     }
 
     if (message.author.bot) return;
+
+    messageCheck(message);
 
     const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -115,5 +118,6 @@ module.exports = async (client, message) => {
         console.error(error);
         const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");
         setTimeout(() => errorMessage.delete(), 5000);
+        message.channel.stopTyping(true);
     }
 };

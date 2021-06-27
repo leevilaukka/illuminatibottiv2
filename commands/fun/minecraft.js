@@ -81,6 +81,7 @@ module.exports = {
                             ],
                            
                         }, client);
+                        
                         // If res.players isn't empty, push players to embed
                         if (res.players) {
                             embed.fields.push({

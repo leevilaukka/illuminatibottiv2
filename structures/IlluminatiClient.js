@@ -29,7 +29,7 @@ module.exports = class IlluminatiClient extends Discord.Client {
     };
 
     /**
-     * Update Guild settings to database     ' 
+     * Update Guild settings to database 
      * @method
      * @param {Discord.Guild} guild Discord Guild object
      * @param {object} settings New settings
