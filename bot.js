@@ -25,16 +25,18 @@ const playerEvents = fs.readdirSync("./events/player/").filter(file => file.ends
 for (const file of eventFiles) {
     const evt = require(`./events/${file}`);
     let evtName = file.split(".")[0];
-    console.log(`Loaded evt: ${evtName}`);
+    if(client.isDevelopment) console.log(`Loaded evt: ${evtName}`);
     client.on(evtName, evt.bind(null, client));
 }
 
 for (const file of playerEvents) {
     const evt = require(`./events/player/${file}`);
     let evtName = file.split(".")[0];
-    console.log(`Loaded playerEvt: ${evtName}`);
+    if(client.isDevelopment) console.log(`Loaded playerEvt: ${evtName}`);
     client.player.on(evtName, evt.bind(null, client));
 }
+
+if (!client.isDevelopment) console.log("Events loaded!")
 
 // Command import
 const commandFolders = fs.readdirSync("./commands")
@@ -72,6 +74,6 @@ client.login(client.config.token).then(() => {
         console.log("Logged in as development version");
         console.log("Client:", client)
     } else {
-        console.log("Logged in!");
+        console.log("Ready! ✔");
     }
 });
