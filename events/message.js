@@ -16,6 +16,7 @@ module.exports = async (client, message) => {
         console.error(e);
     }
 
+
     if (message.author.bot) return;
 
     if(settings.randomMessages) messageCheck(message);
@@ -43,6 +44,12 @@ module.exports = async (client, message) => {
     if (!command) {
         return message.reply(
             `tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`
+        );
+    }
+
+    if(command.outOfOrder && !client.isDevelopment) {
+        return message.reply(
+            `tämä komento ei ole käytössä tällä hetkellä. Siinä on todennäköisesti jokin ongelma, tai sen koodaaminen on vielä kesken`
         );
     }
 

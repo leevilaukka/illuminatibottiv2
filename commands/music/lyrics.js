@@ -5,6 +5,7 @@ module.exports = {
     name: "lyrics",
     description: "Search Genius for lyrics",
     category: "music",
+    outOfOrder: true,
     execute(message, args, settings, client) {
         const [artist, ...title] = args;
 
