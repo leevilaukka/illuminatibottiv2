@@ -5,3 +5,4 @@ ecosystem.config.js
 /logs
 package-lock.json
 /.vscode
+/build

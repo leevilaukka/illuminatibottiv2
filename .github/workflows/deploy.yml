@@ -15,6 +15,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd /var/www/nodeapps/illuminatibottiv2 # navigate into the folder
-            git pull origin master # clone the repo into the 'app' folder
-            npm install # install dependencies 
+            git pull origin master # clone the repo
+            npm install # install dependencies
+            tsc # build typescript
             pm2 start ecosystem.config.js # start as a background service.

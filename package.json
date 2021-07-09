@@ -10,19 +10,24 @@
   "author": "leevilaukka",
   "license": "ISC",
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "algebra": "^1.0.1",
     "algebra.js": "^0.2.6",
     "axios": "^0.21.1",
     "convert-units": "^2.3.4",
-    "discord-player": "^4.1.0",
+    "discord-player": "^4.1.4",
     "discord.js": "^12.5.3",
-    "ffmpeg-static": "^4.3.0",
+    "ffmpeg-static": "^4.4.0",
     "genius-lyrics-api": "^3.0.6",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
     "minecraft-server-util": "^3.5.1",
     "moment": "^2.29.1",
-    "mongoose": "^5.12.11",
+    "mongoose": "^5.13.2",
+    "typescript": "^4.3.5",
     "ytdl-core": "^4.8.2"
+  },
+  "devDependencies": {
+    "@types/convert-units": "^2.3.3"
   }
 }
