@@ -1,1 +1,0 @@
-export type Category = "general" | "music" | "math" | "maps" | "config" | "date" | "other" 

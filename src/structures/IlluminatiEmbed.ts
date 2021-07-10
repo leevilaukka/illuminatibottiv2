@@ -16,7 +16,7 @@ export default class IlluminatiEmbed extends MessageEmbed {
         super(data)
         this.message = message
         this.setColor(data.color || 0x229924)
-        this.setAuthor(client.user.username, client?.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png")
+        this.setAuthor(client?.user?.username, client?.user?.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png")
         if (message.member) this.setFooter(message.member.user.tag, `https://cdn.discordapp.com/avatars/${message.member.id}/${message.member.user.avatar}.png`)
     }
 

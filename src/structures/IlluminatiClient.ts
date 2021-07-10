@@ -1,6 +1,6 @@
-import Discord from "discord.js"
+import Discord, { ClientOptions, ClientUser } from "discord.js"
 import Guild  from "../models/Guild.js"
-import { Player } from "discord-player"
+import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
 import config from "../config.js"
 
@@ -11,13 +11,11 @@ export class IlluminatiClient extends Discord.Client {
     commands: Discord.Collection<unknown, Command>
     isDevelopment: boolean
     env: string
-    user
 
-    
-    constructor(options: any) {
-        super(options)
+    constructor(clientOptions?: ClientOptions | any, playerOptions?: PlayerOptions) {
+        super(clientOptions)
 
-        this.player = new Player(this)
+        this.player = new Player(this, playerOptions)
         this.config = config
         this.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
@@ -70,7 +68,7 @@ export class IlluminatiClient extends Discord.Client {
      */
 
     async createGuild(settings: object) {
-        const newGuild = await new Guild(settings);
+        const newGuild = new Guild(settings);
         return newGuild
             .save()
             .then((res: any) => {

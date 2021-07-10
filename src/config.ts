@@ -1,4 +1,19 @@
-const config = {
+export type Config = {
+    token: string,
+    devServerID: string,
+    ownerID: string,
+    defaultSettings: {
+        prefix: string,
+        volume: string,
+        mcdefaults: {
+            action: string,
+            host: string
+        },
+        throws: string[],
+    }
+}
+
+const config: Config = {
   token: process.env.TOKEN,
   devServerID: process.env.DEVSERVERID,
   ownerID: process.env.OWNERID,

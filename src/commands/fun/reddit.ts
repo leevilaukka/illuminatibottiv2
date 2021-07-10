@@ -9,6 +9,7 @@ const command: Command = {
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
     enableSlash: false,
+    guildOnly: true,
     options: [
         {
             name: "subreddit" ,
@@ -22,7 +23,7 @@ const command: Command = {
             type: "STRING"
         }
     ],
-    execute(message: any, args, client, settings, interaction) {
+    execute(message: any, args, settings, client, interaction) {
         const sender = message || interaction;
 
         // Command arguments

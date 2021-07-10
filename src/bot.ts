@@ -1,4 +1,3 @@
-
 // Structures
 import {IlluminatiClient} from "./structures/IlluminatiClient.js";
 import { Intents } from "discord.js";
@@ -15,7 +14,7 @@ import fs from "fs";
 import mongoose from "mongoose";
 
 // Check if ownerID given
-//if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check env variables.");
+if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check env variables.");
 
 // Event import
 try {
@@ -72,6 +71,7 @@ mongoose.connect(
 client.login(client.config.token).then(() => {
     if (client.isDevelopment) {
         console.log("Logged in as development version");
+        console.log("Client: ", client)
     } else {
         console.log("Ready! ✔");
     }

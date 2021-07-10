@@ -13,7 +13,7 @@ const command: Command = {
     async execute(message, args: any, settings, client, interaction) {
         message.delete()
         let [maxCount, token, timeout] = args;
-        let easyMode;
+        let easyMode: Discord.Message;
         maxCount = maxCount - 1;
         maxCount < 1 ? maxCount = 1 : maxCount = maxCount;
 
@@ -105,12 +105,12 @@ const command: Command = {
                 await tMessage.react('👍');
                 await tMessage.react('👎');
 
-                const filter = (reaction, user) => {
+                const filter = (reaction: Discord.MessageReaction, user: Discord.User) => {
                     return ['👍', '👎'].includes(reaction.emoji.name) && !user.bot;
                 };
 
                 tMessage.awaitReactions(filter, { time: timeout ? timeout * 1000 : 10000 })
-                    .then(collected => {
+                    .then(async collected => {
                         // Lähetä request
                         const likeCount = collected.get("👍") ? collected.get("👍").count - 1 : 0
                         const nopeCount = collected.get("👎") ? collected.get("👎").count - 1 : 0
@@ -128,11 +128,12 @@ const command: Command = {
                         if(maxCount > count) {
                             tMessage.delete()
                             createNewVote(count + 1)
-                        } else return message.channel.send("Se oli siinä!").then(m => {
-                            tMessage.delete()
-                            easyMode.delete()
-                            setTimeout(() => m.delete(), 5000)
-                        })
+                        } else {
+                            const m = await message.channel.send("Se oli siinä!");
+                            tMessage.delete();
+                            easyMode.delete();
+                            setTimeout(() => m.delete(), 5000);
+                        }
                     })
                     .catch(collected => {
                         console.error(collected)
