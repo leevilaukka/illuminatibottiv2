@@ -22,7 +22,7 @@ const config: Config = {
     volume: "1",
     mcdefaults: {
       action: "status",
-      host: "illuminati.serveminecraft.net",
+      host: process.env.MCHOST,
     },
     throws: [
       "https://i.imgur.com/qrzJlKR.jpg",

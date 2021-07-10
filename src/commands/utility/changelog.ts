@@ -13,12 +13,13 @@ const command: Command = {
         if (!update) {
             update = 0;
         }
+        const username = process.env.GITHUB_USER
         const password = process.env.GITHUB_KEY;
         const auth = {
-            username: "leevilaukka",
+            username,
             password
         };
-        axios.get('https://api.github.com/repos/leevilaukka/illuminatibottiv2/commits', {
+        axios.get(`https://api.github.com/repos/${username}/illuminatibottiv2/commits`, {
             auth
         })
             .then(res => {
