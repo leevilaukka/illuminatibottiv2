@@ -1,6 +1,6 @@
 import axios from "axios";
-import { IlluminatiClient } from "../../structures/IlluminatiClient";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { toTimestamp } from "../../utils";
+import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -10,6 +10,8 @@ const command: Command = {
     category: "other",
     enableSlash: false,
     guildOnly: true,
+    args: true,
+    argTypes: ["string", "string"],
     options: [
         {
             name: "subreddit" ,
@@ -51,7 +53,7 @@ const command: Command = {
                     title, 
                     thumbnail: thumb, url: kuva, permalink, author: name, 
                     over_18: nsfw, author_flair_text: flair,
-                    link_flair_background_color: flaircolor, subreddit
+                    link_flair_background_color: flaircolor, subreddit, created
                 } = res.data[0].data.children[0].data
                 const rURL = "https://www.reddit.com"
                 const url = rURL + permalink;
@@ -80,6 +82,10 @@ const command: Command = {
                         value: `[${subreddit}](${subURL})`,
                         inline: true
 
+                    },
+                    {
+                        name: "Luotu",
+                        value: toTimestamp(Math.trunc(created), "md-t")
                     }
                 ];
                 if (flair) {
@@ -89,7 +95,7 @@ const command: Command = {
                         inline: false
                     });
                 }
-                
+                console.log(created)
                 const embed = new IlluminatiEmbed(message || interaction, {
                         title,
                         url,

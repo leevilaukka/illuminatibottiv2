@@ -1,6 +1,8 @@
 import moment from "moment";
 import axios from "axios";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

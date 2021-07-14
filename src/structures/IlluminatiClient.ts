@@ -1,14 +1,14 @@
-import Discord, { ClientOptions, ClientUser } from "discord.js"
+import Discord, { ClientOptions } from "discord.js"
 import Guild  from "../models/Guild.js"
 import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
 import config from "../config.js"
 
-export class IlluminatiClient extends Discord.Client {
+export default class IlluminatiClient extends Discord.Client {
     // Types
     player: Player
     config: any
-    commands: Discord.Collection<unknown, Command>
+    commands: Discord.Collection<string, Command>
     isDevelopment: boolean
     env: string
 

@@ -1,4 +1,3 @@
-import { Message } from "discord.js";
 import Command from "../../types/IlluminatiCommand"
 
 const command: Command = {

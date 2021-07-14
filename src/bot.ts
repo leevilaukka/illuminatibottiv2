@@ -1,12 +1,14 @@
 // Structures
-import {IlluminatiClient} from "./structures/IlluminatiClient.js";
-import { Intents } from "discord.js";
+import { IlluminatiClient } from "./structures";
+import { Intents, Message } from "discord.js";
+
+import { PlayerError } from "discord-player";
 
 const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 // DiscordPlayer
-client.player.on("error", (error: any, message: { channel: { send: (arg0: any) => void; }; }) => {
-    message.channel.send(error)
+client.player.on("error", (error: PlayerError, message: Message) => {
+    message.channel.send(error.message)
 })
 
 // Node modules
@@ -33,8 +35,7 @@ try {
     console.error(error)
 }
 
-
-if (!client.isDevelopment) console.log("Events loaded!")
+console.log("Events loaded!")
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/commands/`)
@@ -50,12 +51,12 @@ for (const folder of commandFolders) {
         if (client.isDevelopment) console.log(`Loaded cmd: ${folder}/${file}`);
     }
 }
-if (!client.isDevelopment) console.log("Commands loaded!");
+
+console.log("Commands loaded!");
 
 // Connect to database
 mongoose.connect(
-    process.env.MONGOURI,
-    {
+    process.env.MONGOURI, {
         useFindAndModify: false,
         useNewUrlParser: true,
         useUnifiedTopology: true

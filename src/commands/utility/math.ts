@@ -1,6 +1,7 @@
 import algebra from "algebra.js";
-import argsToString  from "../../helpers/argsToString";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { argsToString }  from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

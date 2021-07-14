@@ -1,7 +1,7 @@
-import formatDate  from "../../helpers/formatDate";
-import valueParser from "../../helpers/valueParser";
 import { gql, request } from "graphql-request";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+
+import { formatDate, valueParser } from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

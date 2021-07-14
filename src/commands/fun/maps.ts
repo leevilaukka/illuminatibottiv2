@@ -1,10 +1,9 @@
-import argsToString from "../../helpers/argsToString";
-import umlautRemover from "../../helpers/umlautRemover";
-
 import Discord from "discord.js";
 import axios from "axios";
 import fs from "fs";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+
+import { argsToString, umlautRemover } from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

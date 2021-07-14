@@ -1,4 +1,4 @@
-import { IlluminatiClient } from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 export default async (client: IlluminatiClient, oldGuild: any, newGuild: any) => {
     if (oldGuild.name !== newGuild.name) {
