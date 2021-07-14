@@ -1,7 +1,9 @@
 import util from "minecraft-server-util";
-import argsToString from "../../helpers/argsToString";
 import { default as axios } from "axios";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+
+import { argsToString } from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand"
 
 const command: Command = {

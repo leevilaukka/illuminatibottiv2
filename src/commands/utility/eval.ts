@@ -1,4 +1,4 @@
-import argsToString from "../../helpers/argsToString";
+import { argsToString } from "../../helpers";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

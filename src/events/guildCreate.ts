@@ -1,4 +1,4 @@
-import { IlluminatiClient } from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 const evt = async (client: IlluminatiClient, guild: any) => {
     try {

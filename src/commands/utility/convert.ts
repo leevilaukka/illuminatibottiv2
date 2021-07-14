@@ -1,7 +1,8 @@
 import convert from "convert-units";
-import argsToString from "../../helpers/argsToString";
-import valueParser from "../../helpers/valueParser";
+
+import { argsToString, valueParser } from "../../helpers";
 import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -14,18 +15,21 @@ const command: Command = {
         let result: any;
         if (!args.length) {
             const measures = convert().measures();
+
             let fields = [
                 {
                     name: "Yksiköt",
                     value: "Käytössä olevat yksiköt jaettuna tyypin mukaan"
                 },
             ];
+
             const measuresToFields = (item) => {
                 fields.push({
                     name: `${valueParser(item)}`,
                     value: convert().possibilities(item).toString(),
                 })
             };
+
             measures.forEach(measuresToFields);
             return new IlluminatiEmbed(message, {
                 title: "Yksikkömuunnin",
@@ -74,7 +78,6 @@ const command: Command = {
 
             const fieldValue = `${result.val} ${result.unit}`;
             return new IlluminatiEmbed(message, {
-                
                     title: "Muunnos",
                     description: "Annettu lukusi muutettiin parhaaseen mahdolliseen muotoon",
                     fields: [

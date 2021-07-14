@@ -1,6 +1,7 @@
 import algebra from "algebra.js";
-import argsToString  from "../../helpers/argsToString";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { argsToString }  from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -15,7 +16,7 @@ const command: Command = {
         }
 
         try {
-            const exp = algebra.parse(argsToString(args));
+            const exp: any = algebra.parse(argsToString(args));
             const ansX = exp.solveFor("x");
 
             const image = `http://chart.apis.google.com/chart?cht=tx&chl=${encodeURIComponent(argsToString(args))}`;

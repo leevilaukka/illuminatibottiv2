@@ -1,4 +1,4 @@
-import categories from "./../utils/categories";
+import { categories } from "../utils";
 
 const getCommandCategory = (categoryCode: string) => {
     // Check category array for categoryCode and return category name

@@ -1,7 +1,8 @@
-import { default as axios } from "axios";
 import Discord from "discord.js";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { default as axios } from "axios";
 import fs from "fs";
+
+import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -105,7 +106,7 @@ const command: Command = {
                 await tMessage.react('👍');
                 await tMessage.react('👎');
 
-                const filter = (reaction: Discord.MessageReaction, user: Discord.User) => {
+                const filter = (reaction: any, user: Discord.User) => {
                     return ['👍', '👎'].includes(reaction.emoji.name) && !user.bot;
                 };
 

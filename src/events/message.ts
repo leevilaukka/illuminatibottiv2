@@ -1,8 +1,8 @@
-import {IlluminatiClient} from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 import Discord from "discord.js";
 import config from "../config";
-import messageCheck from "../utils/messageCheck";
+import messageCheck from "../helpers/messageCheck";
 
 const cooldowns: any = new Discord.Collection();
 
@@ -86,6 +86,16 @@ export default async (client: IlluminatiClient, message: any ) => {
         }
 
         return message.channel.send(reply);
+    }
+
+    // ArgTypes check
+    if (command.argTypes) {
+        for(let i = 0; i < command.argTypes.length; i++) {
+            if(typeof(command.argTypes[i]) !== args[i]) {
+                console.error(`${i}:n argumentin tyyppi on väärä, tyypin pitäisi olla ${command.argTypes[i]}, mutta se on ${typeof args[i]}`)
+            }
+            else continue
+        }
     }
     //Cooldowns
     if (!cooldowns.has(command.name)) {
