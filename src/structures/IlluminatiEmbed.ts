@@ -1,5 +1,5 @@
 import { MessageEmbed, Message, MessageEmbedOptions } from "discord.js";
-import {IlluminatiClient} from "./IlluminatiClient";
+import IlluminatiClient from "./IlluminatiClient";
 
 /**
  * A MessageEmbed with the default fields already filled

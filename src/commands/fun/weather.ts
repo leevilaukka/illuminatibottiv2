@@ -1,9 +1,8 @@
 import axios from "axios";
 
-import umlautRemover from "../../helpers/umlautRemover";
-import argsToString from "../../helpers/argsToString";
-import formatDate from "../../helpers/formatDate";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { umlautRemover, argsToString, formatDate } from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

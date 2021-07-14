@@ -1,6 +1,7 @@
-import categories from "../../utils/categories";
-import getCommandCategory  from "../../helpers/getCommandCategory";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { categories } from "../../utils";
+import { getCommandCategory } from "../../helpers";
+import { IlluminatiEmbed } from "../../structures";
+
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -10,7 +11,7 @@ const command: Command = {
     usage: `[komento]`,
     cooldown: 5,
     category: "general",
-    execute(message, args: any, settings, client) {
+    async execute(message, args: any, settings, client) {
 
         const {commands} = client;
         const prefix = settings.prefix;
@@ -44,15 +45,15 @@ const command: Command = {
             }
 
             //Lähetä DM
-            return message.author.send({embed})
-                .then(() => {
-                    if (message.channel.type === `dm`) return;
-                    message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
-                })
-                .catch(error => {
-                    console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
-                    message.reply(`vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`);
-                });
+            try {
+                await message.author.send({ embed });
+                if (message.channel.type === `dm`)
+                    return;
+                message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
+            } catch (error) {
+                console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+                message.reply(`vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`);
+            }
         }
         const name = args[0].toLowerCase();
         const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));

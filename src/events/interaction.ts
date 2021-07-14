@@ -1,4 +1,4 @@
-import { IlluminatiClient } from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 export default async (client: IlluminatiClient, interaction: any)  => {
     if(!interaction.isCommand()) return

@@ -1,4 +1,4 @@
-import Command from "../../types/IlluminatiCommand"
+import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
     name: 'ping',

@@ -1,4 +1,4 @@
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {

@@ -1,6 +1,6 @@
 import axios from "axios";
-import Command from "IlluminatiCommand";
-import IlluminatiEmbed from "../../structures/IlluminatiEmbed";
+import Command from "../../types/IlluminatiCommand";
+import { IlluminatiEmbed } from "../../structures";
 
 const command: Command = {
     name: "gif",

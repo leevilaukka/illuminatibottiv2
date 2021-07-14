@@ -1,9 +1,9 @@
-import array from "../utils/translateTable";
+import {translateTable} from "../utils";
 
 const valueParser = (value: any) => {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].original === value) {
-            return array[i].parsed;
+    for (let i = 0; i < translateTable.length; i++) {
+        if (translateTable[i].original === value) {
+            return translateTable[i].parsed;
         }
     }
 };

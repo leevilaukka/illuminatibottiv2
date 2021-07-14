@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
+
 import Guild from "../models/Guild";
-import { IlluminatiClient } from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 export default async (client: IlluminatiClient, deletedMessage: any) => {
 

@@ -1,10 +1,12 @@
 import { Message } from "discord.js";
 import { Config } from "../config";
-import { IlluminatiClient } from "../structures/IlluminatiClient";
+import { IlluminatiClient } from "../structures";
 
 export type CommandArguments = (string|number)[] 
 
 export type Category = "general" | "music" | "math" | "maps" | "config" | "date" | "other" 
+
+type ArgTypes = "string" | "number" 
 
 type SlashOptions = {
     name: string,
@@ -27,6 +29,7 @@ export default interface Command {
     options?: SlashOptions[],
     permissions?: string[],
     ownerOnly?: boolean,
+    argTypes?: ArgTypes[]
     execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, interaction: any) => void
 }
 
