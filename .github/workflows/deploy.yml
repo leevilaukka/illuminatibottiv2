@@ -18,5 +18,5 @@ jobs:
             rm -rf build # Delete current build
             git pull origin master # clone the repo
             npm install # install dependencies
-            tsc --verbose # build typescript
+            tsc --build --verbose # build typescript
             pm2 start ecosystem.config.js # start as a background service.
