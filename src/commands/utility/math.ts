@@ -15,7 +15,7 @@ const command: Command = {
         }
 
         try {
-            const exp = algebra.parse(argsToString(args));
+            const exp: any = algebra.parse(argsToString(args));
             const ansX = exp.solveFor("x");
 
             const image = `http://chart.apis.google.com/chart?cht=tx&chl=${encodeURIComponent(argsToString(args))}`;
