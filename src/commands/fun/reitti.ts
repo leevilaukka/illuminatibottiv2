@@ -13,9 +13,9 @@ const command: Command = {
     args: true,
     async execute(message, args, settings, client) {
         const [origin, destination] = args;
-        const Guild = await client.getGuild(message.guild);
-        const places = Guild.places;
-        console.log(Guild);
+        const guild = await client.getGuild(message.guild);
+        const places = guild.places;
+        console.log(guild);
         const originResult = places.find(({ name }) => name === origin);
         const destResult = places.find(({ name }) => name === destination);
 

@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PermissionResolvable } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
 
@@ -27,7 +27,7 @@ export default interface Command {
     enableSlash?: boolean,
     outOfOrder?: boolean,
     options?: SlashOptions[],
-    permissions?: string[],
+    permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes[]
     execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, interaction: any) => void

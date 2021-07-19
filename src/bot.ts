@@ -1,19 +1,19 @@
 // Structures
 import { IlluminatiClient } from "./structures";
 import { Intents, Message } from "discord.js";
+import Command from "./types/IlluminatiCommand";
 
+// Node modules
+import fs from "fs";
+import mongoose from "mongoose";
 import { PlayerError } from "discord-player";
 
-const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 
 // DiscordPlayer
 client.player.on("error", (error: PlayerError, message: Message) => {
     message.channel.send(error.message)
 })
-
-// Node modules
-import fs from "fs";
-import mongoose from "mongoose";
 
 // Check if ownerID given
 if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check env variables.");
@@ -25,11 +25,12 @@ try {
         .filter((file: string) => file.endsWith(".js"))
 
     for (const file of eventFiles) {
-        const evt = require(`${__dirname}/events/${file}`).default;
-        console.log(evt)
-        let evtName = file.split(".")[0];
-        if (client.isDevelopment) console.log(`Loaded evt: ${evtName}`);
-        client.on(evtName, evt.bind(null, client));
+        import(`${__dirname}/events/${file}`).then(({default: evt}) => {
+            console.log(evt)
+            let evtName = file.split(".")[0];
+            if (client.isDevelopment) console.log(`Loaded evt: ${evtName}`);
+            client.on(evtName, evt.bind(null, client));
+        })
     }
 } catch (error) {
     console.error(error)
@@ -45,10 +46,12 @@ for (const folder of commandFolders) {
         .filter((file: string) => file.endsWith(".js"));
 
     for (const file of commandFiles) {
-        const command = require(`${__dirname}/commands/${folder}/${file}`).default;
-        console.log(command)
-        client.commands.set(command.name, command);
-        if (client.isDevelopment) console.log(`Loaded cmd: ${folder}/${file}`);
+        import(`${__dirname}/commands/${folder}/${file}`).then(({default : cmd}) => {
+            const command: Command = cmd
+            console.log(command)
+            client.commands.set(command.name, command);
+            if (client.isDevelopment) console.log(`Loaded cmd: ${folder}/${file}`);
+        }).catch(console.error)
     }
 }
 

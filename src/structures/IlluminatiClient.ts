@@ -1,18 +1,18 @@
-import Discord, { ClientOptions } from "discord.js"
+import Discord, { ClientOptions, Intents } from "discord.js"
 import Guild  from "../models/Guild.js"
 import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
-import config from "../config.js"
+import config, { Config, GuildSettings } from "../config.js"
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
     player: Player
-    config: any
+    config: Config
     commands: Discord.Collection<string, Command>
     isDevelopment: boolean
     env: string
 
-    constructor(clientOptions?: ClientOptions | any, playerOptions?: PlayerOptions) {
+    constructor(clientOptions?: ClientOptions & {intents: (number|Intents)[]} , playerOptions?: PlayerOptions) {
         super(clientOptions)
 
         this.player = new Player(this, playerOptions)
@@ -29,7 +29,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @returns Guild settings *or* Default settings
      */
 
-    async getGuild(guild: Discord.Guild) {
+    async getGuild(guild: Discord.Guild): Promise<GuildSettings> {
         let data = await Guild.findOne({ guildID: guild.id }).catch((e: any) =>
             console.error(e)
         );
@@ -46,7 +46,7 @@ export default class IlluminatiClient extends Discord.Client {
      */
 
     async updateGuild(guild: Discord.Guild, settings: object) {
-        let data = await this.getGuild(guild);
+        let data: any = await this.getGuild(guild);
 
         if (typeof data !== "object") data = {};
         for (const key in settings) {

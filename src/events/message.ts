@@ -1,13 +1,13 @@
 import { IlluminatiClient } from "../structures";
 
 import Discord from "discord.js";
-import config from "../config";
+import config, { GuildSettings } from "../config";
 import messageCheck from "../helpers/messageCheck";
 
 const cooldowns: any = new Discord.Collection();
 
-export default async (client: IlluminatiClient, message: any ) => {
-    let settings: any;
+export default async (client: IlluminatiClient, message: Discord.Message ) => {
+    let settings: GuildSettings;
     try {
         if (message.channel.type === "dm") {
             settings = client.config.defaultSettings;
@@ -86,7 +86,7 @@ export default async (client: IlluminatiClient, message: any ) => {
         }
 
         return message.channel.send(reply);
-    }
+    } 
 
     // ArgTypes check
     if (command.argTypes) {

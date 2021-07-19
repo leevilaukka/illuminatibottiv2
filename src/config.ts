@@ -1,17 +1,30 @@
 export type Config = {
-    token: string,
-    devServerID: string,
-    ownerID: string,
-    defaultSettings: {
-        prefix: string,
-        volume: string,
-        mcdefaults: {
-            action: string,
-            host: string
-        },
-        throws: string[],
-    }
+  token: string,
+  devServerID: string,
+  ownerID: string,
+  defaultSettings: GuildSettings
 }
+
+type Place = {
+  name: string,
+  coords: {
+    lat: number,
+    lon: number
+  }
+}
+
+export type GuildSettings = {
+  prefix: string,
+  volume: string,
+  randomMessages: boolean,
+  mcdefaults: {
+    action: string,
+    host: string
+  },
+  throws: string[],
+  places: Place[]
+}
+
 
 const config: Config = {
   token: process.env.TOKEN,
@@ -20,10 +33,12 @@ const config: Config = {
   defaultSettings: {
     prefix: "*",
     volume: "1",
+    randomMessages: false,
     mcdefaults: {
       action: "status",
       host: process.env.MCHOST,
     },
+    places: [],
     throws: [
       "https://i.imgur.com/qrzJlKR.jpg",
       "https://i.imgur.com/K5WcvWk.png",

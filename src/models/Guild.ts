@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 const Schema = mongoose.Schema;
-import config from "../config.js";
+import config, { GuildSettings } from "../config.js";
 
 const PlaceSchema = new Schema({
     name: String,
@@ -70,4 +70,4 @@ const GuildSchema = new Schema({
     }
 });
 
-export default mongoose.model("Guild", GuildSchema);
+export default mongoose.model<GuildSettings>("Guild", GuildSchema);
