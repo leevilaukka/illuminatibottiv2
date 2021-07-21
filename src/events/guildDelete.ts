@@ -1,9 +1,10 @@
 import { IlluminatiClient } from "../structures";
+import IlluminatiGuild from "../structures/IlluminatiGuild";
 
-const evt = async (client: IlluminatiClient, guild: any) => {
+const evt = async (client: IlluminatiClient, guild: IlluminatiGuild) => {
     try {
         if (guild.available) {
-            await client.deleteGuild(guild);
+            await guild.deleteGuild();
         }
     } catch (e) {
         console.error(e)

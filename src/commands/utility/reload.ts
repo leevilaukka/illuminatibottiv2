@@ -5,13 +5,16 @@ const command: Command = {
     description: "Reloads a command",
     args: true,
     category: "config",
-    execute(message, args: string[], client) {
+    outOfOrder: true,
+    execute(message, args: string[], settings, client) {
         const commandName = args[0].toLowerCase();
         const command =
             client.commands.get(commandName) ||
             client.commands.find(
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
+
+            console.log(command);
 
         if (!command) {
             return message.channel.send(

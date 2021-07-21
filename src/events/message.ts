@@ -3,23 +3,32 @@ import { IlluminatiClient } from "../structures";
 import Discord from "discord.js";
 import config, { GuildSettings } from "../config";
 import messageCheck from "../helpers/messageCheck";
+import { IlluminatiUser } from "../types/IlluminatiUser";
+import IlluminatiGuild from "../structures/IlluminatiGuild";
 
 const cooldowns: any = new Discord.Collection();
 
-export default async (client: IlluminatiClient, message: Discord.Message ) => {
+type IlluminatiMessage = Discord.Message & {author: IlluminatiUser, guild: IlluminatiGuild};
+
+export default async (client: IlluminatiClient, message: IlluminatiMessage ) => {
     let settings: GuildSettings;
     try {
         if (message.channel.type === "dm") {
             settings = client.config.defaultSettings;
         } else {
-            settings = await client.getGuild(message.guild);
+            settings = await message.guild.getGuild();
         }
     } catch (e) {
         console.error(e);
     }
 
-
     if (message.author.bot) return;
+
+    message.author.createUser();
+
+    message.guild.log();
+
+    message.author.messageCountUp();
 
     if(settings.randomMessages) messageCheck(message);
 
@@ -132,6 +141,7 @@ export default async (client: IlluminatiClient, message: Discord.Message ) => {
         message.channel.startTyping();
         await command.execute(message, args, settings, client, interaction);
         message.channel.stopTyping(true);
+        //message.author.logCommandUse(command.name);
     } catch (error) {
         console.error(error);
         const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");

@@ -1,4 +1,5 @@
 import Command from "../../types/IlluminatiCommand";
+import { IlluminatiUser } from "../../types/IlluminatiUser";
 
 const command: Command = {
     name: 'ping',
@@ -13,7 +14,7 @@ const command: Command = {
     }],
     enableSlash: true,
     execute(message, args, _settings, client, interaction) {
-        message.reply(`Pong! Viive on ${Math.ceil(client.ws.ping)}ms. Ensimmäinen argumentti oli ${args[0]}`)        
+        message.reply(`Pong! Viive on ${Math.ceil(client.ws.ping)}ms. Ensimmäinen argumentti oli ${args[0]}`)
     },
 };
 

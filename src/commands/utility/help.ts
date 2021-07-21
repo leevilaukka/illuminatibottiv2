@@ -22,16 +22,7 @@ const command: Command = {
         };
 
         if (!args.length) {
-            let fields = [
-            ];
-
-            const embed = new IlluminatiEmbed(message, {
-                title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
-                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
-                fields,
-                author
-            }, client);
-
+            let fields = [];
 
             // Valmistele komentojen lista
             for (let i = 0; i < categories.length; i++) {
@@ -44,18 +35,25 @@ const command: Command = {
                 }
             }
 
+            const embed = new IlluminatiEmbed(message, {
+                title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
+                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
+                fields,
+                author
+            }, client);
+
             //Lähetä DM
             try {
                 await message.author.send({ embed });
                 if (message.channel.type === `dm`)
                     return;
-                message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
+                return message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
             } catch (error) {
                 console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
-                message.reply(`vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`);
+                return message.reply(`vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`);
             }
         }
-        const name = args[0].toLowerCase();
+        const name = args[0]?.toLowerCase();
         const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
         let fields = [
         ];
@@ -66,7 +64,8 @@ const command: Command = {
 
         fields.push({
             name: `**Nimi:**`,
-            value: command.name
+            value: command.name,
+            inline: true
         });
 
         if (command.aliases) fields.push({
@@ -75,27 +74,31 @@ const command: Command = {
         });
         if (command.description) fields.push({
             name: `**Kuvaus:**`,
-            value: `${command.description}`
+            value: `${command.description}`,
+            inline: true
         });
         if (command.usage) fields.push({
             name: `**Käyttö:**`,
-            value: `${prefix}${command.name} \`${command.usage}\``
+            value: `${prefix}${command.name} \`${command.usage}\``,
+            inline: true
         });
         if (command.category) fields.push({
             name: `**Luokka:**`,
-            value: `${getCommandCategory(command.category)}`
+            value: `${getCommandCategory(command.category)}`,
+            inline: true
         });
         fields.push({
             name: `**Cooldown:**`,
-            value: `${command.cooldown || 3} sekunti(a)`
+            value: `${command.cooldown || 3} sekunti(a)`,
+            inline: true
         });
-        const embed = {
+
+        new IlluminatiEmbed(message, {
             title: "Tietoja komennosta",
             fields,
             author
-        };
+        }, client).send();
 
-        message.channel.send({embed});
     },
 };
 

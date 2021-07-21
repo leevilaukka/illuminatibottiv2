@@ -7,6 +7,9 @@ import Command from "./types/IlluminatiCommand";
 import fs from "fs";
 import mongoose from "mongoose";
 import { PlayerError } from "discord-player";
+import extendAll from "./structures/extender";
+
+extendAll();
 
 const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 
@@ -45,7 +48,7 @@ for (const folder of commandFolders) {
         .readdirSync(`${__dirname}/commands/${folder}`)
         .filter((file: string) => file.endsWith(".js"));
 
-    for (const file of commandFiles) {
+    for(const file of commandFiles) {
         import(`${__dirname}/commands/${folder}/${file}`).then(({default : cmd}) => {
             const command: Command = cmd
             console.log(command)

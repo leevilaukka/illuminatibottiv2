@@ -1,8 +1,10 @@
-import Discord, { ClientOptions, Intents } from "discord.js"
+import Discord, { ClientOptions, GuildMember, Intents, User } from "discord.js"
 import Guild  from "../models/Guild.js"
 import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
+import IUser from "../models/User.js"
+import { IlluminatiUser } from "../types/IlluminatiUser.js"
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
@@ -21,6 +23,26 @@ export default class IlluminatiClient extends Discord.Client {
         this.isDevelopment = (process.env.NODE_ENV === "development");
         this.env = process.env.NODE_ENV
     }
+    /**
+     * Get command by name
+     * @method getCommand
+     * @param {string} name
+     */
+
+    async getCommand(name: string): Promise<Command> {
+        return this.commands.get(name);
+    }
+
+    /**
+     *  Get all commands as array
+     *  @method getCommands
+     * @return {Command[]} Commands
+     */
+
+    async getCommands(): Promise<Command[]> {
+        return this.commands.array();
+    }
+
 
     /**
      * Get Guild settings from database
@@ -30,12 +52,10 @@ export default class IlluminatiClient extends Discord.Client {
      */
 
     async getGuild(guild: Discord.Guild): Promise<GuildSettings> {
-        let data = await Guild.findOne({ guildID: guild.id }).catch((e: any) =>
-            console.error(e)
-        );
-        if (data) return data;
+        const guildSettings = await Guild.findOne({ guildID: guild.id });
+        if (guildSettings) return guildSettings;
         else return this.config.defaultSettings;
-    };
+    }
 
     /**
      * Update Guild settings to database 
@@ -61,45 +81,11 @@ export default class IlluminatiClient extends Discord.Client {
     };
 
     /**
-     * Create new Guild to database
-     * @method
-     * @param {object} settings Guild settings
-     * @returns New database guild settings
-     */
-
-    async createGuild(settings: object) {
-        const newGuild = new Guild(settings);
-        return newGuild
-            .save()
-            .then((res: any) => {
-                console.log(
-                    `Uusi palvelin luotu! Nimi: ${res.guildName} (${res.guildID})`
-                );
-            })
-            .catch((error: any) => {
-                console.error(error);
-            });
-    };
-
-
-    /**
-     * Delete guild from database
-     * @method
-     * @param {Discord.Guild} guild Discord Guild object
-     */
-
-    async deleteGuild(guild: Discord.Guild) {
-        await Guild.deleteOne({ guildID: guild.id });
-        console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
-    };
-
-    /**
      * Clean text
      * @method
      * @param {String} text
      * @returns 
      */
-
     clean(text: string) {
         if (typeof text === "string")
             return text

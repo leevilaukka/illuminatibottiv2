@@ -20,10 +20,16 @@ const command: Command = {
     execute(message, args: number[], client, settings, interaction) {
         const sender = message || interaction;
         const [min, max] = args;
-
-        const rnd = Math.floor(Math.random()*(max-min+1)+min);
+        let random = 0
+        // Random Number Generator from min to max
+        if (min && max) {
+            random = Math.floor(Math.random() * (max - min + 1)) + min;
+        } else {
+            random = Math.floor(Math.random() * 10);
+        }
+    
         sender.reply(
-            `satunnaislukusi on ${rnd}`
+            `satunnaislukusi on ${random}`
         )
     }
 }

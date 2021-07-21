@@ -1,6 +1,7 @@
 import { IlluminatiClient } from "../structures";
+import IlluminatiGuild from "../structures/IlluminatiGuild";
 
-const evt = async (client: IlluminatiClient, guild: any) => {
+const evt = async (client: IlluminatiClient, guild: IlluminatiGuild) => {
     try {
         const newGuild = {
             guildID: guild.id,
@@ -8,7 +9,8 @@ const evt = async (client: IlluminatiClient, guild: any) => {
             joinedAt: guild.joinedAt
         };
 
-        await client.createGuild(newGuild)
+        await guild.createGuild(newGuild)
+
     } catch (e) {
         console.error(e)
     }

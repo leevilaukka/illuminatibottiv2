@@ -1,4 +1,4 @@
-const randomArray = (array: string | any[]) => {
+const randomArray = (array: any[]) => {
     return array[Math.floor(Math.random() * array.length)]
 };
 export default randomArray;

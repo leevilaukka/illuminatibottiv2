@@ -8,7 +8,7 @@ export default async (client: IlluminatiClient, interaction: any)  => {
         if (!interaction.guild) {
             settings = client.config.defaultSettings;
         } else {
-            settings = await client.getGuild(interaction.guild);
+            settings = await interaction.guild.getGuild(interaction.guild);
         }
     } catch (e) {
         console.error(e);

@@ -5,9 +5,9 @@ import { IlluminatiEmbed } from "../../structures";
 const command: Command = {
     name: "gif",
     description: "Send random GIF from GIPHY",
-    execute(message, args, settings, client, interaction) {
+    async execute(message, args, settings, client, interaction) {
         axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${process.env.GIPHYAPI}&tag=&rating=g`)
-        .then(res => {
+        .then(async res => {
             const gif = res.data.data.images.original.url
 
             const embed = new IlluminatiEmbed(message, {
@@ -16,7 +16,7 @@ const command: Command = {
                     url: gif
                 }
             }, client)
-
+            
             embed.send()
         })
     }
