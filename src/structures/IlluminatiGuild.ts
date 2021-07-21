@@ -4,7 +4,7 @@ import IGuild from "../models/Guild"
 import { GuildSettings } from "../config";
 
 export default class IlluminatiGuild extends Guild {
-    config: import("d:/Koodailut/illuminatibottiv2/src/config").Config;
+    config: import("../config").Config;
 
     constructor(client: IlluminatiClient, data: object){
         super(client, data);

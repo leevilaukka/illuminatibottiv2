@@ -4,7 +4,7 @@ const command: Command = {
     ownerOnly: true,
     description: 'Debugging economy',
     aliases: ["de"],
-    execute(message, args: number[], settings, client, interaction) {
+    execute(message, args: any, settings, client, interaction) {
         const [amount] = args
         if (!amount) {
             return message.channel.send(`Please specify an amount to add.`)
