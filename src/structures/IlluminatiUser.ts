@@ -28,7 +28,7 @@ export class IlluminatiUser extends User {
      * Create new user to database
      */
     async createUser() {
-        if (!this.getUser()) {
+        if (!await (await this.getUser()).discordID) {
             const user = new IUser({
                 discordID: this.id,
             });
