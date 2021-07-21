@@ -1,8 +1,9 @@
 import { model, Schema } from "mongoose";
-import { IlluminatiUser } from "../types/IlluminatiUser";
+import { IlluminatiUserTypes } from "../structures/IlluminatiUser";
 
 const IlluminatiUserSchema = new Schema({
     discordID: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
     stats: {
         commandsUsed: [
             {command: String, count: Number}
@@ -15,4 +16,4 @@ const IlluminatiUserSchema = new Schema({
     }
 })
 
-export default model<IlluminatiUser>("User", IlluminatiUserSchema);
+export default model<IlluminatiUserTypes>("User", IlluminatiUserSchema);

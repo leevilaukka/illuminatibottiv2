@@ -3,7 +3,7 @@ import { IlluminatiClient } from "../structures";
 import Discord from "discord.js";
 import config, { GuildSettings } from "../config";
 import messageCheck from "../helpers/messageCheck";
-import { IlluminatiUser } from "../types/IlluminatiUser";
+import { IlluminatiUser } from "../structures/IlluminatiUser";
 import IlluminatiGuild from "../structures/IlluminatiGuild";
 
 const cooldowns: any = new Discord.Collection();
@@ -55,6 +55,7 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
         );
     }
 
+    // Command disabled
     if(command.outOfOrder && !client.isDevelopment) {
         return message.reply(
             `tämä komento ei ole käytössä tällä hetkellä. Siinä on todennäköisesti jokin ongelma, tai sen koodaaminen on vielä kesken`
@@ -104,6 +105,7 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
             else continue
         }
     }
+
     //Cooldowns
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
@@ -129,9 +131,11 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
         }
     }
 
+    // Set cooldown timestamp
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
+    // Log command usage
     if (client.isDevelopment) console.log(`Cmd ${command.name} called!`);
 
     //Execute command and catch errors

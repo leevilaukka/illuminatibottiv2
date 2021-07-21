@@ -1,7 +1,7 @@
 import { Message, PermissionResolvable } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
-import { IlluminatiUser } from "./IlluminatiUser";
+import { IlluminatiUser } from "../structures/IlluminatiUser";
 
 export type CommandArguments = (string|number)[] 
 

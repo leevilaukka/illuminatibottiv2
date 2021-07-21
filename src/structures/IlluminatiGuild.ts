@@ -15,7 +15,6 @@ export default class IlluminatiGuild extends Guild {
         console.log("Guild log:",this);
     }
 
-
     /**
      * Get Guild settings from database
      * @method
@@ -36,7 +35,7 @@ export default class IlluminatiGuild extends Guild {
      * @returns Updated guild settings
      */
 
-     async updateGuild(settings: object) {
+     async updateGuild(settings: object): Promise<object> {
         let data: any = await this.getGuild();
 
         if (typeof data !== "object") data = {};
@@ -71,6 +70,10 @@ export default class IlluminatiGuild extends Guild {
                 console.error(error);
             });
     };
+
+    get botHexColor(): string {
+        return this.me.displayHexColor;
+    }
 
     /**
      * Delete guild from database

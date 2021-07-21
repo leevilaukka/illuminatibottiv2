@@ -1,8 +1,28 @@
 import Discord, { User } from "discord.js"
 import IlluminatiClient from "./IlluminatiClient";
 import IUser from "../models/User"
-import { UserStats } from "../types/IlluminatiUser";
 import IlluminatiEmbed from "./IlluminatiEmbed";
+
+type UserStats = {
+    money: number;
+    level: number;
+    xp: number;
+    nextLevelXP: number;
+    messageCount: number;
+    commandsUsed: [
+        {
+            command: string;
+            count: number;
+        }
+    ]
+}
+
+export type IlluminatiUserTypes = {
+    discordID: string;
+    username: string;
+    stats: UserStats;
+    data: IlluminatiUser;
+}
 
 export class IlluminatiUser extends User {
     constructor(client: IlluminatiClient, data: Discord.User) {
@@ -31,21 +51,45 @@ export class IlluminatiUser extends User {
         if (!(await this.getUser())?.discordID) {
             const user = new IUser({
                 discordID: this.id,
+                username: this.username,
             });
 
             await user.save().then((res) => {
                 console.log(`Created user:`, res)
             });
-        } else {
-            console.log(`User already exists:`, this.id);
         }
+    }
+
+    async updateUser(data: IlluminatiUserTypes) {
+      
+            const user = await this.getUser();
+            if (typeof user !== "object") return console.error(`User does not exist:`, this.id);
+
+            // Update user
+            user.username = data.username;
+            user.stats = {...user.stats, ...data.stats};
+            user.save().then(() => {
+                console.log(`Updated user:`, user);
+            }).catch((e: any) => console.error(e));
+        
+    }
+    /**
+     * Update or create user
+     * @param data Data to update user with
+     */
+    async updateOrCreateUser(data: IlluminatiUserTypes) {
+        const user = await this.getUser();
+        if (typeof user !== "object") {
+            // No user found, create new user
+            this.createUser();
+        } else this.updateUser(data);
     }
 
     /**
      * Delete user from database
      */
     async deleteUser() {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (user) {
             await user.remove().then((res) => {
                 console.log(`Deleted user:`, res)
@@ -59,8 +103,9 @@ export class IlluminatiUser extends User {
      * Update user stats
      * @param data Stats to update
      */
+
     async updateUserStats(data: UserStats) {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (user) {
             user.stats = { ...user.stats, ...data };
             await user.save().then((res) => {
@@ -70,6 +115,7 @@ export class IlluminatiUser extends User {
             console.log(`User does not exist:`, this.id);
         }
     }
+
     /*
     async logCommandUse(command: string) {
         const user = await IUser.findOne({ discordID: this.id });
@@ -91,8 +137,9 @@ export class IlluminatiUser extends User {
     /**
      * Get user stats
      */
+
     async getStats() {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (user) {
             return user.stats;
         }
@@ -102,8 +149,9 @@ export class IlluminatiUser extends User {
     /**
      * Add message to users message counter
      */
+
     async messageCountUp() {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (typeof user !== "object") return;
         user.stats.messageCount++;
         return user.save().catch((e: any) => console.error(e));
@@ -113,8 +161,9 @@ export class IlluminatiUser extends User {
      * Add money to user
      * @param amount Amount of money to add
      */
+
     async addMoney(amount: number) {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (typeof user !== "object") return;
         user.stats.money += amount;
         return user.save().catch((e: any) => console.error(e));
@@ -126,10 +175,11 @@ export class IlluminatiUser extends User {
      * @param amount Amount to give
      * @param message Message object
      */
+
     async tradeMoney(giveTo: IlluminatiUser, amount: number, message: Discord.Message) {
         if(giveTo.bot) return message.reply("älä tue bottien itsevaltaa!");
         
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         const giveToUser = await IUser.findOne({ discordID: giveTo.id });
 
         if(!giveToUser) return message.reply("tuntematon käyttäjä! Pyydä käyttäjää lähettämään jokin viesti ja kokeile sitten uudelleen.");
@@ -156,16 +206,18 @@ export class IlluminatiUser extends User {
      * @param message Message object
      * @param client Client object
      */
+
     async sendInfo(message: Discord.Message, client: IlluminatiClient) {
-        const user = await IUser.findOne({ discordID: this.id });
+        const user = await this.getUser();
         if (typeof user !== "object") return;
     
         new IlluminatiEmbed(message, {
             title: `${this.username} (${this.id})`,
             description: `**Käyttäjän tiedot**`,
             thumbnail: {
-                url: this.displayAvatarURL(),
+                url: this.displayAvatarURL({ format: "gif", size: 256 }),
             },
+            color: message.member.displayHexColor,
             fields: [
                 {
                     name: "Lähetetyt viestit",

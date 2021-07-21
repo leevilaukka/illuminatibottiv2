@@ -1,10 +1,8 @@
-import Discord, { ClientOptions, GuildMember, Intents, User } from "discord.js"
+import Discord, { ClientOptions } from "discord.js"
 import Guild  from "../models/Guild.js"
 import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
-import IUser from "../models/User.js"
-import { IlluminatiUser } from "../types/IlluminatiUser.js"
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
@@ -14,7 +12,7 @@ export default class IlluminatiClient extends Discord.Client {
     isDevelopment: boolean
     env: string
 
-    constructor(clientOptions?: ClientOptions & {intents: (number|Intents)[]} , playerOptions?: PlayerOptions) {
+    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerOptions?: PlayerOptions) {
         super(clientOptions)
 
         this.player = new Player(this, playerOptions)
@@ -43,6 +41,7 @@ export default class IlluminatiClient extends Discord.Client {
         return this.commands.array();
     }
 
+    // GUILD SETTINGS | refactor to IlluminatiGuild later
 
     /**
      * Get Guild settings from database
