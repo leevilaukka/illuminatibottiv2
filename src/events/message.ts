@@ -26,9 +26,7 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
 
     message.author.createUser();
 
-    message.guild.log();
-
-    message.author.messageCountUp();
+    if(message.author.getUser()) message.author.messageCountUp();
 
     if(settings.randomMessages) messageCheck(message);
 
