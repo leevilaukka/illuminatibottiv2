@@ -3,8 +3,9 @@ import IlluminatiGuild from "./IlluminatiGuild"
 import { IlluminatiUser } from "./IlluminatiUser"
 
 const extendAll = async () => {
-    Structures.extend("User", () => IlluminatiUser) // Extend the User class
-    Structures.extend("Guild", () => IlluminatiGuild) // Extend the Guild class
+    Structures.extend("User", () => IlluminatiUser) // Extend the User structure
+    Structures.extend("Guild", () => IlluminatiGuild) // Extend the Guild structure
+    console.log("Structures extended!") // Log that it was done
 }
 
-export default extendAll 
+export default extendAll

@@ -176,7 +176,7 @@ export class IlluminatiUser extends User {
      * @param message Message object
      */
 
-    async tradeMoney(giveTo: IlluminatiUser, amount: number, message: Discord.Message) {
+    async tradeMoney(giveTo: User, amount: number, message: Discord.Message) {
         if(giveTo.bot) return message.reply("älä tue bottien itsevaltaa!");
         
         const user = await this.getUser();
