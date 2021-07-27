@@ -215,7 +215,7 @@ export class IlluminatiUser extends User {
             title: `${this.username} (${this.id})`,
             description: `**Käyttäjän tiedot**`,
             thumbnail: {
-                url: this.displayAvatarURL({ format: "gif", size: 256 }),
+                url: this.displayAvatarURL({ size: 1024, dynamic: true }),
             },
             color: message.member.displayHexColor,
             fields: [

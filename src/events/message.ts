@@ -25,6 +25,8 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
     if (message.author.bot) return;
 
     message.author.createUser();
+    
+    
 
     if(message.author.getUser()) message.author.messageCountUp();
 
