@@ -18,7 +18,7 @@ export default class IlluminatiEmbed extends MessageEmbed {
         this.timestamp = new Date().getTime();
         this.setColor(data.color || message.guild.me.displayHexColor)
         this.setAuthor(client?.user?.username, client?.user?.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png")
-        if (message.member) this.setFooter(message.member.user.tag, message.member.user.avatarURL({ format: "gif" }))
+        if (message.member) this.setFooter(message.member.user.tag, message.member.user.avatarURL({ dynamic : true }))
     }
 
     /**
