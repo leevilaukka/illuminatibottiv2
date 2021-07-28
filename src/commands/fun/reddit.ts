@@ -11,7 +11,6 @@ const command: Command = {
     enableSlash: false,
     guildOnly: true,
     args: true,
-    argTypes: ["string", "string"],
     options: [
         {
             name: "subreddit" ,
@@ -45,10 +44,8 @@ const command: Command = {
             .then((res) => {
                 console.log(res)
                 // Subreddit found check
-                if (!res.data[0]) {
-                    return sender.reply("Subreddittiä ei löytynyt!");
-                }
-
+                if (!res.data[0]) return sender.reply("Subreddittiä ei löytynyt!");
+                
                 const {
                     title, 
                     thumbnail: thumb, url: kuva, permalink, author: name, 
@@ -122,7 +119,7 @@ const command: Command = {
                     );
                 }
                 // Console log error
-                console.error(e);
+                throw new Error(e)
             });
     },
 };

@@ -3,6 +3,7 @@ import Guild  from "../models/Guild.js"
 import { Player, PlayerOptions } from "discord-player"
 import Command  from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
+import { IlluminatiLogger } from "./IlluminatiLogger.js"
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
@@ -11,6 +12,7 @@ export default class IlluminatiClient extends Discord.Client {
     commands: Discord.Collection<string, Command>
     isDevelopment: boolean
     env: string
+    logger: IlluminatiLogger
 
     constructor(clientOptions?: ClientOptions & {intents: number[]}, playerOptions?: PlayerOptions) {
         super(clientOptions)
@@ -20,6 +22,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
         this.env = process.env.NODE_ENV
+        this.logger = new IlluminatiLogger()
     }
     /**
      * Get command by name

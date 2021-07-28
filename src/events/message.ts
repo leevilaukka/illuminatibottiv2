@@ -1,6 +1,6 @@
 import { IlluminatiClient } from "../structures";
 
-import Discord from "discord.js";
+import Discord, { Collection, Snowflake } from "discord.js";
 import config, { GuildSettings } from "../config";
 import messageCheck from "../helpers/messageCheck";
 import { IlluminatiUser } from "../structures/IlluminatiUser";
@@ -19,13 +19,12 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
             settings = await message.guild.getGuild();
         }
     } catch (e) {
-        console.error(e);
+        client.logger.botError(e, message);
     }
 
     if (message.author.bot) return;
 
     message.author.createUser();
-    
     
 
     if(message.author.getUser()) message.author.messageCountUp();
@@ -147,7 +146,7 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
         message.channel.stopTyping(true);
         //message.author.logCommandUse(command.name);
     } catch (error) {
-        console.error(error);
+        client.logger.botError(error, message, command);
         const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");
         setTimeout(() => errorMessage.delete(), 5000);
         message.channel.stopTyping(true);

@@ -2,6 +2,7 @@ import Discord, { User } from "discord.js"
 import IlluminatiClient from "./IlluminatiClient";
 import IUser from "../models/User"
 import IlluminatiEmbed from "./IlluminatiEmbed";
+import { toTimestamp } from "../utils";
 
 type UserStats = {
     money: number;
@@ -210,15 +211,15 @@ export class IlluminatiUser extends User {
     async sendInfo(message: Discord.Message, client: IlluminatiClient) {
         const user = await this.getUser();
         if (typeof user !== "object") return;
-    
-        new IlluminatiEmbed(message, {
+
+        return new IlluminatiEmbed(message, {
             title: `${this.username} (${this.id})`,
             description: `**Käyttäjän tiedot**`,
             thumbnail: {
                 url: this.displayAvatarURL({ size: 1024, dynamic: true }),
             },
             color: message.member.displayHexColor,
-            fields: [
+            fields: !this.bot ? [
                 {
                     name: "Lähetetyt viestit",
                     value: user.stats.messageCount,
@@ -237,7 +238,12 @@ export class IlluminatiUser extends User {
                     name: "XP",
                     value: `${user.stats.xp} / ${user.stats.nextLevelXP}`,
                     inline: true,
-                }
+                },
+            ] : [
+                {
+                    name: "Botti",
+                    value: `:robot:`,
+                },
             ]
         }, client).send();
     }
