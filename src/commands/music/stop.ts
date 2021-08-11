@@ -1,8 +1,9 @@
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
-    name: 'me',
+    name: 'stop',
     execute(message, args, settings, client, interaction) {
-        client.userManager.sendInfo(message.author,message, client)
+        client.player.getQueue(message.guild).stop()
+        return message.reply("Musiikki pysäytetty!")
     }
 }
 export default command

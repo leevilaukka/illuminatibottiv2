@@ -32,10 +32,9 @@ const command: Command = {
 
         client.getGuild(message.guild)
             .then((res: any) => {
-                message.channel.send(null , {files: randoms(num, res.imgs)})
+                message.channel.send({files: randoms(num, res.imgs)})
                 if (!option || option !== "-s") {
-                    message.delete({timeout: 1000})
-                        .catch(e => console.error(e))
+                    setTimeout(() => message.delete(), 5000);
                 }
             })
     }

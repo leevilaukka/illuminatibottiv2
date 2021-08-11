@@ -54,7 +54,7 @@ const command: Command = {
                             text: `status - ${res.host}`,
                         },
                     };
-                    message.channel.send({ embed });
+                    message.channel.send({ embeds: [embed] });
                 } catch (e) {
                     return await message.reply(
                         `nyt kävi virhe :( - Palvelinta ei löytynyt tai se on offline-tilassa - ${e}`

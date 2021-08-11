@@ -1,5 +1,5 @@
 import { MessageEmbed, Message, MessageEmbedOptions } from "discord.js";
-import IlluminatiClient from "./IlluminatiClient";
+import { IlluminatiClient } from ".";
 
 /**
  * A MessageEmbed with the default fields already filled
@@ -27,7 +27,18 @@ export default class IlluminatiEmbed extends MessageEmbed {
      * @param {string} text Text to send with embed
      */
     
-    async send(text?: string) {
-        await this.message.channel.send(text, {embed: this})
+    async send(content?: string) {
+        return this.message.channel.send({content, embeds: [this]})
+    }
+
+    /**
+     * Send many embeds at once
+     * @method
+     * @param {string} content Content to send with embed
+     * @param {MessageEmbed[] | IlluminatiEmbed[]} embeds Array of MessageEmbed or IlluminatiEmbed objects
+     */
+
+    async sendMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], content?: string) {
+        await this.message.channel.send({content, embeds: [this, ...embeds]})
     }
 }

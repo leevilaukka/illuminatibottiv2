@@ -103,7 +103,7 @@ const command: Command = {
                         inline: true,
                     });
                 }
-                message.channel.send({ embed });
+                message.channel.send({ embeds: [embed] });
             });
         });
     },

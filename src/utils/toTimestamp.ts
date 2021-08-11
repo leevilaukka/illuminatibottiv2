@@ -1,3 +1,5 @@
+import { Formatters, Util } from "discord.js"
+
 export default (time: Date | string | number, format: "mm-dd-yy" | "md-t" | "t" | "mdy" | "full" | "since" | "T", divider?: number) => {
     const formats = [
         {
@@ -6,7 +8,7 @@ export default (time: Date | string | number, format: "mm-dd-yy" | "md-t" | "t" 
         },
         {
             long: "md-t",
-            short: "f"
+            short: Formatters.TimestampStyles.ShortDateTime
         },
         {
             long: "t",
@@ -14,7 +16,7 @@ export default (time: Date | string | number, format: "mm-dd-yy" | "md-t" | "t" 
         },
         {
             long: "mdy",
-            short: "D"
+            short: Formatters.TimestampStyles.LongDate
         },
         {
             long: "full",
@@ -30,6 +32,7 @@ export default (time: Date | string | number, format: "mm-dd-yy" | "md-t" | "t" 
         },
     ]
 
+    
     const unixTime = divider ? new Date(time).getTime() / divider : new Date(time).getTime()
     
     for (let i = 0; i < formats.length; i++) {

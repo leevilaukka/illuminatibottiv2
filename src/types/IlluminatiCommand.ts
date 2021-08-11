@@ -1,7 +1,6 @@
 import { Message, PermissionResolvable } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
-import { IlluminatiUser } from "../structures/IlluminatiUser";
 
 export type CommandArguments = (string|number)[] 
 
@@ -31,6 +30,6 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes[]
-    execute: (message: Message & { author: IlluminatiUser }, args: CommandArguments, settings: Config | any, client: IlluminatiClient, interaction: any) => void
+    execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, interaction: any) => void
 }
 

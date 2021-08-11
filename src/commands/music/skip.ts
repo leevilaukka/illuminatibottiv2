@@ -1,8 +1,8 @@
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
-    name: 'me',
+    name: 'skip',
     execute(message, args, settings, client, interaction) {
-        client.userManager.sendInfo(message.author,message, client)
+        client.player.getQueue(message.guild).skip()
     }
 }
 export default command

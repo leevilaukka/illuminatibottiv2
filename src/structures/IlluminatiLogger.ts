@@ -2,7 +2,7 @@ import { Message, User } from "discord.js"
 import Error from "../models/BotError"
 import Command from "../types/IlluminatiCommand"
 
-export class IlluminatiLogger extends console.Console {
+export default class IlluminatiLogger extends console.Console {
     constructor() {
         super(process.stdout, process.stderr)
     }
@@ -13,11 +13,13 @@ export class IlluminatiLogger extends console.Console {
 
     async botError(message?: any, discordMessage?: Message, command?: Command, optionalParams?: any[]) {
         console.error(message, optionalParams)
+
         const newDoc = new Error({
-            message: discordMessage.toJSON(),
+            message: discordMessage?.toJSON(),
             errorMessage: message,
             command: command.name
         })
+
         newDoc.save()
         const reply = await discordMessage.reply("nyt tapahtui jokin virhe: " + message)
         reply.react("💾")
@@ -26,7 +28,7 @@ export class IlluminatiLogger extends console.Console {
             return ["💾"].includes(reaction.emoji.name) && !user.bot;
         };
 
-        reply.awaitReactions(filter, {time: 5000}).then(collected => {
+        reply.awaitReactions({filter, time: 5000}).then(collected => {
             if(collected.get("💾")?.count <= 2) {
                 reply.delete()
             } else return

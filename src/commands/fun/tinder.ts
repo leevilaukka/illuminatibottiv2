@@ -40,7 +40,7 @@ const command: Command = {
             writer.on("finish", async () => {
                 // Additional variables for new embed
                 const file = new Discord.MessageAttachment('./pipes/tinder.png');
-                !easyMode ? easyMode = await message.channel.send("Tästä helppo match, jos tulee vastaan.", {files: [file]}) : easyMode = null;
+                !easyMode ? easyMode = await message.channel.send({content: "Tästä helppo match, jos tulee vastaan.", files: [file]}) : easyMode = null;
                 fs.unlink(path, () => {return})
             })
         })
@@ -61,11 +61,11 @@ const command: Command = {
 
             let fields = [{
                 name: "Etäisyys (km)",
-                value: Math.floor(current.distance_mi * 1.609),
+                value: Math.floor(current.distance_mi * 1.609).toString(),
                 inline: true
             }, {
                 name: "Ikä",
-                value: currentAge,
+                value: currentAge.toString(),
                 inline: true
             }]
 
@@ -102,7 +102,7 @@ const command: Command = {
                 fields,
             }, client)
 
-            message.channel.send({ embed }).then(async (tMessage) => {
+            message.channel.send({ embeds: [embed] }).then(async (tMessage) => {
                 await tMessage.react('👍');
                 await tMessage.react('👎');
 
@@ -110,7 +110,7 @@ const command: Command = {
                     return ['👍', '👎'].includes(reaction.emoji.name) && !user.bot;
                 };
 
-                tMessage.awaitReactions(filter, { time: timeout ? timeout * 1000 : 10000 })
+                tMessage.awaitReactions({filter, time: timeout ? timeout * 1000 : 10000 })
                     .then(async collected => {
                         // Lähetä request
                         const likeCount = collected.get("👍") ? collected.get("👍").count - 1 : 0

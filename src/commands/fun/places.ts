@@ -115,7 +115,7 @@ const command: Command = {
                                             },
                                             fields
                                         }, client);
-                                        message.channel.send({files: [file], embed})
+                                        message.channel.send({files: [file], embeds: [embed]})
                                     })
                                 })
                                 // Catch errors with getting the photo

@@ -9,8 +9,8 @@
     "outDir": "build",  
     "removeComments": true,
     "declaration": false,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types", "./types"]
   },  
   "include": ["./src/**/**/*"],
-  "exclude": ["./node_modules/**"],
+  "exclude": ["./node_modules/**", "./src/types/**"],
 }

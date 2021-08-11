@@ -2,6 +2,7 @@ import axios from "axios";
 import { toTimestamp } from "../../utils";
 import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
+import { Message } from "discord.js";
 
 const command: Command = {
     name: "reddit",
@@ -24,8 +25,8 @@ const command: Command = {
             type: "STRING"
         }
     ],
-    execute(message: any, args, settings, client, interaction) {
-        const sender = message || interaction;
+    execute(message: Message & {channel: {nsfw: boolean}}, args, settings, client, interaction) {
+        const sender = message 
 
         // Command arguments
         let subreddit = args[0];
@@ -42,7 +43,6 @@ const command: Command = {
         axios
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)
             .then((res) => {
-                console.log(res)
                 // Subreddit found check
                 if (!res.data[0]) return sender.reply("Subreddittiä ei löytynyt!");
                 
@@ -92,12 +92,12 @@ const command: Command = {
                         inline: false
                     });
                 }
-                console.log(created)
+
                 const embed = new IlluminatiEmbed(message || interaction, {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,
-                        color: flaircolor ? `0x${flaircolor}` : 0xff4500,
+                        color: flaircolor ? `#${flaircolor}` : 0xff4500,
                         image: {
                             url: kuva,
                         },
@@ -108,7 +108,7 @@ const command: Command = {
                         fields,
                 }, client);
                 
-                sender.reply({embed})
+                sender.reply({embeds: [embed]})
             })
             // Catch error with Axios GET
             .catch((e) => {

@@ -1,28 +1,35 @@
 import Discord, { ClientOptions } from "discord.js"
-import Guild  from "../models/Guild.js"
-import { Player, PlayerOptions } from "discord-player"
-import Command  from "../types/IlluminatiCommand"
+import Guild from "../models/Guild.js"
+import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
-import { IlluminatiLogger } from "./IlluminatiLogger.js"
+import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
+import { UserFunctions } from "../structures/IlluminatiUser"
+import { GuildFunctions } from "./IlluminatiGuild.js"
+import { Player } from "discord-player"
+
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
-    player: Player
+    player: Player;
     config: Config
     commands: Discord.Collection<string, Command>
     isDevelopment: boolean
     env: string
     logger: IlluminatiLogger
+    userManager: UserFunctions
+    guildManager: GuildFunctions
 
-    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerOptions?: PlayerOptions) {
+    constructor(clientOptions?: ClientOptions & {intents: number[]}) {
         super(clientOptions)
 
-        this.player = new Player(this, playerOptions)
         this.config = config
         this.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
         this.env = process.env.NODE_ENV
         this.logger = new IlluminatiLogger()
+        this.userManager = IlluminatiUser
+        this.guildManager = IlluminatiGuild
+        this.player = new Player(this)
     }
     /**
      * Get command by name
@@ -41,7 +48,7 @@ export default class IlluminatiClient extends Discord.Client {
      */
 
     async getCommands(): Promise<Command[]> {
-        return this.commands.array();
+        return [...this.commands.values()];
     }
 
     // GUILD SETTINGS | refactor to IlluminatiGuild later

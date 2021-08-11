@@ -1,22 +1,18 @@
-import { IlluminatiClient } from "../structures";
+import { IlluminatiClient } from "../../structures";
 
-import Discord, { Collection, Snowflake } from "discord.js";
-import config, { GuildSettings } from "../config";
-import messageCheck from "../helpers/messageCheck";
-import { IlluminatiUser } from "../structures/IlluminatiUser";
-import IlluminatiGuild from "../structures/IlluminatiGuild";
+import Discord, { Message } from "discord.js";
+import config, { GuildSettings } from "../../config";
+import messageCheck from "../../helpers/messageCheck";
 
 const cooldowns: any = new Discord.Collection();
 
-type IlluminatiMessage = Discord.Message & {author: IlluminatiUser, guild: IlluminatiGuild};
-
-export default async (client: IlluminatiClient, message: IlluminatiMessage ) => {
+export default async (client: IlluminatiClient, message: Message ) => {
     let settings: GuildSettings;
     try {
-        if (message.channel.type === "dm") {
+        if (message.channel.type === "DM") {
             settings = client.config.defaultSettings;
         } else {
-            settings = await message.guild.getGuild();
+            settings = await client.guildManager.getGuild(message.guild);
         }
     } catch (e) {
         client.logger.botError(e, message);
@@ -24,10 +20,11 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
 
     if (message.author.bot) return;
 
-    message.author.createUser();
+    client.userManager.createUser(message.author);
     
+    const user = await client.userManager.getUser(message.author)
 
-    if(message.author.getUser()) message.author.messageCountUp();
+    if(user) client.userManager.messageCountUp(message.author);
 
     if(settings.randomMessages) messageCheck(message);
 
@@ -66,14 +63,14 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
     //Permissons check
     if (
         command.permissions &&
-        message.channel.type !== "dm" &&
-        !message.member.hasPermission(command.permissions)
+        message.channel.type !== "DM" &&
+        !message.member.permissions.has(command.permissions)
     ) {
         return message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
     }
 
     //guildOnly check
-    if (command.guildOnly && message.channel.type !== "text") {
+    if (command.guildOnly && message.channel.type !== "GUILD_TEXT") {
         return message.reply(
             "En voi suorittaa tätä komentoa yksityiskeskustelussa!"
         );
@@ -118,38 +115,40 @@ export default async (client: IlluminatiClient, message: IlluminatiMessage ) => 
     const cooldownAmount = (command.cooldown || 3) * 1000;
 
     //Cooldown check
-    if (timestamps.has(message.author.id)) {
-        const expirationTime =
-            timestamps.get(message.author.id) + cooldownAmount;
+    console.log(user.stats.premium)
+    if (!user.stats.premium) {
+        if (timestamps.has(message.author.id)) {
+            const expirationTime =
+                timestamps.get(message.author.id) + cooldownAmount;
 
-        if (now < expirationTime) {
-            const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(
-                `odota ${timeLeft.toFixed(1)} sekunti(a) ennen kuin käytät \`${
-                    command.name
-                }\` komentoa uudestaan.`
-            );
+            if (now < expirationTime) {
+                const timeLeft = (expirationTime - now) / 1000;
+                return message.reply(
+                    `odota ${timeLeft.toFixed(1)} sekunti(a) ennen kuin käytät \`${
+                        command.name
+                    }\` komentoa uudestaan.`
+                );
+            }
         }
+        
+        // Set cooldown timestamp
+        timestamps.set(message.author.id, now);
+        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
     }
 
-    // Set cooldown timestamp
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-
+    
     // Log command usage
     if (client.isDevelopment) console.log(`Cmd ${command.name} called!`);
 
     //Execute command and catch errors
     try {
-        message.channel.startTyping();
+        message.channel.sendTyping();
         await command.execute(message, args, settings, client, interaction);
-        message.channel.stopTyping(true);
         //message.author.logCommandUse(command.name);
     } catch (error) {
         client.logger.botError(error, message, command);
         const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");
         setTimeout(() => errorMessage.delete(), 5000);
-        message.channel.stopTyping(true);
     }
 };
 function interaction(message: any, args: string[], settings: any, client: IlluminatiClient, interaction: any) {

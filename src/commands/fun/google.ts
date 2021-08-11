@@ -5,8 +5,8 @@ import { IlluminatiEmbed } from "../../structures";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
-    name: "search",
-    aliases: ["hae", "s", "google", "g"],
+    name: "google",
+    aliases: ["hae", "s", "g"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     category: "other",
@@ -27,12 +27,14 @@ const command: Command = {
                         value: result.url
                     })
                 }
+                
                 if (result.detailedDescription) {
                     fields.push({
                         name: "Tarkempi kuvaus",
                         value: result.detailedDescription.articleBody
                     })
                 }
+
                 new IlluminatiEmbed(message, {
                     title: result.name,
                     url: result.detailedDescription && result.detailedDescription.url ,

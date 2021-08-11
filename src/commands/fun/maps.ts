@@ -45,7 +45,7 @@ const command: Command = {
                         timestamp: Date.now()
                     }, client) ;
                     // Send embed
-                    message.channel.send({files: [file], embed});
+                    message.channel.send({files: [file], embeds: [embed]});
                 })
 
             })

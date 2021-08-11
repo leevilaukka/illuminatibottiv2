@@ -1,12 +1,9 @@
-import { Message } from "discord.js";
-
-import Guild from "../models/Guild";
-import { IlluminatiClient } from "../structures";
+import { Guild } from "../../models";
+import { IlluminatiClient } from "../../structures";
 
 export default async (client: IlluminatiClient, deletedMessage: any) => {
 
     if(!deletedMessage.guild) return;
-    
     
     const fetchedLogs = await deletedMessage.guild.fetchAuditLogs({
        limit: 1,

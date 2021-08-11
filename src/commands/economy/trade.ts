@@ -8,7 +8,7 @@ const command: Command = {
         const amount = args[1]
         const sendTo = message.mentions.users.first()
 
-        message.author.tradeMoney(sendTo, amount, message)
+        client.userManager.tradeMoney(message.author, sendTo, amount, message)
     }
 }
 export default command

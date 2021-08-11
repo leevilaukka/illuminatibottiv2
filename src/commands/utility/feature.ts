@@ -43,7 +43,7 @@ const command: Command = {
                             title: res.data.title,
                             description: res.data.body,
                             url: res.data.html_url,
-                            color: `0x${res.data.labels[0].color}`,
+                            color: `#${res.data.labels[0].color}`,
                             fields: [
                                 {
                                     name: "Tila",
@@ -85,7 +85,7 @@ const command: Command = {
                         title: "Uusi ilmoitus luotu!",
                         description: res.data.body,
                         url: res.data.html_url,
-                        color: `0x${res.data.labels[0].color}`,
+                        color: `#${res.data.labels[0].color}`,
                         fields: [
                             {
                                 name: "Tägi",

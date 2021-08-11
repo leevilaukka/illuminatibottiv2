@@ -1,3 +1,4 @@
+import { MessageActionRow, MessageButton, MessageSelectMenu } from "discord.js";
 import Command from "../../types/IlluminatiCommand";
 
 const command: Command = {
@@ -12,8 +13,10 @@ const command: Command = {
         description: "Input"
     }],
     enableSlash: true,
-    execute(message, args, _settings, client, interaction) {
-        message.reply(`Pong! Viive on ${Math.ceil(client.ws.ping)}ms. Ensimmäinen argumentti oli ${args[0]}`)
+    execute(message, args, _settings, client) {
+        message.reply({
+            content: `Pong! Viive on ${Math.ceil(client.ws.ping)}ms. Ensimmäinen argumentti oli ${args[0]}`, 
+        })
     },
 };
 

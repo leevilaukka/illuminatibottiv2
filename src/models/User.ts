@@ -13,6 +13,7 @@ const IlluminatiUserSchema = new Schema({
         xp: { type: Number, default: 0 },
         nextLevelXP: { type: Number, default: 0 },
         money: { type: Number, default: 0 },
+        premium: { type: Boolean, default: false },
     }
 })
 

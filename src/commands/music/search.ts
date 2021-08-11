@@ -1,0 +1,75 @@
+import { Message, MessageCollector } from 'discord.js'
+import { argsToString } from '../../helpers'
+import { IlluminatiEmbed } from '../../structures'
+import Command from '../../types/IlluminatiCommand'
+const command: Command = {
+    name: 'search',
+    args: true,
+    async execute(message, args, settings, client, interaction) {
+        const query = argsToString(args)
+
+        client.player.search(query, {
+            requestedBy: message.author
+        }).then(async res => {
+            if (res.tracks.length === 0) {
+                return message.channel.send(`Yhtäkään kappaletta haulla \`${query}\` ei löytynyt`)
+            }
+
+            const embed = new IlluminatiEmbed(message, {
+                title: 'Hakutulokset',
+                description: `Löydettiin \`${res.tracks.length}\` tulosta haulle \`${query}\``,
+                fields: res.tracks.map((track, index) => {
+                    return {
+                        name: `\`${index + 1}\` | ${track.title}`,
+                        value: `${track.author}`
+                    }
+                }),
+            }, client)
+
+            const sentEmbed = await message.channel.send({ embeds: [embed] })
+
+            const filter = (m: Message) => {
+                const author = m.author.id === message.author.id
+                const parsed = parseInt(m.content) <= res.tracks.length
+                console.log("Filter: ", author, parsed)
+                return author && parsed
+            }
+
+            message.channel.awaitMessages({ filter, max: 1, time: 10000, errors: ['time'] })
+                .then(async collected => {
+                    console.log(collected)
+                    const trackIdx = parseInt(collected.first().content.trim()) - 1
+                    const queue = client.player.getQueue(message.guild)
+                    
+                    if (queue) {
+                        queue.play(res.tracks[trackIdx])
+                    } else {
+                        const queue = client.player.createQueue(message.guild, {
+                            metadata: {
+                                channel: message.channel,
+                                author: message.author,
+                                message
+                            }
+                        })
+
+                        try {
+                            if (!queue.connection) await queue.connect(message.member.voice.channel)
+                        } catch (e) {
+                            queue.destroy()
+                            return message.channel.send('Unable to connect to voice channel.')
+                        }
+                        
+                        await queue.play(res.tracks[trackIdx])
+                        return collected.first()
+                    }
+                })
+                .then(async (collected) => {
+                    await collected.delete()
+                    await sentEmbed.delete()
+                    await message.delete()
+                })
+                .catch(collected => console.log(`After a minute, only ${collected.size} out of 4 voted.`));
+        })
+    }
+}
+export default command
