@@ -19,7 +19,7 @@ try {
         .filter((file: string) => file.endsWith(".js"))
 
     for (const file of eventFiles) {
-        import(`${__dirname}/events/${file}`).then(({default: evt}) => {
+        import(`${__dirname}/events/discord/${file}`).then(({default: evt}) => {
             let evtName = file.split(".")[0];
             if (client.isDevelopment) console.log(`Loaded discordEvt: ${evtName}`);
             client.on(evtName, evt.bind(null, client));
