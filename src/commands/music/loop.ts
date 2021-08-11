@@ -1,4 +1,3 @@
-import messageCreate from '../../events/discord/messageCreate'
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
     name: 'loop',
