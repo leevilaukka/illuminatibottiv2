@@ -8,6 +8,8 @@ const command: Command = {
     name: 'playlist',
     args: true,
     outOfOrder: true,
+    guildOnly: true,
+    category: 'music',
     async execute(message, args, settings, client, interaction) {
         const query = argsToString(args)
 

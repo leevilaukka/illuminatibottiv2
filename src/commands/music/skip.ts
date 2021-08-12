@@ -3,6 +3,8 @@ const command: Command = {
     name: 'skip',
     description: 'Skip the current song',
     aliases: ['s'],
+    category: 'music',
+    guildOnly: true,
     execute(message, args, settings, client, interaction) {
         client.player.getQueue(message.guild).skip()
     }

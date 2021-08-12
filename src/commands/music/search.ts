@@ -7,6 +7,9 @@ const command: Command = {
     name: 'search',
     description: 'Search for a song',
     args: true,
+    category: 'music',
+    aliases: ['ms'],
+    guildOnly: true,
     async execute(message, args, settings, client, interaction) {
         const query = argsToString(args)
 

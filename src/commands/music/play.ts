@@ -6,6 +6,9 @@ import {PlayerMetadata} from '../../types/PlayerMetadata'
 const command: Command = {
     name: 'play',
     aliases: ['p'],
+    description: 'Plays a song',
+    category: 'music',
+    guildOnly: true,
     async execute(message, args, settings, client, interaction) {
         if(!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
@@ -17,7 +20,6 @@ const command: Command = {
             channel: message.channel,
             author: message.author,
             message,
-            command: this
         }
 
         const queue = client.player.createQueue(message.guild, {

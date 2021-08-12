@@ -1,4 +1,5 @@
 import Command from '../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'premium',
     ownerOnly: true,
@@ -13,4 +14,5 @@ const command: Command = {
         }
     }
 }
+
 export default command

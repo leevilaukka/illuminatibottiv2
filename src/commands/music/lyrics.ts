@@ -3,6 +3,10 @@ import { IlluminatiEmbed } from '../../structures'
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
     name: 'lyrics',
+    aliases: ['lyric'],
+    description: 'Searches for lyrics.',
+    guildOnly: true,
+    category: 'music',
     async execute(message, args, settings, client, interaction) {
         const queue = client.player.getQueue(message.guild)
 

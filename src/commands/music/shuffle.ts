@@ -1,6 +1,9 @@
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
     name: 'shuffle',
+    description: 'Shuffles the queue.',
+    guildOnly: true,
+    category: 'music',
     execute(message, args, settings, client, interaction) {
         const queue = client.player.getQueue(message.guild)
         if (queue.tracks.length > 1) {
