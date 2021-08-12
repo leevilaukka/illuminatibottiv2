@@ -147,8 +147,6 @@ export default async (client: IlluminatiClient, message: Message ) => {
         //message.author.logCommandUse(command.name);
     } catch (error) {
         client.logger.botError(error, message, command);
-        const errorMessage = await message.reply("komentoa suorittaessa tapahtui virhe");
-        setTimeout(() => errorMessage.delete(), 5000);
     }
 };
 function interaction(message: any, args: string[], settings: any, client: IlluminatiClient, interaction: any) {

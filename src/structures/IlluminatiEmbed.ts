@@ -31,6 +31,10 @@ export default class IlluminatiEmbed extends MessageEmbed {
         return this.message.channel.send({content, embeds: [this]})
     }
 
+    async reply(content?: string) {
+        return this.message.reply({content, embeds: [this]})
+    }
+
     /**
      * Send many embeds at once
      * @method

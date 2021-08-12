@@ -1,4 +1,4 @@
-import Discord, { ClientOptions } from "discord.js"
+import Discord, { Client, ClientOptions } from "discord.js"
 import Guild from "../models/Guild.js"
 import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
@@ -6,11 +6,12 @@ import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
 import { UserFunctions } from "../structures/IlluminatiUser"
 import { GuildFunctions } from "./IlluminatiGuild.js"
 import { Player } from "discord-player"
+import { Lyrics } from "@discord-player/extractor"
 
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
-    player: Player;
+    player: Player
     config: Config
     commands: Discord.Collection<string, Command>
     isDevelopment: boolean
@@ -18,6 +19,10 @@ export default class IlluminatiClient extends Discord.Client {
     logger: IlluminatiLogger
     userManager: UserFunctions
     guildManager: GuildFunctions
+    lyrics: {
+        search: (query: string) => Promise<Lyrics.LyricsData>
+        client: any
+    }
 
     constructor(clientOptions?: ClientOptions & {intents: number[]}) {
         super(clientOptions)
@@ -30,6 +35,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
         this.player = new Player(this)
+        this.lyrics = Lyrics.init(process.env.GENIUSAPI)
     }
     /**
      * Get command by name

@@ -36,6 +36,7 @@ export type UserFunctions = {
     addMoney: (user: User, amount: number) => Promise<void | (IlluminatiUserTypes & Document<any, any, IlluminatiUserTypes>)>;
     tradeMoney: (user: User, giveTo: User, amount: number, message: Discord.Message) => Promise<Discord.Message>;
     sendInfo: (user: User, message: Discord.Message, client: IlluminatiClient) => Promise<Message>;
+    givePremium: (user: User) => Promise<void>;
 }
 /**
  * Log user object
@@ -253,4 +254,12 @@ export const sendInfo = async (user: User, message: Discord.Message, client: Ill
     }, client).send();
 }
 
-export default {log, createUser, getStats, sendInfo, addMoney, messageCountUp, tradeMoney, updateUserStats, getUser, updateUser, updateOrCreateUser, deleteUser};
+const givePremium = async (user) => {
+    const userData = await getUser(user);
+    if (typeof userData !== "object") return;
+
+    userData.stats.premium = true;
+    userData.save()
+}
+
+export default {log, createUser, getStats, sendInfo, addMoney, messageCountUp, tradeMoney, updateUserStats, getUser, updateUser, updateOrCreateUser, deleteUser, givePremium};

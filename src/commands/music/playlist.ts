@@ -1,6 +1,8 @@
+import { QueryType } from 'discord-player'
 import { argsToString } from '../../helpers'
 import { IlluminatiEmbed } from '../../structures'
 import Command from '../../types/IlluminatiCommand'
+import { PlayerMetadata } from '../../types/PlayerMetadata'
 
 const command: Command = {
     name: 'playlist',
@@ -10,7 +12,8 @@ const command: Command = {
         const query = argsToString(args)
 
         client.player.search(query, {
-            requestedBy: message.author
+            requestedBy: message.author,
+            searchEngine: QueryType.YOUTUBE_PLAYLIST
         }).then(async res => {
             if (!res.playlist) {
                 return message.channel.send(`Yhtäkään soittolistaa haulla \`${query}\` ei löytynyt`)
@@ -41,12 +44,14 @@ const command: Command = {
                             queue.addTracks(res.playlist.tracks)
                             queue.play()
                         } else {
+                            const metadata: PlayerMetadata = {
+                                channel: message.channel,
+                                author: message.author,
+                                message,
+                                command: this
+                            }
                             const queue = client.player.createQueue(message.guild, {
-                                metadata: {
-                                    channel: message.channel,
-                                    author: message.author,
-                                    message
-                                }
+                               metadata
                             })
     
                             try {

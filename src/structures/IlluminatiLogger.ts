@@ -17,11 +17,11 @@ export default class IlluminatiLogger extends console.Console {
         const newDoc = new Error({
             message: discordMessage?.toJSON(),
             errorMessage: message,
-            command: command.name
+            command: command?.name
         })
 
         newDoc.save()
-        const reply = await discordMessage.reply("nyt tapahtui jokin virhe: " + message)
+        const reply = await discordMessage.reply({content: "nyt tapahtui jokin virhe: " + message})
         reply.react("💾")
 
         const filter = (reaction: any, user: User) => {

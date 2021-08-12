@@ -2,8 +2,10 @@ import { Message, MessageCollector } from 'discord.js'
 import { argsToString } from '../../helpers'
 import { IlluminatiEmbed } from '../../structures'
 import Command from '../../types/IlluminatiCommand'
+import { PlayerMetadata } from '../../types/PlayerMetadata'
 const command: Command = {
     name: 'search',
+    description: 'Search for a song',
     args: true,
     async execute(message, args, settings, client, interaction) {
         const query = argsToString(args)
@@ -44,12 +46,15 @@ const command: Command = {
                     if (queue) {
                         queue.play(res.tracks[trackIdx])
                     } else {
+                        const metadata: PlayerMetadata = {
+                            channel: message.channel,
+                            author: message.author,
+                            message,
+                            command: this
+                        }
+
                         const queue = client.player.createQueue(message.guild, {
-                            metadata: {
-                                channel: message.channel,
-                                author: message.author,
-                                message
-                            }
+                            metadata
                         })
 
                         try {

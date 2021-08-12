@@ -1,6 +1,7 @@
 import Command from '../../types/IlluminatiCommand'
 const command: Command = {
     name: 'loop',
+    description: 'Vaihda toistimen toistotilaa',
     execute(message, args, settings, client, interaction) {
         const queue = client.player.getQueue(message.guild)
         const loopMode = queue.repeatMode

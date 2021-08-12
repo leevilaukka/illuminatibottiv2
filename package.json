@@ -16,6 +16,7 @@
   "readme": "./README.md",
   "license": "ISC",
   "dependencies": {
+    "@discord-player/extractor": "^3.0.2",
     "@discordjs/opus": "^0.5.3",
     "algebra": "^1.0.1",
     "algebra.js": "^0.2.6",

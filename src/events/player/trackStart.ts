@@ -1,8 +1,8 @@
 import { Track } from "discord-player";
-import { valueFromAST } from "graphql";
 import { IlluminatiClient, IlluminatiEmbed } from "../../structures";
+import { PlayerQueue } from "../../types/PlayerMetadata";
 
-export default (client: IlluminatiClient, queue: any, track: Track) => {
+export default (client: IlluminatiClient, queue: PlayerQueue, track: Track) => {
     const embed = new IlluminatiEmbed(queue.metadata.message, {
         title: `Nyt toistetaan: ${track.title}`,
         url: track.url,
