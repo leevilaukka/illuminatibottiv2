@@ -6,6 +6,7 @@ import Command from "./types/IlluminatiCommand";
 // Node modules
 import fs from "fs";
 import mongoose from "mongoose";
+import registerInteractions from "./events/interactions/registerInteractions";
 
 const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES]});
 
@@ -46,17 +47,18 @@ try {
     console.error(error)
 }
 
+
 console.log("Events loaded!")
 
 // Command import
-const commandFolders = fs.readdirSync(`${__dirname}/commands/`)
+const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`)
 for (const folder of commandFolders) {
     const commandFiles = fs
-        .readdirSync(`${__dirname}/commands/${folder}`)
+        .readdirSync(`${__dirname}/actions/commands/${folder}`)
         .filter((file: string) => file.endsWith(".js"));
 
     for(const file of commandFiles) {
-        import(`${__dirname}/commands/${folder}/${file}`).then(({default : cmd}) => {
+        import(`${__dirname}/actions/commands/${folder}/${file}`).then(({default : cmd}) => {
             const command: Command = cmd
             console.log(command)
             client.commands.set(command.name, command);
@@ -66,6 +68,16 @@ for (const folder of commandFolders) {
 }
 
 console.log("Commands loaded!");
+
+const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`)
+
+for(const file of interactionFiles) {
+    import(`${__dirname}/actions/interactions/${file}`).then(({default : interaction}) => {
+        
+        console.log(interaction)
+        client.interactions.set(interaction.data.name, interaction);
+    }).catch(console.error)
+}
 
 // Connect to database
 mongoose.connect(
@@ -80,6 +92,8 @@ mongoose.connect(
         } else console.log("DB Connected!");
     }
 );
+
+registerInteractions(client, client.isDevelopment)
 
 // Bot client login
 client.login(client.config.token).then(() => {

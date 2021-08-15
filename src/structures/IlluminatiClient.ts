@@ -19,6 +19,7 @@ export default class IlluminatiClient extends Discord.Client {
     logger: IlluminatiLogger
     userManager: UserFunctions
     guildManager: GuildFunctions
+    interactions: Discord.Collection<string, any>
     lyrics: {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
@@ -36,6 +37,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.guildManager = IlluminatiGuild
         this.player = new Player(this)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
+        this.interactions = new Discord.Collection();
     }
     /**
      * Get command by name
