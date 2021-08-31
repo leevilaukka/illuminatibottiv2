@@ -15,7 +15,8 @@ type UserStats = {
             count: number;
         }
     ]
-    premium: boolean
+    premium: boolean,
+    dailyStreak: number,
 }
 
 export type IlluminatiUserTypes = {
@@ -173,7 +174,9 @@ export const addMoney = async (user: User, amount: number) => {
     const userData = await getUser(user);
     if (typeof user !== "object") return;
     userData.stats.money += amount;
-    return userData.save().catch((e: any) => console.error(e));
+    return userData.save().catch((e: string) => {
+        console.error(e);
+    });
 }
 
 /** 
@@ -187,7 +190,7 @@ export const tradeMoney = async (user: User, giveTo: User, amount: number, messa
     if (giveTo.bot) return message.reply("älä tue bottien itsevaltaa!");
 
     const data = await getUser(user);
-    const giveToUser = await IUser.findOne({ discordID: giveTo.id });
+    const giveToUser = await getUser(giveTo);
 
     if (!giveToUser) return message.reply("tuntematon käyttäjä! Pyydä käyttäjää lähettämään jokin viesti ja kokeile sitten uudelleen.");
 

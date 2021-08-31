@@ -4,7 +4,7 @@ const command: Command = {
     description: 'Stop the music',
     guildOnly: true,
     category: 'music',
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         
         if (queue) {

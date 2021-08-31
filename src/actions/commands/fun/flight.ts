@@ -6,7 +6,7 @@ import Command from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "flight",
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const icao = args[0]
         axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
         .then(res => {

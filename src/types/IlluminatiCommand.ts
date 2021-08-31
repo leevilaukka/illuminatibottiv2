@@ -30,6 +30,6 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes[]
-    execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, interaction: any) => void
+    execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient) => void
 }
 

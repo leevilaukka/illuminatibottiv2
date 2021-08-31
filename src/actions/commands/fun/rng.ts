@@ -17,8 +17,7 @@ const command: Command = {
         type: "INTEGER",
         description: "Maksimiluku"
     }],
-    execute(message, args: number[], client, settings, interaction) {
-        const sender = message || interaction;
+    execute(message, args: number[], client, settings) {;
         const [min, max] = args;
         let random = 0
         // Random Number Generator from min to max
@@ -28,7 +27,7 @@ const command: Command = {
             random = Math.floor(Math.random() * 10);
         }
     
-        sender.reply(
+        message.reply(
             `satunnaislukusi on ${random}`
         )
     }

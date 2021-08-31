@@ -6,7 +6,7 @@ const command: Command = {
     description: 'Sends the currently playing song.',
     category: 'music',
     guildOnly: true,
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         const nowPlaying = queue.nowPlaying()
 

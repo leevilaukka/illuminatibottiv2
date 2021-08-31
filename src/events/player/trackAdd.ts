@@ -1,8 +1,8 @@
 import { Track } from "discord-player";
-import { IlluminatiClient, IlluminatiEmbed } from "../../structures";
-import { PlayerQueue } from "../../types/PlayerMetadata";
+import { IlluminatiEmbed } from "../../structures";
+import { PlayerEvent } from "../../types/PlayerEvent";
 
-export default (client: IlluminatiClient, queue: PlayerQueue, track: Track) => {
+const evt: PlayerEvent = (client, queue, track: Track) => {
     const embed = new IlluminatiEmbed(queue.metadata.message, {
         title: `Lisätty jonoon: ${track.title}`,
         url: track.url,
@@ -25,3 +25,4 @@ export default (client: IlluminatiClient, queue: PlayerQueue, track: Track) => {
     }, client);
     queue.metadata.message.reply({embeds: [embed]})  
 }
+export default evt

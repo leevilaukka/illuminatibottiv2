@@ -115,7 +115,6 @@ export default async (client: IlluminatiClient, message: Message ) => {
     const cooldownAmount = (command.cooldown || 3) * 1000;
 
     //Cooldown check
-    console.log(user.stats.premium)
     if (!user.stats.premium) {
         if (timestamps.has(message.author.id)) {
             const expirationTime =
@@ -143,13 +142,10 @@ export default async (client: IlluminatiClient, message: Message ) => {
     //Execute command and catch errors
     try {
         message.channel.sendTyping();
-        await command.execute(message, args, settings, client, interaction);
-        //message.author.logCommandUse(command.name);
+        command.execute(message, args, settings, client);
     } catch (error) {
         client.logger.botError(error, message, command);
     }
 };
-function interaction(message: any, args: string[], settings: any, client: IlluminatiClient, interaction: any) {
-    throw new Error("Function not implemented.");
-}
+
 

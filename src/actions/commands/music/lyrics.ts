@@ -7,7 +7,7 @@ const command: Command = {
     description: 'Searches for lyrics.',
     guildOnly: true,
     category: 'music',
-    async execute(message, args, settings, client, interaction) {
+    async execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
 
         const {title} = queue.nowPlaying()

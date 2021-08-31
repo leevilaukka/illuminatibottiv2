@@ -5,7 +5,7 @@ const command: Command = {
     description: 'Aseta toistoon filtteri',
     usage: '<type>',
     guildOnly: true,
-    execute(message, args: any, settings, client, interaction) {
+    execute(message, args: any, settings, client) {
         const filterName = args[0]
         const queue = client.player.getQueue(message.guild)
         const enabledFiltersKeys = queue.getFiltersEnabled()

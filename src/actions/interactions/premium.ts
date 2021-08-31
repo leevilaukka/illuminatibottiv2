@@ -1,13 +1,18 @@
 import { ContextMenuInteraction } from "discord.js"
-import { IlluminatiClient } from "../../structures"
+import { IlluminatiInteraction } from "../../types/IlluminatiInteraction"
 
-const interaction = {
+const interaction: IlluminatiInteraction = {
     data: {
-        name: 'premium',
-        type: 2
+        name: 'Anna Premium',
+        type: 2,
+        default_permission: false,
     },
-    async execute(data: ContextMenuInteraction, client: IlluminatiClient) {
-        console.log("premium", data)
+    permissions: {
+        id: process.env.OWNER_ID,
+        type: "USER",
+        permission: true
+    },
+    async execute(data: ContextMenuInteraction, client) {
         const user = await client.users.fetch(data.targetId)
         if(user.bot) return data.reply({content: "Et voi antaa premiumia botille!", ephemeral: true})
         try{
@@ -16,7 +21,7 @@ const interaction = {
            return console.log(e)
         }
 
-        return data.reply({content: "Premium annettu", ephemeral: true})
+        return data.reply({content: `Premium annettu käyttäjälle ${user.username}`, ephemeral: true})
     }
 }
 

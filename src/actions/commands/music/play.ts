@@ -9,7 +9,7 @@ const command: Command = {
     description: 'Plays a song',
     category: 'music',
     guildOnly: true,
-    async execute(message, args, settings, client, interaction) {
+    async execute(message, args, settings, client) {
         if(!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
         }

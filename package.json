@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@discord-player/extractor": "^3.0.2",
+    "@discordjs/builders": "^0.5.0",
     "@discordjs/opus": "^0.5.3",
     "@discordjs/rest": "^0.1.0-canary.0",
     "algebra": "^1.0.1",
@@ -30,6 +31,7 @@
     "genius-lyrics-api": "^3.0.6",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
+    "md5": "^2.3.0",
     "minecraft-server-util": "^3.5.1",
     "moment": "^2.29.1",
     "mongoose": "^5.13.3",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@types/algebra.js": "^0.2.1",
     "@types/convert-units": "^2.3.4",
+    "@types/md5": "^2.3.1",
     "@types/mongoose": "^5.11.97"
   },
   "repository": {

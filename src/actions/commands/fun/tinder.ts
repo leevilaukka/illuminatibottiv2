@@ -11,7 +11,7 @@ const command: Command = {
     args: true,
     usage: "<määrä> <token> <aika>",
     cooldown: 10,
-    async execute(message, args: any, settings, client, interaction) {
+    async execute(message, args: any, settings, client) {
         message.delete()
         let [maxCount, token, timeout] = args;
         let easyMode: Discord.Message;

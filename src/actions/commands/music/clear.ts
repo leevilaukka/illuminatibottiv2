@@ -4,7 +4,7 @@ const command: Command = {
     category: 'music',
     description: 'Clear the music queue',
     guildOnly: true,
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         if(queue && queue.tracks.length > 0) {
             queue.clear()

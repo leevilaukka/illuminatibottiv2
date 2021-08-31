@@ -1,6 +1,7 @@
-import { IlluminatiClient } from "../../structures"
-import { PlayerQueue } from "../../types/PlayerMetadata"
+import { PlayerEvent } from "../../types/PlayerEvent"
 
-export default (client: IlluminatiClient, queue: PlayerQueue, error: Error) => {
+const evt: PlayerEvent = (client, queue, error) => {
     return console.error(error)
 }
+
+export default evt

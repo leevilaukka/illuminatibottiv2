@@ -3,7 +3,7 @@ import Command from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'premium',
     ownerOnly: true,
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const user = message.mentions.users.first()
 
         if (user) {

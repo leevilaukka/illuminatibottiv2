@@ -10,7 +10,7 @@ const command: Command = {
     aliases: ["nimi", "nimipäivä"],
     description: "Päivän nimipäiväsankarit",
     category: "date",
-    execute(message, args, client) {
+    execute(message, _args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
         axios.get("http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
             .then(res => {

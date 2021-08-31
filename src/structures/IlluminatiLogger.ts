@@ -1,14 +1,18 @@
 import { Message, User } from "discord.js"
+import { IlluminatiClient } from "."
 import Error from "../models/BotError"
 import Command from "../types/IlluminatiCommand"
 
 export default class IlluminatiLogger extends console.Console {
-    constructor() {
+    client: IlluminatiClient
+    
+    constructor(client: IlluminatiClient) {
         super(process.stdout, process.stderr)
+        this.client = client
     }
 
     log(message?: any, optionalParams?: any[]) {
-        console.log(message, optionalParams)
+        this.client.isDevelopment && console.log(message, optionalParams)
     }
 
     async botError(message?: any, discordMessage?: Message, command?: Command, optionalParams?: any[]) {

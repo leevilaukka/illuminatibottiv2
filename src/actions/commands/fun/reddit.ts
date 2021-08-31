@@ -2,30 +2,16 @@ import axios from "axios";
 import { toTimestamp } from "../../../utils";
 import { IlluminatiEmbed } from "../../../structures";
 import Command from "../../../types/IlluminatiCommand";
-import { Message } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 
 const command: Command = {
     name: "reddit",
     aliases: ["r", "r/"],
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
-    enableSlash: false,
     guildOnly: true,
     args: true,
-    options: [
-        {
-            name: "subreddit" ,
-            description: "Name of subreddit",
-            type: "STRING",
-            required: true
-        },
-        {
-            name: "skip",
-            description: "Skip NSFW channel test",
-            type: "STRING"
-        }
-    ],
-    execute(message: Message & {channel: {nsfw: boolean}}, args, settings, client, interaction) {
+    async execute(message: Message & {channel: TextChannel}, args, settings, client) {
         const sender = message 
 
         // Command arguments
@@ -34,9 +20,12 @@ const command: Command = {
 
         // Subreddit argument given check
         if (!subreddit) {
-            return message.channel
-                .send("Anna subreddit!")
-                .catch((e: any) => message.channel.send(e));
+            try {
+                return message.channel
+                    .send("Anna subreddit!");
+            } catch (e) {
+                return await message.channel.send(e);
+            }
         }
 
         // Dynamically get random reddit post from given subreddit
@@ -60,7 +49,7 @@ const command: Command = {
                 //Skip NSFW check
                 if (skipnsfw !== "-s") {
                     // NSFW check
-                    if (!interaction && !message.channel.nsfw && nsfw ) {
+                    if (!message.channel.nsfw && nsfw ) {
                         return sender.reply(
                             "En voi lähettää tätä sisältöä kuin NSFW-kanaville!"
                         );
@@ -85,6 +74,7 @@ const command: Command = {
                         value: toTimestamp(Math.trunc(created), "md-t")
                     }
                 ];
+                
                 if (flair) {
                     fields.push({
                         name: "Flair",
@@ -93,7 +83,7 @@ const command: Command = {
                     });
                 }
 
-                const embed = new IlluminatiEmbed(message || interaction, {
+                const embed = new IlluminatiEmbed(message, {
                         title,
                         url,
                         description: nsfw ? "**NSFW**" : null,

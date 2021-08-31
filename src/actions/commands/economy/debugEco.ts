@@ -4,7 +4,7 @@ const command: Command = {
     ownerOnly: true,
     description: 'Debugging economy',
     aliases: ["de"],
-    execute(message, args: number[], settings, client, interaction) {
+    execute(message, args: number[], settings, client) {
         const amount = args[0]
         
         if (!amount) {

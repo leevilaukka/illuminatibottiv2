@@ -6,7 +6,7 @@ const command: Command = {
     description: 'Näytä nykyinen jono',
     category: 'music',
     guildOnly: true,
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild.id)
 
         const comingUp = queue.tracks.map(track => {

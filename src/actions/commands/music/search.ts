@@ -10,7 +10,7 @@ const command: Command = {
     category: 'music',
     aliases: ['ms'],
     guildOnly: true,
-    async execute(message, args, settings, client, interaction) {
+    async execute(message, args, settings, client) {
         const query = argsToString(args)
 
         client.player.search(query, {

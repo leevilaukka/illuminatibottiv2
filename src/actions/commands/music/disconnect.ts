@@ -5,7 +5,7 @@ const command: Command = {
     description: 'Disconnect from the voice channel',
     aliases: ['dc', 'leave'],
     guildOnly: true,
-    execute(message, args, settings, client, interaction) {
+    execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
 
         if (queue) {

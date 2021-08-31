@@ -14,6 +14,7 @@ const IlluminatiUserSchema = new Schema({
         nextLevelXP: { type: Number, default: 0 },
         money: { type: Number, default: 0 },
         premium: { type: Boolean, default: false },
+        dailyStreak: { type: Number, default: 0 },
     }
 })
 

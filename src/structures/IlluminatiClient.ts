@@ -7,6 +7,7 @@ import { UserFunctions } from "../structures/IlluminatiUser"
 import { GuildFunctions } from "./IlluminatiGuild.js"
 import { Player } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
+import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
 
 
 export default class IlluminatiClient extends Discord.Client {
@@ -19,7 +20,7 @@ export default class IlluminatiClient extends Discord.Client {
     logger: IlluminatiLogger
     userManager: UserFunctions
     guildManager: GuildFunctions
-    interactions: Discord.Collection<string, any>
+    interactions: Discord.Collection<string, IlluminatiInteraction>
     lyrics: {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
@@ -32,12 +33,12 @@ export default class IlluminatiClient extends Discord.Client {
         this.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
         this.env = process.env.NODE_ENV
-        this.logger = new IlluminatiLogger()
+        this.logger = new IlluminatiLogger(this)
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
         this.player = new Player(this)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
-        this.interactions = new Discord.Collection();
+        this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
     }
     /**
      * Get command by name
@@ -57,6 +58,10 @@ export default class IlluminatiClient extends Discord.Client {
 
     async getCommands(): Promise<Command[]> {
         return [...this.commands.values()];
+    }
+
+    async getInteractions(): Promise<IlluminatiInteraction[]> {
+        return [...this.interactions.values()];
     }
 
     // GUILD SETTINGS | refactor to IlluminatiGuild later
