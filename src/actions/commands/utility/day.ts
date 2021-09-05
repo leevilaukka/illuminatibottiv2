@@ -56,14 +56,14 @@ const command: Command = {
                                 });
                             }
 
-                            new IlluminatiEmbed(message, {
+                            new IlluminatiEmbed(message, client, {
                                 title: result.name,
                                 url: result.url,
                                 description: result.description
                                     ? result.description
                                     : null,
                                 fields,
-                            }, client).send();
+                            }).send();
                         });
                     }
                 }

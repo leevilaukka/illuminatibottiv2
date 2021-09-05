@@ -6,7 +6,7 @@ import { Intents } from "discord.js";
 import mongoose from "mongoose";
 import { setupImports } from "./setupImports";
 
-const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
+const client = new IlluminatiClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES], userAgentSuffix: ["IlluminatiBotti"]});
 
 // Check if ownerID given
 if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check your env variables.");

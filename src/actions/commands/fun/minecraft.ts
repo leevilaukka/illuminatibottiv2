@@ -66,7 +66,7 @@ const command: Command = {
                         .queryFull(host);
                     if (client.isDevelopment)
                         console.log(res_1);
-                    const embed_1 = new IlluminatiEmbed(message, {
+                    const embed_1 = new IlluminatiEmbed(message, client, {
                         title: res_1.host,
                         fields: [
                             {
@@ -82,7 +82,7 @@ const command: Command = {
                                 value: res_1.gameType,
                             },
                         ],
-                    }, client);
+                    });
 
                     // If res.players isn't empty, push players to embed
                     if (res_1.players) {

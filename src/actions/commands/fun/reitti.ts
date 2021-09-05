@@ -62,7 +62,7 @@ const command: Command = {
             route.legs.map((leg: { startTime: string | number | Date; endTime: string | number | Date; distance: number; duration: number; from: { name: any; }; to: { name: any; }; mode: any; trip: { tripHeadsign: any; routeShortName: any; }; }, index: number) => {
                 const startTime = new Date(leg.startTime);
                 const endTime = new Date(leg.endTime);
-                const embed = new IlluminatiEmbed(message, {
+                const embed = new IlluminatiEmbed(message, client, {
                     title: `Vaihe ${index + 1}`,
                     fields: [
                         {
@@ -95,7 +95,7 @@ const command: Command = {
                             inline: true,
                         },
                     ],
-                }, client);
+                });
                 if (leg.trip) {
                     embed.fields.push({
                         name: "Trip",

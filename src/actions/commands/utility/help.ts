@@ -35,12 +35,12 @@ const command: Command = {
                 }
             }
 
-            const embed = new IlluminatiEmbed(message, {
+            const embed = new IlluminatiEmbed(message, client, {
                 title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
                 description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
                 fields,
                 author
-            }, client);
+            });
 
             //Lähetä DM
             try {
@@ -93,11 +93,11 @@ const command: Command = {
             inline: true
         });
 
-        new IlluminatiEmbed(message, {
+        new IlluminatiEmbed(message, client, {
             title: "Tietoja komennosta",
             fields,
             author
-        }, client).send();
+        }).send();
 
     },
 };

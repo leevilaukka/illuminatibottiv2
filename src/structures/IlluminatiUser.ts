@@ -213,7 +213,7 @@ export const UserFunctions = {
         const userData = await UserFunctions.getUser(user);
         if (typeof userData !== "object") return;
 
-        return new IlluminatiEmbed(message, {
+        return new IlluminatiEmbed(message, client, {
             title: `${user.username} (${user.id})`,
             description: `**Käyttäjän tiedot**`,
             thumbnail: {
@@ -246,7 +246,7 @@ export const UserFunctions = {
                     value: `:robot:`,
                 },
             ]
-        }, client).send();
+        }).send();
     },
 
     givePremium: async (user: User): UserPromise => {

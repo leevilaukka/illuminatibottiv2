@@ -46,10 +46,6 @@ const command: Command = {
                 queue.addTracks(res.playlist.tracks)
                 queue.play()
             }
-
-
-
-
         })
     }
 }

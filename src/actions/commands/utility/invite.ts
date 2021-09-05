@@ -5,13 +5,13 @@ import Command from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'invite',
     async execute(message, args, settings, client) {
-        const embed = new IlluminatiEmbed(message, {
+        const embed = new IlluminatiEmbed(message, client, {
             title: 'Kutsu botti!',
             description: `Lisää ${client.user.username} omalle palvelimellesi!`,
             thumbnail: {
                 url: client.user.displayAvatarURL({ format: 'png', dynamic: true })
             }
-        }, client)
+        })
 
         const row = new MessageActionRow()
             .addComponents(

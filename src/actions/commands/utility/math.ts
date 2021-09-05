@@ -37,13 +37,13 @@ const command: Command = {
                     value: ansY
                 })
             }
-            new IlluminatiEmbed(message, {
+            new IlluminatiEmbed(message, client, {
                 title: "Vastaus",
                 image: {
                     url: image
                 },
                 fields,
-            }, client).send();
+            }).send();
         } catch (e) {
             return message.channel.send(e.message);
         }

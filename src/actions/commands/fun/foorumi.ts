@@ -6,7 +6,7 @@ const command: Command = {
     description: "DiscordFoorumi-linkki",
     category: "other",
     execute(message, args, settings, client) {
-        new IlluminatiEmbed(message, {
+        new IlluminatiEmbed(message, client, {
             title: "DiscordFoorumi",
             url: "https://foorumi.leevila.fi",
             description: "Käy chekkaa DiscordFoorumi",
@@ -14,7 +14,7 @@ const command: Command = {
                 name: "IlluminatiBotti",
                 icon_url: client.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png"
             }
-        }, client).send()
+        }).send()
     }
 };
 

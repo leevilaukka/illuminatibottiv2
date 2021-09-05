@@ -39,7 +39,7 @@ const command: Command = {
                 })
                     .then(res => {
                         // Create embed from returned data
-                        new IlluminatiEmbed(message, {
+                        new IlluminatiEmbed(message, client, {
                             title: res.data.title,
                             description: res.data.body,
                             url: res.data.html_url,
@@ -59,7 +59,7 @@ const command: Command = {
                                 }
                             ],
                             timestamp: res.data.updated_at
-                        }, client).send();
+                        }).send();
                     })
                     .catch(() => message.channel.send("Ilmoitusta ei löytynyt."))
             }// If typelist doesn't include given type and typearg is not a number, send message
@@ -81,7 +81,7 @@ const command: Command = {
             })
                 .then(res => {
                     // Create embed from returned data
-                    new IlluminatiEmbed(message, {
+                    new IlluminatiEmbed(message, client, {
                         title: "Uusi ilmoitus luotu!",
                         description: res.data.body,
                         url: res.data.html_url,
@@ -97,7 +97,7 @@ const command: Command = {
                             }
                         ],
                         timestamp: Date.now()
-                    }, client).send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi");
+                    }).send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi");
                 })
                 .catch(e => message.channel.send("Tapahtui virhe: " + e.message))
         }

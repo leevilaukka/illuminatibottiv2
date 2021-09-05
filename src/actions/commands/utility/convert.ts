@@ -31,11 +31,11 @@ const command: Command = {
             };
 
             measures.forEach(measuresToFields);
-            return new IlluminatiEmbed(message, {
+            return new IlluminatiEmbed(message, client, {
                 title: "Yksikkömuunnin",
                 description: "Tietoja yksikkömuuntimesta",
                 fields
-            }, client).send()
+            }).send()
         }
 
         const [value, from, to] = args;
@@ -45,7 +45,7 @@ const command: Command = {
             try {
                 const info = convert().describe(from);
 
-                return new IlluminatiEmbed(message, {
+                return new IlluminatiEmbed(message, client, {
                     title: "Tietoa yksiköstä",
                     description: "Tietoja antamastasi yksiköstä",
                     fields: [
@@ -62,7 +62,7 @@ const command: Command = {
                             value: valueParser(info.system)
                         }
                     ]
-                }, client).send()
+                }).send()
             } catch (e) {
                 return message.channel.send(e.message);
             }
@@ -77,7 +77,7 @@ const command: Command = {
             }
 
             const fieldValue = `${result.val} ${result.unit}`;
-            return new IlluminatiEmbed(message, {
+            return new IlluminatiEmbed(message, client, {
                     title: "Muunnos",
                     description: "Annettu lukusi muutettiin parhaaseen mahdolliseen muotoon",
                     fields: [
@@ -90,7 +90,7 @@ const command: Command = {
                             value: fieldValue
                         }
                     ]
-            }, client).send();
+            }).send();
         }
 
         try {
@@ -99,7 +99,7 @@ const command: Command = {
             return message.channel.send(e.message);
         }
 
-        new IlluminatiEmbed(message, {
+        new IlluminatiEmbed(message, client, {
             title: "Muunnos",
             description: "Annettu lukusi muutettiin haluaamasi muotoon",
             fields: [
@@ -112,7 +112,7 @@ const command: Command = {
                     value: `${result} ${to}`
                 }
             ]
-        }, client).send();
+        }).send();
     }
 };
 

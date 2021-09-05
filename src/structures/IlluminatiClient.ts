@@ -7,7 +7,7 @@ import { Player } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
 import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
 import { UserFunctions } from "./IlluminatiUser.js"
-import axios, { AxiosAdapter, AxiosInstance } from "axios"
+import axios, { AxiosInstance } from "axios"
 
 
 export default class IlluminatiClient extends Discord.Client {

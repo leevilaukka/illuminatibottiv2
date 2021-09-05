@@ -17,7 +17,7 @@ const command: Command = {
             ":infinity: (AutoPlay)"
         ]
 
-        new IlluminatiEmbed(message, {
+        new IlluminatiEmbed(message, client, {
             title: `Nyt soi: ${nowPlaying.title}`,
             url: nowPlaying.url,
             thumbnail: { url: nowPlaying.thumbnail },
@@ -46,7 +46,7 @@ const command: Command = {
                     value: queue.createProgressBar()
                 }
             ],
-        }, client).send();
+        }).send();
     }
 }
 export default command

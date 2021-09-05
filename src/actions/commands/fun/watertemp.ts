@@ -39,11 +39,11 @@ const command: Command = {
                     })
                 }
 
-                new IlluminatiEmbed(message, {
+                new IlluminatiEmbed(message, client, {
                     title: 'Helsingin uimapaikkojen lämpötilat',
                     description: "Tiedot päivitetty viimeisen 30min - 1h aikana",
                     fields
-                }, client).send()
+                }, ).send()
             })
     }
 }

@@ -50,10 +50,10 @@ const command: Command = {
                 })
             }
 
-            const embed = new IlluminatiEmbed(message, {
+            const embed = new IlluminatiEmbed(message, client, {
                 title: ":airplane:",
                 fields
-            }, client)
+            })
 
             embed.send()
         })

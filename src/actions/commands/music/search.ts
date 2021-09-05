@@ -20,7 +20,7 @@ const command: Command = {
                 return message.channel.send(`Yhtäkään kappaletta haulla \`${query}\` ei löytynyt`)
             }
 
-            const embed = new IlluminatiEmbed(message, {
+            const embed = new IlluminatiEmbed(message, client, {
                 title: 'Hakutulokset',
                 description: `Löydettiin \`${res.tracks.length}\` tulosta haulle \`${query}\``,
                 fields: res.tracks.map((track, index) => {
@@ -29,7 +29,7 @@ const command: Command = {
                         value: `${track.author}`
                     }
                 }),
-            }, client)
+            })
 
             const sentEmbed = await message.channel.send({ embeds: [embed] })
 

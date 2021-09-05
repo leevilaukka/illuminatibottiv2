@@ -23,7 +23,7 @@ const command: Command = {
         })
             .then(res => {
                 const {commit, committer} = res.data[update];
-                new IlluminatiEmbed(message, {
+                new IlluminatiEmbed(message, client, {
                     title: "IlluminatiBotti v2",
                     url: res.data[update].html_url,
                     description: commit.message,
@@ -32,7 +32,7 @@ const command: Command = {
                         url: committer.html_url
                     },
                     timestamp: commit.author.date
-                }, client).send();
+                }).send();
             })
             .catch(() => message.channel.send(`Tapahtui virhe. Päivitystä ei välttämättä ole vielä olemassa.`))
     }

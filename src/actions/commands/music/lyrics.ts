@@ -22,7 +22,7 @@ const command: Command = {
             return message.reply('No lyrics found for this song.')
         }
 
-        new IlluminatiEmbed(message, {
+        new IlluminatiEmbed(message, client, {
             title: `Sanat kappaleelle ${lyrics.title}`,
             url: lyrics.url,
             thumbnail: {url: lyrics.image},
@@ -33,7 +33,7 @@ const command: Command = {
                     value: lyrics.artist.name
                 }
             ]
-        }, client).reply()
+        }).reply()
     }
 }
 export default command

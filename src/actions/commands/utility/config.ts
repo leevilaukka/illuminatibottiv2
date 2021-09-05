@@ -117,7 +117,7 @@ const command: Command= {
             return message.channel.send(`Tapahtui virhe: ${e.message}`);
         }
       default: {
-        return new IlluminatiEmbed(message, {
+        return new IlluminatiEmbed(message, client, {
             title: "Kaikki botin asetukset",
             description: "Voit vaihtaa asetusta antamalla asetuksen nimen ja uuden arvon. Tässä nykyiset arvot",
             fields: [
@@ -141,7 +141,7 @@ const command: Command= {
                 value: `\`${settings.mcdefaults.host}\``,
               },
             ],
-        }, client).send();
+        }).send();
       }
     }
   },

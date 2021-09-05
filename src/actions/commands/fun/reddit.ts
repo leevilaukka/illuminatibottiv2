@@ -83,7 +83,7 @@ const command: Command = {
                     });
                 }
 
-                const embed = new IlluminatiEmbed(message, {
+                const embed = new IlluminatiEmbed(message, client, {
                     title,
                     url,
                     description: nsfw ? "**NSFW**" : null,
@@ -96,7 +96,7 @@ const command: Command = {
                         url: postaajaurl,
                     },
                     fields,
-                }, client);
+                });
 
                 const row = new MessageActionRow()
                     .addComponents(

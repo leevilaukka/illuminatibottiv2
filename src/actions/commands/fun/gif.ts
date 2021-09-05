@@ -9,14 +9,12 @@ const command: Command = {
         .then(async res => {
             const gif = res.data.data.images.original.url
 
-            const embed = new IlluminatiEmbed(message, {
+            new IlluminatiEmbed(message, client, {
                 title: "Satunnainen GIF",
                 image: {
                     url: gif
                 }
-            }, client)
-            
-            embed.send()
+            }).send()
         })
     }
 }

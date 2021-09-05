@@ -3,7 +3,7 @@ import { IlluminatiEmbed } from "../../structures";
 import { PlayerEvent } from "../../types/PlayerEvent";
 
 const evt: PlayerEvent = (client, queue, track: Track) => {
-    const embed = new IlluminatiEmbed(queue.metadata.message, {
+    const embed = new IlluminatiEmbed(queue.metadata.message, client, {
         title: `Lisätty jonoon: ${track.title}`,
         url: track.url,
         thumbnail: { url: track.thumbnail },
@@ -22,7 +22,7 @@ const evt: PlayerEvent = (client, queue, track: Track) => {
                 inline: true
             }
         ],
-    }, client);
+    });
     queue.metadata.message.reply({embeds: [embed]})  
 }
 export default evt

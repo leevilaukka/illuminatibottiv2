@@ -12,7 +12,7 @@ import { IlluminatiClient } from ".";
 
 export default class IlluminatiEmbed extends MessageEmbed {
     message: Message;
-    constructor(message: Message, data: MessageEmbedOptions, client: IlluminatiClient) {
+    constructor(message: Message, client: IlluminatiClient, data: MessageEmbedOptions) {
         super(data)
         this.message = message
         this.timestamp = new Date().getTime();
@@ -44,5 +44,9 @@ export default class IlluminatiEmbed extends MessageEmbed {
 
     async sendMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], content?: string) {
         await this.message.channel.send({content, embeds: [this, ...embeds]})
+    }
+
+    async replyMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], content?: string) {
+        await this.message.reply({content, embeds: [this, ...embeds]})
     }
 }

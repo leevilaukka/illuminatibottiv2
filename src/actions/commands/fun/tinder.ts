@@ -94,14 +94,14 @@ const command: Command = {
                 })
             }
 
-            const embed = new IlluminatiEmbed(message, {
+            const embed = new IlluminatiEmbed(message, client, {
                 title: `${current.user.recently_active ? ":green_circle: " : ""}${current.user.name}`,
                 description: current.user.bio,
                 image:{
                     url: current.user.photos[0].url
                 },
                 fields,
-            }, client)
+            })
 
             message.channel.send({ embeds: [embed] }).then(async (tMessage) => {
                 await tMessage.react('👍');

@@ -7,7 +7,7 @@ import { MessageActionRow, MessageButton } from 'discord.js'
 const command: Command = {
     name: 'botinfo',
     async execute(message, args, settings, client) {
-        const embed = new IlluminatiEmbed(message, {
+        const embed = new IlluminatiEmbed(message, client, {
             title: 'Bot Information',
             thumbnail: {
                 url: client.user.displayAvatarURL(),
@@ -59,7 +59,7 @@ const command: Command = {
                     inline: true
                 },
             ]
-        }, client)
+        })
 
         const row = new MessageActionRow()
             .addComponents(

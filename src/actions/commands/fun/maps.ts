@@ -32,7 +32,7 @@ const command: Command = {
                 writer.on('finish', resolve => {
                     const file = new Discord.MessageAttachment('./pipes/maps.png');
 
-                    let embed = new IlluminatiEmbed(message, {
+                    let embed = new IlluminatiEmbed(message, client, {
                         title: `Karttasi!`,
                         image: {
                             url: 'attachment://maps.png'
@@ -42,7 +42,7 @@ const command: Command = {
                             icon_url: "https://cdn.vox-cdn.com/thumbor/pOMbzDvdEWS8NIeUuhxp23wi_cU=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/19700731/googlemaps.png"
                         },
                         timestamp: Date.now()
-                    }, client) ;
+                    });
                     // Send embed
                     message.channel.send({files: [file], embeds: [embed]});
                 })

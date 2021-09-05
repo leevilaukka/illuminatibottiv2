@@ -114,7 +114,7 @@ const command: Command = {
                                         }
 
                                         // Send embed with photo
-                                        const embed = new IlluminatiEmbed(message, {
+                                        const embed = new IlluminatiEmbed(message, client, {
                                             title: data.name,
                                             url: data.url,
                                             color: data.icon_background_color,
@@ -127,7 +127,7 @@ const command: Command = {
                                                 url: 'attachment://places.png'
                                             },
                                             fields
-                                        }, client);
+                                        });
 
                                         message.channel.send({ files: [file], embeds: [embed], components: [row] })
                                     })
@@ -138,14 +138,14 @@ const command: Command = {
                                 });
                         } else {
                             // If no photos found, send embed without photos
-                            const embed = new IlluminatiEmbed(message, {
+                            const embed = new IlluminatiEmbed(message, client, {
                                 title: data.name,
                                 url: data.url,
                                 image: {
                                     url: 'attachment://places.png'
                                 },
                                 fields
-                            }, client)
+                            })
 
 
                             message.reply({ embeds: [embed], components: [row] })

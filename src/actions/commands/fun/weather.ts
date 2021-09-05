@@ -75,7 +75,7 @@ const command: Command = {
                         });
                 }
 
-                new IlluminatiEmbed(message,{
+                new IlluminatiEmbed(message, client, {
                     title: `Kaupungin ${res.data.name}, ${res.data.sys.country} sää`,
                     description: `**${weather.description}**`,
                     color: 0x32a895,
@@ -85,7 +85,7 @@ const command: Command = {
                         text: "Sää"
                     },
                     timestamp: Date.now()
-                }, client).send()
+                }).send()
             })
             .catch(e => console.error(e))
     }

@@ -33,7 +33,7 @@ const command: Command = {
                     })
                 }
 
-                new IlluminatiEmbed(message, {
+                new IlluminatiEmbed(message, client, {
                     title: result.name,
                     url: result.detailedDescription && result.detailedDescription.url ,
                     description: result.description,
@@ -45,7 +45,7 @@ const command: Command = {
                     footer: {
                         text: "IlluminatiBotti x Google"
                     }
-                }, client).send();
+                }).send();
             })
             .catch(e => {
                 console.error(e);
