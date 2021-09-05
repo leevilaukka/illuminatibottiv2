@@ -1,5 +1,4 @@
 import moment from "moment";
-import axios from "axios";
 
 import { IlluminatiEmbed } from "../../../structures";
 
@@ -12,7 +11,7 @@ const command: Command = {
     category: "date",
     execute(message, _args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
-        axios.get("http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
+        client.axios.get("http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
             .then(res => {
                 const names = res.data;
                 for (let i = 0; i < names.length; i++) {

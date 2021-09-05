@@ -1,9 +1,8 @@
-import axios from "axios";
+import Command from "../../../types/IlluminatiCommand";
 
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
 
 const command: Command = {
     name: "feature",
@@ -12,6 +11,7 @@ const command: Command = {
     usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
     category: "general",
+    outOfOrder: true,
     execute(message, args: any, _settings, client) {
         // Array of supported types (issue labels)
         const typelist = [
@@ -34,7 +34,7 @@ const command: Command = {
             // Check if typearg is a number
             if (!isNaN(typearg) && !desc) {
                 // Get Github API with issue number
-                axios.get(`https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues/${typearg}`, {
+                client.axios.get(`https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues/${typearg}`, {
                     auth
                 })
                     .then(res => {
@@ -76,7 +76,7 @@ const command: Command = {
                 body,
                 labels: [typearg]
             };
-            axios.post("https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues", data, {
+            client.axios.post("https://api.github.com/repos/leevilaukka/illuminatibottiv2/issues", data, {
                 auth
             })
                 .then(res => {

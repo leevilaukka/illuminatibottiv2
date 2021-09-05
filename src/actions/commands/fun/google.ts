@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 import Command from "../../../types/IlluminatiCommand";
@@ -12,7 +10,7 @@ const command: Command = {
     category: "other",
     execute(message, args, settings, client) {
         const query = argsToString(args);
-        axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
+        client.axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
             .then(res => {
                 if (!res.data.itemListElement[0]) {
                     return message.channel.send("Hakusanalla ei löytynyt kohteita :cry:")

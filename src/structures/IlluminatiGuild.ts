@@ -1,90 +1,80 @@
 import { ColorResolvable, Guild } from "discord.js";
 import IGuild from "../models/Guild"
 import config, { GuildSettings } from "../config";
+import { Document } from "mongoose";
 
-export type GuildFunctions = {
-    log: (guild: Guild) => void;
-    getGuild: (guild: Guild) => Promise<GuildSettings>;
-    updateGuild: (guild: Guild, settings: object) => Promise<object>;
-    createGuild: (settings: object) => Promise<void>;
-    botHexColor: (guild: Guild) => ColorResolvable;
-    deleteGuild: (guild: Guild) => Promise<any>;
-}
+type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
-export const log = (guild: Guild) => {
-    console.log("Guild log:", guild);
-}
+const GuildFunctions = {
+    log: (guild: Guild): void => {
+        console.log("Guild log:", guild);
+    },
 
-/**
- * Get Guild settings from database
- * @method
- * @returns Guild settings *or* Default settings
- */
+    /**
+     * Get Guild settings from database
+     * @method
+     * @returns Guild settings *or* Default settings
+     */
 
-export const getGuild = async (guild: Guild): Promise<GuildSettings> => {
-    const guildSettings = await IGuild.findOne({ guildID: guild.id });
-    if (guildSettings) return guildSettings;
-    else return config.defaultSettings;
-}
+    getGuild: async (guild: Guild): GuildPromise => {
+        const guildSettings = await IGuild.findOne({ guildID: guild.id });
+        if (guildSettings) return guildSettings;
+        else return config.defaultSettings;
+    },
 
-/**
- * Update Guild settings to database 
- * @method
- * @param {Discord.Guild} guild Discord Guild object
- * @param {object} settings New settings
- * @returns Updated guild settings
- */
+    /**
+     * Update Guild settings to database 
+     * @method
+     * @param {Discord.Guild} guild Discord Guild object
+     * @param {object} settings New settings
+     * @returns Updated guild settings
+     */
 
-export const updateGuild = async (guild: Guild, settings: object): Promise<object> => {
-    let data: any = await getGuild(guild);
+    updateGuild: async (guild: Guild, settings: object): Promise<object> => {
+        let data: any = await GuildFunctions.getGuild(guild);
 
-    if (typeof data !== "object") data = {};
-    for (const key in settings) {
-        if (data[key] !== settings[key]) data[key] = settings[key];
-        else return;
+        if (typeof data !== "object") data = { };
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
+        }
+
+        return await data.updateOne(settings).catch((e: any) => console.error(e));
+    },
+
+    /**
+     * Create new Guild to database
+     * @method
+     * @param {object} settings Guild settings
+     * @returns New database guild settings
+     */
+
+    createGuild: async (settings: object): Promise<void | GuildPromise> => {
+        const newGuild = new IGuild(settings);
+        return newGuild
+            .save()
+            .then((res) => {
+                return res;
+            })
+            .catch((error: any) => {
+                console.error(error);
+            });
+    },
+
+    botHexColor: (guild: Guild): ColorResolvable => {
+        return guild.me.displayHexColor;
+    },
+
+    /**
+     * Delete guild from database
+     * @method
+     * @param {Discord.Guild} guild Discord Guild object
+     */
+
+    deleteGuild: async (guild: Guild): Promise<void> => {
+        await IGuild.deleteOne({ guildID: guild.id });
+        console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
     }
-
-    console.log(
-        `Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`
-    );
-    return await data.updateOne(settings).catch((e: any) => console.error(e));
-};
-
-/**
- * Create new Guild to database
- * @method
- * @param {object} settings Guild settings
- * @returns New database guild settings
- */
-
-export const createGuild = async (settings: object) => {
-    const newGuild = new IGuild(settings);
-    return newGuild
-        .save()
-        .then((res: any) => {
-            console.log(
-                `Uusi palvelin luotu! Nimi: ${res.guildName} (${res.guildID})`
-            );
-        })
-        .catch((error: any) => {
-            console.error(error);
-        });
-};
-
-export const botHexColor = (guild: Guild): ColorResolvable => {
-    return guild.me.displayHexColor;
 }
 
-/**
- * Delete guild from database
- * @method
- * @param {Discord.Guild} guild Discord Guild object
- */
-
-export const deleteGuild = async (guild: Guild): Promise<any> => {
-    await IGuild.deleteOne({ guildID: guild.id });
-    console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
-};
-
-export default {getGuild, updateGuild, createGuild, deleteGuild, botHexColor, log};
-
+export default GuildFunctions;

@@ -1,5 +1,4 @@
 import Discord from "discord.js";
-import { default as axios } from "axios";
 import fs from "fs";
 
 import { IlluminatiEmbed } from "../../../structures";
@@ -13,8 +12,10 @@ const command: Command = {
     cooldown: 10,
     async execute(message, args: any, settings, client) {
         message.delete()
-        let [maxCount, token, timeout] = args;
+        
+        let [maxCount, token, timeout]: [number, string, number] = args;
         let easyMode: Discord.Message;
+
         maxCount = maxCount - 1;
         maxCount < 1 ? maxCount = 1 : maxCount = maxCount;
 
@@ -24,7 +25,7 @@ const command: Command = {
             }
         }
 
-        axios.get(`https://api.gotinder.com/v2/fast-match/preview`,{   
+        client.axios.get(`https://api.gotinder.com/v2/fast-match/preview`,{   
             headers: {
                 'X-Auth-Token': token
             },
@@ -46,7 +47,7 @@ const command: Command = {
         })
        
 
-        const { data: { data: { results } } } = await axios.get("https://api.gotinder.com/v2/recs/core?locale=en", config)
+        const { data: { data: { results } } } = await client.axios.get("https://api.gotinder.com/v2/recs/core?locale=en", config)
         
         const createNewVote = (count = 0) => {
             const current = results[count];
@@ -118,12 +119,12 @@ const command: Command = {
                         
                         if(likeCount > nopeCount) {
                             // LIKE
-                            axios.get(`https://api.gotinder.com/like/${current.user._id}`, config).then(({data}) => {
+                            client.axios.get(`https://api.gotinder.com/like/${current.user._id}`, config).then(({data}) => {
                                 data.match && message.channel.send(`${current.user.name} osui :D!`)
                             })
                         } else if(nopeCount > likeCount) {
                             // PASS
-                            axios.get(`https://api.gotinder.com/pass/${current.user._id}`, config)
+                            client.axios.get(`https://api.gotinder.com/pass/${current.user._id}`, config)
                         } 
 
                         if(maxCount > count) {

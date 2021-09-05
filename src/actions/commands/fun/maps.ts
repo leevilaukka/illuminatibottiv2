@@ -1,5 +1,4 @@
 import Discord from "discord.js";
-import axios from "axios";
 import fs from "fs";
 
 import { argsToString, umlautRemover } from "../../../helpers";
@@ -22,7 +21,7 @@ const command: Command = {
         const writer = fs.createWriteStream(path);
 
         // Axios GET Google Maps Static API
-        axios.get(`https://maps.googleapis.com/maps/api/staticmap?center=${location}&zoom=15&size=640x640&maptype=roadmap&key=${token}&scale=2`, {
+        client.axios.get(`https://maps.googleapis.com/maps/api/staticmap?center=${location}&zoom=15&size=640x640&maptype=roadmap&key=${token}&scale=2`, {
             responseType: "stream"
         })
             .then(res => {

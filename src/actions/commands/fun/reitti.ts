@@ -59,7 +59,7 @@ const command: Command = {
             client.isDevelopment && console.log(data.plan.itineraries[0]);
             const route = data.plan.itineraries[0];
             message.channel.send("Reittisi!");
-            route.legs.map((leg, index) => {
+            route.legs.map((leg: { startTime: string | number | Date; endTime: string | number | Date; distance: number; duration: number; from: { name: any; }; to: { name: any; }; mode: any; trip: { tripHeadsign: any; routeShortName: any; }; }, index: number) => {
                 const startTime = new Date(leg.startTime);
                 const endTime = new Date(leg.endTime);
                 const embed = new IlluminatiEmbed(message, {

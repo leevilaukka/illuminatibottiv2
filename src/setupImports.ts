@@ -1,4 +1,5 @@
 import fs from "fs"
+import registerInteractions from "./events/interactions/registerInteractions";
 import { IlluminatiClient } from "./structures";
 import Command from "./types/IlluminatiCommand";
 
@@ -54,13 +55,15 @@ export const commandImports = async (client: IlluminatiClient) => {
 };
 
 
-const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`);
+const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
+console.log(interactionFiles)
 
 export const interactionImports = async (client: IlluminatiClient) => {
     for await (const file of interactionFiles) {
         import(`${__dirname}/actions/interactions/${file}`).then(({ default: interaction }) => {
             client.interactions.set(interaction.data.name, interaction);
         })
+            .then(() => registerInteractions(client).then(() => console.log(`Interactions registered!`)))
             .catch(console.error)
     }
 };
@@ -69,4 +72,5 @@ export const setupImports = async (client: IlluminatiClient) => {
     await eventImports(client);
     await commandImports(client);
     await interactionImports(client);
+    return;
 };

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { EmbedFieldData } from 'discord.js'
 import { toTimestamp } from '../../../utils'
 import { IlluminatiEmbed } from '../../../structures'
@@ -8,7 +7,7 @@ const command: Command = {
     name: "flight",
     execute(message, args, settings, client) {
         const icao = args[0]
-        axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
+        client.axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
         .then(res => {
             const data = res.data.data[1] || res.data.data[0]
             console.log(res)

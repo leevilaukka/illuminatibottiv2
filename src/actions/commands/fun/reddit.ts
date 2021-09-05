@@ -1,8 +1,7 @@
-import axios from "axios";
 import { toTimestamp } from "../../../utils";
 import { IlluminatiEmbed } from "../../../structures";
 import Command from "../../../types/IlluminatiCommand";
-import { Message, TextChannel } from "discord.js";
+import { Message, MessageActionRow, MessageButton, TextChannel } from "discord.js";
 
 const command: Command = {
     name: "reddit",
@@ -10,9 +9,10 @@ const command: Command = {
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: "other",
     guildOnly: true,
+    usage: "<subreddit>",
     args: true,
-    async execute(message: Message & {channel: TextChannel}, args, settings, client) {
-        const sender = message 
+    async execute(message: Message & { channel: TextChannel }, args, settings, client) {
+        const sender = message
 
         // Command arguments
         let subreddit = args[0];
@@ -29,15 +29,15 @@ const command: Command = {
         }
 
         // Dynamically get random reddit post from given subreddit
-        axios
+        client.axios
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)
             .then((res) => {
                 // Subreddit found check
                 if (!res.data[0]) return sender.reply("Subreddittiä ei löytynyt!");
-                
+
                 const {
-                    title, 
-                    thumbnail: thumb, url: kuva, permalink, author: name, 
+                    title,
+                    thumbnail: thumb, url: kuva, permalink, author: name,
                     over_18: nsfw, author_flair_text: flair,
                     link_flair_background_color: flaircolor, subreddit, created
                 } = res.data[0].data.children[0].data
@@ -45,11 +45,11 @@ const command: Command = {
                 const url = rURL + permalink;
                 const subURL = rURL + `/r/${subreddit}`
                 const postaajaurl = "https://www.reddit.com/u/" + name;
-        
+
                 //Skip NSFW check
                 if (skipnsfw !== "-s") {
                     // NSFW check
-                    if (!message.channel.nsfw && nsfw ) {
+                    if (!message.channel.nsfw && nsfw) {
                         return sender.reply(
                             "En voi lähettää tätä sisältöä kuin NSFW-kanaville!"
                         );
@@ -59,13 +59,13 @@ const command: Command = {
                 // Embed data init
                 let fields = [
                     {
-                        name: "Lähettäjä", 
-                        value: `[${name}](${postaajaurl})`,
+                        name: "Lähettäjä",
+                        value: `${name}`,
                         inline: true
                     },
                     {
                         name: "Subreddit",
-                        value: `[${subreddit}](${subURL})`,
+                        value: `${subreddit}`,
                         inline: true
 
                     },
@@ -74,7 +74,7 @@ const command: Command = {
                         value: toTimestamp(Math.trunc(created), "md-t")
                     }
                 ];
-                
+
                 if (flair) {
                     fields.push({
                         name: "Flair",
@@ -84,21 +84,38 @@ const command: Command = {
                 }
 
                 const embed = new IlluminatiEmbed(message, {
-                        title,
-                        url,
-                        description: nsfw ? "**NSFW**" : null,
-                        color: flaircolor ? `#${flaircolor}` : 0xff4500,
-                        image: {
-                            url: kuva,
-                        },
-                        author: {
-                            name,
-                            url: postaajaurl,
-                        },
-                        fields,
+                    title,
+                    url,
+                    description: nsfw ? "**NSFW**" : null,
+                    color: flaircolor ? `#${flaircolor}` : 0xff4500,
+                    image: {
+                        url: kuva,
+                    },
+                    author: {
+                        name,
+                        url: postaajaurl,
+                    },
+                    fields,
                 }, client);
-                
-                sender.reply({embeds: [embed]})
+
+                const row = new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setStyle("LINK")
+                            .setURL(url)
+                            .setLabel("Postaus"),
+                        new MessageButton()
+                            .setStyle("LINK")
+                            .setURL(postaajaurl)
+                            .setLabel("Postaaja"),
+                        new MessageButton()
+                            .setStyle("LINK")
+                            .setURL(subURL)
+                            .setLabel("Subreddit"),
+                    )
+
+
+                sender.reply({ embeds: [embed], components: [row] })
             })
             // Catch error with Axios GET
             .catch((e) => {

@@ -13,7 +13,7 @@ const command: Command = {
     execute(message, args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
 
-        axios
+        client.axios
             .get(
                 "http://www.webcal.fi/cal.php?id=3&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki"
             )

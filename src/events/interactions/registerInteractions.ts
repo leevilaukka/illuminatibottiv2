@@ -6,6 +6,7 @@ export default async (client: IlluminatiClient) => {
     const rest = new REST({ version: '9' }).setToken(process.env.TOKEN)
 	
 	const interactions = (await client.getInteractions()).map(interaction => {
+		console.log(interaction)
 		return interaction.data
 	})
     
@@ -14,7 +15,7 @@ export default async (client: IlluminatiClient) => {
 		await rest.put(
 			client.isDevelopment ? Routes.applicationGuildCommands("729712438466838631", process.env.DEVSERVERID) : Routes.applicationCommands("670016290840379411"),
 			{ body: interactions },
-		).then(console.log);
+		).then((res) => console.log("REST: ", res));
  	} catch (error) {
 		client.logger.error(error);
 	}

@@ -1,5 +1,4 @@
 import util from "minecraft-server-util";
-import { default as axios } from "axios";
 
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
@@ -118,10 +117,10 @@ const command: Command = {
 
             case "run":
                 try {
-                    const ping = await axios
+                    const ping = await client.axios
                         .get(`http://illuminati.serveminecraft.net:25555/ping`);
                     if (ping.data.status === "OK") {
-                        axios
+                        client.axios
                             .post(
                                 `http://illuminati.serveminecraft.net:25555/run`, { author: message.author.username }
                             )

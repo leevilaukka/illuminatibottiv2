@@ -1,26 +1,27 @@
-import Discord, { Client, ClientOptions } from "discord.js"
+import Discord, { ClientOptions, Interaction, User } from "discord.js"
 import Guild from "../models/Guild.js"
 import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
-import { UserFunctions } from "../structures/IlluminatiUser"
-import { GuildFunctions } from "./IlluminatiGuild.js"
 import { Player } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
 import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
+import { UserFunctions } from "./IlluminatiUser.js"
+import axios, { AxiosAdapter, AxiosInstance } from "axios"
 
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
+    commands: Discord.Collection<string, Command>
+    interactions: Discord.Collection<string, IlluminatiInteraction>
     player: Player
     config: Config
-    commands: Discord.Collection<string, Command>
+    userManager: typeof UserFunctions
+    guildManager: typeof IlluminatiGuild
     isDevelopment: boolean
     env: string
+    axios: AxiosInstance
     logger: IlluminatiLogger
-    userManager: UserFunctions
-    guildManager: GuildFunctions
-    interactions: Discord.Collection<string, IlluminatiInteraction>
     lyrics: {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
@@ -36,10 +37,16 @@ export default class IlluminatiClient extends Discord.Client {
         this.logger = new IlluminatiLogger(this)
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
+        this.axios = axios.create()
         this.player = new Player(this)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
         this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
     }
+
+    async getBotInviteLink(): Promise<string> {
+        return this.generateInvite({scopes: ["bot", "applications.commands"]});
+    }
+
     /**
      * Get command by name
      * @method getCommand
@@ -47,22 +54,71 @@ export default class IlluminatiClient extends Discord.Client {
      */
 
     async getCommand(name: string): Promise<Command> {
-        return this.commands.get(name);
+        return this.commands.get(name) ||
+        this.commands.find(
+            (cmd) => cmd.aliases && cmd.aliases.includes(name)
+        );
+    }
+
+    async getOwner(): Promise<Discord.User> {
+        return await this.users.fetch(this.config.ownerID).then((user) => user);
     }
 
     /**
-     *  Get all commands as array
-     *  @method getCommands
+     * Get all commands as array
+     * @method getCommands
      * @return {Command[]} Commands
+     * @see getCommand
+     * @example
+     * client.getCommands().forEach(command => {
+     *    console.log(command.name)
+     * })
      */
 
     async getCommands(): Promise<Command[]> {
         return [...this.commands.values()];
     }
 
+    /**
+     * Get interaction by name
+     * @method getInteraction
+     * @param {string} name
+     * @returns IlluminatiInteraction
+     * @see getInteractions
+     * @example
+     * client.getInteraction("test").then(interaction => {
+     *   console.log(interaction.name)
+     * })
+     */
+
+    async getInteraction(name: string): Promise<IlluminatiInteraction> {
+        return this.interactions.get(name)
+    }
+
+    /**
+     * Get all interactions
+     * @method getInteractions
+     * @returns {IlluminatiInteraction[]} Array of IlluminatiInteractions
+     * @memberof IlluminatiClient
+     * @example
+     * client.getInteractions()
+     * // [IlluminatiInteraction, IlluminatiInteraction]
+     */
+
     async getInteractions(): Promise<IlluminatiInteraction[]> {
         return [...this.interactions.values()];
     }
+
+        /**
+     * Get all userinteractable objects
+     * @method
+     * @see getCommands Method for commands
+     * @see getInteractions Method for interactions
+     * @returns Object with all the commands and interactions
+     */
+         async getAllInteractables(): Promise<{commands: Command[], interactions: IlluminatiInteraction[]}> {
+            return {commands: [...await this.getCommands()], interactions: [...await this.getInteractions()]};
+        }
 
     // GUILD SETTINGS | refactor to IlluminatiGuild later
 
@@ -87,7 +143,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @returns Updated guild settings
      */
 
-    async updateGuild(guild: Discord.Guild, settings: object) {
+    async updateGuild(guild: Discord.Guild, settings: object): Promise<GuildSettings> {
         let data: any = await this.getGuild(guild);
 
         if (typeof data !== "object") data = {};
@@ -106,7 +162,7 @@ export default class IlluminatiClient extends Discord.Client {
      * Clean text
      * @method
      * @param {String} text
-     * @returns 
+     * @returns Clean string
      */
     clean(text: string) {
         if (typeof text === "string")

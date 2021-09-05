@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { IlluminatiEmbed } from "../../../structures";
 import Command from "../../../types/IlluminatiCommand";
 
@@ -20,7 +18,7 @@ const command: Command = {
             username,
             password
         };
-        axios.get(`https://api.github.com/repos/${username}/illuminatibottiv2/commits`, {
+        client.axios.get(`https://api.github.com/repos/${username}/illuminatibottiv2/commits`, {
             auth
         })
             .then(res => {
