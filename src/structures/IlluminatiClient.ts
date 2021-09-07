@@ -3,7 +3,7 @@ import Guild from "../models/Guild.js"
 import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
-import { Player } from "discord-player"
+import { Player, PlayerInitOptions } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
 import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
 import { UserFunctions } from "./IlluminatiUser.js"
@@ -27,7 +27,7 @@ export default class IlluminatiClient extends Discord.Client {
         client: any
     }
 
-    constructor(clientOptions?: ClientOptions & {intents: number[]}) {
+    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerOptions?: PlayerInitOptions) {
         super(clientOptions)
 
         this.config = config
@@ -38,7 +38,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
         this.axios = axios.create()
-        this.player = new Player(this)
+        this.player = new Player(this, playerOptions)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
         this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
     }
@@ -75,7 +75,7 @@ export default class IlluminatiClient extends Discord.Client {
      * })
      */
 
-    async getCommands(): Promise<Command[]> {
+    getCommands(): Command[] {
         return [...this.commands.values()];
     }
 
@@ -91,7 +91,7 @@ export default class IlluminatiClient extends Discord.Client {
      * })
      */
 
-    async getInteraction(name: string): Promise<IlluminatiInteraction> {
+    getInteraction(name: string): IlluminatiInteraction {
         return this.interactions.get(name)
     }
 
@@ -105,7 +105,7 @@ export default class IlluminatiClient extends Discord.Client {
      * // [IlluminatiInteraction, IlluminatiInteraction]
      */
 
-    async getInteractions(): Promise<IlluminatiInteraction[]> {
+    getInteractions(): IlluminatiInteraction[] {
         return [...this.interactions.values()];
     }
 
@@ -116,9 +116,9 @@ export default class IlluminatiClient extends Discord.Client {
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
      */
-         async getAllInteractables(): Promise<{commands: Command[], interactions: IlluminatiInteraction[]}> {
-            return {commands: [...await this.getCommands()], interactions: [...await this.getInteractions()]};
-        }
+    getAllInteractables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
+        return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
+    }
 
     // GUILD SETTINGS | refactor to IlluminatiGuild later
 

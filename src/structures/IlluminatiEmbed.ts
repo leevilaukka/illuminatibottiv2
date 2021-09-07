@@ -5,7 +5,7 @@ import { IlluminatiClient } from ".";
  * A MessageEmbed with the default fields already filled
  * @constructor
  * @extends {MessageEmbed} Discord MessageEmbed class
- * @param {Message} [message] - The user that executed the command that resulted in this embed
+ * @param {Message} [message] - The message that executed the command that resulted in this embed
  * @param {object} [data] - Data to set in the rich embed
  * @param {IlluminatiClient} client Discord Bot Client
  */
