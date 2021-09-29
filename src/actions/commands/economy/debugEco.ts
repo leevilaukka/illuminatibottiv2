@@ -4,14 +4,14 @@ const command: Command = {
     ownerOnly: true,
     description: 'Debugging economy',
     aliases: ["de"],
-    execute(message, args: number[], settings, client) {
+    execute(message, args: number[], settings, client, meta) {
         const amount = args[0]
         
         if (!amount) {
             return message.channel.send(`Please specify an amount to add.`)
         }
 
-        client.userManager.addMoney(message.author, amount)
+        meta.user.addMoney(amount)
         message.channel.send(`You have successfully added ${amount} to your account.`)
     }
 }

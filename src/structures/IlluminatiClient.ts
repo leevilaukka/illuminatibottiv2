@@ -164,7 +164,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @param {String} text
      * @returns Clean string
      */
-    clean(text: string) {
+    clean(text: string): string {
         if (typeof text === "string")
             return text
                 .replace(/`/g, "`" + String.fromCharCode(8203))

@@ -5,7 +5,7 @@ const interaction: IlluminatiInteraction = {
     data: {
         name: 'Anna Premium',
         type: 2,
-        default_permission: false,
+        defaultPermission: false,
     },
     permissions: {
         id: process.env.OWNER_ID,
@@ -16,7 +16,7 @@ const interaction: IlluminatiInteraction = {
         const user = await client.users.fetch(data.targetId)
         if(user.bot) return data.reply({content: "Et voi antaa premiumia botille!", ephemeral: true})
         try{
-            client.userManager.givePremium(user)
+            client.userManager(user).givePremium()
         } catch(e){
            return console.log(e)
         }

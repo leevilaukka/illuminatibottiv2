@@ -25,29 +25,30 @@ export type IlluminatiUserTypes = {
     stats: UserStats;
 }
 
-type UserPromise = Promise<IlluminatiUserTypes & Document<any, any, IlluminatiUserTypes>>
+type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiUserTypes>
 
-export const UserFunctions = {
+
+export const UserFunctions = (user: User) => {
     /**
      * Log user object
      */
-    log: (user: User): void => {
+    const logUser = () => {
         console.log(user);
-    },
+    }
 
     /**
      * Get user from database
      */
-    getUser: async (user: User): UserPromise => {
+    const getUser = async (): UserPromise => {
         const data = await IUser.findOne({ discordID: user.id })
         return data;
-    },
+    }
 
     /**
      * Create new user to database
      */
-    createUser: async (user: User): UserPromise => {
-        if (!(await UserFunctions.getUser(user))?.discordID) {
+    const createUser = async (): UserPromise => {
+        if (!(await UserFunctions(user).getUser())?.discordID) {
             const data = new IUser({
                 discordID: user.id,
                 username: user.username,
@@ -57,11 +58,11 @@ export const UserFunctions = {
                 const user = res;
                 return user;
             });
-        } else return await UserFunctions.getUser(user);
-    },
+        } else return await UserFunctions(user).getUser();
+    }
 
-    updateUser: async (user: User, data: IlluminatiUserTypes): Promise<void | UserPromise> => {
-        const userData = await UserFunctions.getUser(user);
+    const updateUser = async (data: IlluminatiUserTypes): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof userData !== "object") return console.error(`User does not exist:`, user.id);
 
         // Update user
@@ -71,24 +72,25 @@ export const UserFunctions = {
             const result = res;
             return result;
         }).catch(() => console.error(`Failed to update user:`, user.id));
-    },
+    }
+
     /**
      * Update or create user
      * @param data Data to update user with
      */
-    updateOrCreateUser: async (user: User, data: IlluminatiUserTypes): Promise<void | UserPromise> => {
-        const userData = await UserFunctions.getUser(user);
+    const updateOrCreateUser = async (data: IlluminatiUserTypes): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof userData !== "object") {
             // No user found, create new user
-            return UserFunctions.createUser(user);
-        } else return UserFunctions.updateUser(user, data);
-    },
+            return UserFunctions(user).createUser();
+        } else return UserFunctions(user).updateUser(data);
+    }
 
     /**
      * Delete user from database
      */
-    deleteUser: async (user: User): Promise<void> => {
-        const userData = await UserFunctions.getUser(user);
+    const deleteUser = async (): Promise<void> => {
+        const userData = await UserFunctions(user).getUser();
         if (userData) {
             await userData.remove().then((res) => {
                 console.log(`Deleted user:`, res)
@@ -96,15 +98,15 @@ export const UserFunctions = {
         } else {
             console.log(`User does not exist:`, user.id);
         }
-    },
+    }
 
     /**
      * Update user stats
      * @param data Stats to update
      */
 
-    updateUserStats: async (user: User, data: UserStats): Promise<void | UserPromise> => {
-        const userData = await UserFunctions.getUser(user);
+    const updateUserStats = async (data: UserStats): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
         if (userData) {
             userData.stats = { ...userData.stats, ...data };
             await userData.save().then(async (res) => {
@@ -113,7 +115,7 @@ export const UserFunctions = {
         } else {
             console.log(`User does not exist:`, user.id);
         }
-    },
+    }
 
     /*
     async logCommandUse(command: string) {
@@ -137,37 +139,37 @@ export const UserFunctions = {
      * Get user stats
      */
 
-    getStats: async (user: User): Promise<UserStats> => {
-        const userData = await UserFunctions.getUser(user);
+    const getStats = async (): Promise<UserStats> => {
+        const userData = await UserFunctions(user).getUser();
         if (userData) {
             return userData.stats;
         }
         return null;
-    },
+    }
 
     /**
      * Add message to users message counter
      */
 
-    messageCountUp: async (user: User): Promise<void | UserPromise> => {
-        const userData = await UserFunctions.getUser(user);
+    const messageCountUp = async (): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof user !== "object") return;
         userData.stats.messageCount++;
         return userData.save().catch((e: any) => console.error(e));
-    },
+    }
 
     /**
      * Add money to user
      * @param amount Amount of money to add
      */
-    addMoney: async (user: User, amount: number): Promise<void | UserPromise> => {
-        const userData = await UserFunctions.getUser(user);
+    const addMoney = async (amount: number): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof user !== "object") return;
         userData.stats.money += amount;
         return userData.save().catch((e: string) => {
             console.error(e);
         });
-    },
+    }
 
     /** 
      * Trade money with other users
@@ -176,11 +178,11 @@ export const UserFunctions = {
      * @param message Message object
      */
 
-    tradeMoney: async (user: User, giveTo: User, amount: number, message: Discord.Message): Promise<Message | UserPromise[]> => {
+    const tradeMoney = async (giveTo: User, amount: number, message: Discord.Message): Promise<Message | UserPromise[]> => {
         if (giveTo.bot) return message.reply("älä tue bottien itsevaltaa!");
 
-        const data = await UserFunctions.getUser(user);
-        const giveToUser = await UserFunctions.getUser(giveTo);
+        const data = await UserFunctions(user).getUser();
+        const giveToUser = await UserFunctions(giveTo).getUser();
 
         if (!giveToUser) return message.reply("tuntematon käyttäjä! Pyydä käyttäjää lähettämään jokin viesti ja kokeile sitten uudelleen.");
 
@@ -201,7 +203,7 @@ export const UserFunctions = {
 
             return [data, giveToUser];
         }).catch((e: any) => console.error(e));
-    },
+    }
 
     /**
      * Send users info as an embed
@@ -209,8 +211,8 @@ export const UserFunctions = {
      * @param client Client object
      */
 
-    sendInfo: async (user: User, message: Discord.Message, client: IlluminatiClient): Promise<Discord.Message> => {
-        const userData = await UserFunctions.getUser(user);
+    const sendInfo = async (message: Discord.Message, client: IlluminatiClient): Promise<Discord.Message> => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof userData !== "object") return;
 
         return new IlluminatiEmbed(message, client, {
@@ -247,15 +249,17 @@ export const UserFunctions = {
                 },
             ]
         }).send();
-    },
+    }
 
-    givePremium: async (user: User): UserPromise => {
-        const userData = await UserFunctions.getUser(user);
+    const givePremium = async (): UserPromise => {
+        const userData = await UserFunctions(user).getUser();
         if (typeof userData !== "object") return;
 
         userData.stats.premium = true;
         return await userData.save()
     }
+
+    return {logUser, getUser, createUser, updateOrCreateUser, updateUser, getStats, messageCountUp, addMoney, tradeMoney, sendInfo, givePremium, updateUserStats, deleteUser}
 }
 
 export default UserFunctions;

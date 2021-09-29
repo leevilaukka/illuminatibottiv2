@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { Model } from "mongoose"
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 

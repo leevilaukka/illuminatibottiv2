@@ -15,11 +15,7 @@ setupImports(client).then(() => console.log("Imports complete!"));
 
 // Connect to database
 mongoose.connect(
-    process.env.MONGOURI, {
-    useFindAndModify: false,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-},
+    process.env.MONGOURI,
     (cb: any) => {
         if (cb == !null) {
             console.error(cb);

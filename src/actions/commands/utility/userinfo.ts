@@ -2,12 +2,12 @@ import Command from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: 'userinfo',
-    async execute(message, args, settings, client) {
-        const user = message.mentions.users.first()
-        if (user) {
-            return client.userManager.sendInfo(user, message, client)
+    async execute(message, args, settings, client, {user}) {
+        const mentionedUser = message.mentions.users.first()
+        if (mentionedUser) {
+            return client.userManager(mentionedUser).sendInfo(message, client)
         } else {
-            return client.userManager.sendInfo(message.author, message, client)
+            return user.sendInfo(message, client)
         }
     }
 }
