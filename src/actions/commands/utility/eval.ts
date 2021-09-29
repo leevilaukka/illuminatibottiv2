@@ -8,9 +8,9 @@ const command: Command = {
     ownerOnly: true,
     args: true,
     category: "config",
-    async execute(message, args, _settings, client) {
+    async execute(message, args, _settings, client, user) {
         try {
-            ContextMenuInteraction
+            this.arguments = {message, args, _settings, client, user};
             const code = argsToString(args)
             let evaled = eval(code)
 

@@ -43,6 +43,7 @@ const command: Command = {
 
         if(!track) return message.reply('No tracks found.')
         queue.play(track)
+        console.log(track.raw)
     }
 }
 export default command

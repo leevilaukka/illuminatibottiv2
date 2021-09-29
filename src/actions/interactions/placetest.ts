@@ -11,7 +11,7 @@ const data = new SlashCommandBuilder()
 const interaction: IlluminatiInteraction = {
     data,
     async execute(data: CommandInteraction, client) {
-        const places = (await client.guildManager.getGuild(data.guild)).places;
+        const places = (await client.guildManager(data.guild).getGuild()).places;
 
         if(!places) return data.reply("No places set up");
 
@@ -51,10 +51,10 @@ const interaction: IlluminatiInteraction = {
 
         let place1, place2;
         if (data.customId === 'placetest:place') {
-            place1 = (await client.guildManager.getGuild(data.guild)).places.filter((place) => place.name === data.values[0]);
+            place1 = (await client.guildManager(data.guild).getGuild()).places.filter((place) => place.name === data.values[0]);
         }
         if (data.customId === 'placetest:place2') {
-            place2 = (await client.guildManager.getGuild(data.guild)).places.filter((place) => place.name === data.values[0]);
+            place2 = (await client.guildManager(data.guild).getGuild()).places.filter((place) => place.name === data.values[0]);
         }
 
         if (place1 && place2) {

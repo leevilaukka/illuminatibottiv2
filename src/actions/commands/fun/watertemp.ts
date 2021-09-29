@@ -1,16 +1,15 @@
 import { IlluminatiEmbed } from '../../../structures'
 import Command from '../../../types/IlluminatiCommand'
-import { toTimestamp } from '../../../utils'
 
 interface TempData {
-
     comment: string
     contact: string
     sensors: {
         meta: {
             name: string
             lat: number
-            lon: number
+            lon: number,
+            servicemap_url: string
         }
         data: {
             time: string
@@ -29,15 +28,30 @@ const command: Command = {
             .then(res => {
                 const { data } = res
                 const fields = []
+                let sensors = []
+                
                 for(const sensor in data.sensors) {
                     const sensorData = data.sensors[sensor]
                     const { meta, data: sData } = sensorData
 
+                    sensors.push({meta, data: sData[sData.length - 1]})
+                }
+
+                console.log(sensors)
+
+                sensors.sort((a, b) => {
+                    if(a.data.temp_water > b.data.temp_water) return -1
+                    if(a.data.temp_water < b.data.temp_water) return 1
+                    return 0
+                }).map(sensor => {
+                    const { meta, data } = sensor
                     fields.push({
                         name: `${meta.name}`,
-                        value: `Ilma: ${sData[sData.length - 1].temp_air.toFixed(2)}°C, Vesi: ${sData[sData.length - 1].temp_water.toFixed(2)}°C`
+                        value: `🏖️: ${Math.round(data.temp_air)} °C || 💧: ${Math.round(data.temp_water)} °C ${meta.servicemap_url ? `| [Kartta](${meta.servicemap_url})` : ""} ${meta.site_url ? `| [Nettisivut](${meta.site_url})` : ""}`
                     })
-                }
+                })
+                
+                
 
                 new IlluminatiEmbed(message, client, {
                     title: 'Helsingin uimapaikkojen lämpötilat',

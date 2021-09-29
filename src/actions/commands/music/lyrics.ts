@@ -10,8 +10,8 @@ const command: Command = {
     async execute(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
 
-        const {title} = queue.nowPlaying()
-        console.log(title)
+        const { title } = queue.nowPlaying()
+
         if(!title) {
             return message.reply('There is no song currently playing.')
         }

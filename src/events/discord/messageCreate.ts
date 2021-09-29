@@ -10,11 +10,14 @@ const cooldowns: Collection<string, Collection<string, number>> = new Discord.Co
 export default async (client: IlluminatiClient, message: Message) => {
     let settings: GuildSettings;
 
+    const user = client.userManager(message.author);
+    const guild = client.guildManager(message.guild);
+
     try {
         if (message.channel.type === "DM") {
             settings = client.config.defaultSettings;
         } else {
-            settings = await client.guildManager.getGuild(message.guild);
+            settings = await guild.getGuild();
         }
     } catch (e) {
         client.logger.botError(e, message);
@@ -22,11 +25,9 @@ export default async (client: IlluminatiClient, message: Message) => {
 
     if (message.author.bot) return;
 
-    const user = await client.userManager.createUser(message.author);
-
     
 
-    if (user) client.userManager.messageCountUp(message.author);
+    if (user.getUser()) user.messageCountUp();
 
     if (settings.randomMessages) messageCheck(message);
 
@@ -58,7 +59,7 @@ export default async (client: IlluminatiClient, message: Message) => {
             const cooldownAmount = (command.cooldown || 3) * 1000;
 
             //Cooldown check
-            if (!user.stats.premium) {
+            if (!(await user.getStats()).premium) {
                 if (timestamps.has(message.author.id)) {
                     const expirationTime =
                         timestamps.get(message.author.id) + cooldownAmount;
@@ -83,7 +84,7 @@ export default async (client: IlluminatiClient, message: Message) => {
             //Execute command and catch errors
             try {
                 message.channel.sendTyping();
-                command.execute(message, args, settings, client);
+                command.execute(message, args, settings, client, {user, guild});
             } catch (error) {
                 client.logger.botError(error, message, command);
             }

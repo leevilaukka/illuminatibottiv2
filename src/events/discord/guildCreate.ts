@@ -9,7 +9,7 @@ const evt = async (client: IlluminatiClient, guild: Guild) => {
             joinedAt: guild.joinedAt
         };
 
-        await client.guildManager.createGuild(newGuild)
+        await client.guildManager(guild).createGuild(newGuild)
 
     } catch (e) {
         console.error(e)
