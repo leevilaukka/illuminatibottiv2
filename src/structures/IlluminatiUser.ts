@@ -17,6 +17,7 @@ type UserStats = {
     ]
     premium: boolean,
     dailyStreak: number,
+    lastCommand: Date | null,
 }
 
 export type IlluminatiUserTypes = {
@@ -29,6 +30,13 @@ type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiU
 
 
 export const UserFunctions = (user: User) => {
+
+    /**
+     * Returns Discord User Object
+     * @returns {Discord.User}
+     */
+    const getDiscordUser = () => user
+
     /**
      * Log user object
      */
@@ -117,6 +125,44 @@ export const UserFunctions = (user: User) => {
         }
     }
 
+    const checkDailyStreak = async (): Promise<boolean> => {
+        const userData = await UserFunctions(user).getUser();
+        if (userData) {
+            const lastCommand = userData.stats.lastCommand;
+            if (lastCommand) {
+                const now = new Date();
+                const diff = now.getTime() - lastCommand.getTime();
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                if (days === 0) return true;
+                else return false;
+            }
+        }
+    }
+
+    const updateLastCommand = async (): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
+        if (userData) {
+            userData.stats.lastCommand = new Date();
+            await userData.save().then(async (res) => {
+                return res
+            });
+        } else {
+            console.log(`User does not exist:`, user.id);
+        }
+    }
+
+    const updateDailyStreak = async (): Promise<void | UserPromise> => {
+        const userData = await UserFunctions(user).getUser();
+        if (userData && await UserFunctions(user).checkDailyStreak()) {
+            userData.stats.dailyStreak = userData.stats.dailyStreak + 1;
+            await userData.save().then(async (res) => {
+                return res
+            });
+        } else {
+            console.log(`User does not exist:`, user.id);
+        }
+    }
+            
     /*
     async logCommandUse(command: string) {
         const user = await IUser.findOne({ discordID: this.id });
@@ -259,7 +305,25 @@ export const UserFunctions = (user: User) => {
         return await userData.save()
     }
 
-    return {logUser, getUser, createUser, updateOrCreateUser, updateUser, getStats, messageCountUp, addMoney, tradeMoney, sendInfo, givePremium, updateUserStats, deleteUser}
+    return {
+        logUser,
+        getDiscordUser,
+        getUser,
+        createUser,
+        updateOrCreateUser,
+        updateUser,
+        getStats,
+        messageCountUp,
+        addMoney,
+        tradeMoney,
+        sendInfo,
+        givePremium,
+        updateUserStats,
+        deleteUser,
+        checkDailyStreak,
+        updateDailyStreak,
+        updateLastCommand
+    }
 }
 
 export default UserFunctions;
