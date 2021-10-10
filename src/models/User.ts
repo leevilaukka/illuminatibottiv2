@@ -18,4 +18,4 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, Model<IlluminatiUse
     }
 })
 
-export default model("User", IlluminatiUserSchema);
+export default model<IlluminatiUserTypes>("User", IlluminatiUserSchema);

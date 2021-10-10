@@ -3,7 +3,7 @@ import Guild from "../models/Guild.js"
 import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
-import { Player, PlayerInitOptions } from "discord-player"
+import { Player,  PlayerInitOptions } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
 import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
 import { UserFunctions } from "./IlluminatiUser.js"
@@ -27,7 +27,7 @@ export default class IlluminatiClient extends Discord.Client {
         client: any
     }
 
-    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerOptions?: PlayerInitOptions) {
+    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerInitOptions?: PlayerInitOptions) {
         super(clientOptions)
 
         this.config = config
@@ -38,7 +38,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
         this.axios = axios.create()
-        this.player = new Player(this, playerOptions)
+        this.player = new Player(this, playerInitOptions)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
         this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
     }
