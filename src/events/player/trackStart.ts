@@ -22,6 +22,10 @@ const evt: PlayerEvent = (client, queue, track: Track) => {
                 inline: true
             }
         ],
+        footer: {
+            text: track.requestedBy.tag,
+            icon_url: track.requestedBy.displayAvatarURL({dynamic: true})
+        }
     });
     queue.metadata.channel.send({embeds: [embed]})  
 }

@@ -18,13 +18,13 @@ const command: Command = {
 
         const metadata: PlayerMetadata = {
             channel: message.channel,
-            author: message.author,
             message,
+            author: message.author,
         }
 
-        const queue = client.player.createQueue(message.guild, {
+        const queue = client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
             metadata
-        })
+        });
 
         try {
             if (!queue.connection) await queue.connect(message.member.voice.channel)
@@ -42,8 +42,7 @@ const command: Command = {
         });
 
         if(!track) return message.reply('No tracks found.')
-        queue.play(track)
-        console.log(track.raw)
+        return queue.play(track)
     }
 }
 export default command

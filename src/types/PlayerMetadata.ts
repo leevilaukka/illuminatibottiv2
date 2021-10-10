@@ -6,7 +6,7 @@ export type PlayerQueue = Queue & {metadata: PlayerMetadata}
 
 export type PlayerMetadata = {
     channel: TextBasedChannels,
-    author: UserResolvable,
+    author?: UserResolvable,
     message: Message,
     command?: Command
 }
