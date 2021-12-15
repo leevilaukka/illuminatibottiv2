@@ -28,8 +28,7 @@ export type IlluminatiUserTypes = {
 
 type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiUserTypes>
 
-
-export const UserFunctions = (user: User) => {
+export function UserFunctions(user: User) {
     return {
         /**
          * Returns Discord User Object

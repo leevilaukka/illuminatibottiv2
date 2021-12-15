@@ -1,3 +1,4 @@
+import { QueueFilters } from 'discord-player'
 import Command from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'filter',
@@ -5,9 +6,12 @@ const command: Command = {
     description: 'Aseta toistoon filtteri',
     usage: '<type>',
     guildOnly: true,
-    execute(message, args: any, settings, client) {
-        const filterName = args[0]
+    execute(message, args, settings, client) {
+        const filterName = args[0] as keyof QueueFilters
         const queue = client.player.getQueue(message.guild)
+
+        if (!queue) return message.channel.send('Musiikkia ei ole käynnissä')
+        
         const enabledFiltersKeys = queue.getFiltersEnabled()
 
         if (!queue.getFiltersDisabled().includes(filterName) || !enabledFiltersKeys.includes(filterName)) {

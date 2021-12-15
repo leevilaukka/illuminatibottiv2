@@ -8,7 +8,7 @@ export type CommandArguments = (string|number)[]
 
 export type Category = "general" | "music" | "math" | "maps" | "config" | "date" | "other" 
 
-type ArgTypes = "string" | "number" 
+type ArgTypes = ("string" | "number")[] 
 
 type SlashOptions = {
     name: string,
@@ -31,7 +31,7 @@ export default interface Command {
     options?: SlashOptions[],
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
-    argTypes?: ArgTypes[]
+    argTypes?: ArgTypes
     execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta:{guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions>}) => void
 }
 

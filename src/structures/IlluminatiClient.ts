@@ -1,4 +1,4 @@
-import Discord, { ClientOptions, Interaction, User } from "discord.js"
+import Discord, { ClientOptions } from "discord.js"
 import Guild from "../models/Guild.js"
 import Command from "../types/IlluminatiCommand"
 import config, { Config, GuildSettings } from "../config.js"
@@ -8,7 +8,12 @@ import { Lyrics } from "@discord-player/extractor"
 import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
 import { UserFunctions } from "./IlluminatiUser.js"
 import axios, { AxiosInstance } from "axios"
+import { Downloader } from "@discord-player/downloader"
+import info from "../../package.json"
 
+const setPlayerUses = (player: Player) => {
+    player.use("YOUTUBE_DL", Downloader)
+}
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
@@ -26,6 +31,7 @@ export default class IlluminatiClient extends Discord.Client {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
     }
+    info: typeof info
 
     constructor(clientOptions?: ClientOptions & {intents: number[]}, playerInitOptions?: PlayerInitOptions) {
         super(clientOptions)
@@ -41,7 +47,19 @@ export default class IlluminatiClient extends Discord.Client {
         this.player = new Player(this, playerInitOptions)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
         this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
+        this.info = info
+
+        setPlayerUses(this.player)
     }
+
+
+    /**
+     * Get the bot invite link
+     * @method
+     * @returns Invite link
+     * @example
+     * client.getBotInviteLink()
+     **/
 
     async getBotInviteLink(): Promise<string> {
         return this.generateInvite({scopes: ["bot", "applications.commands"]});
