@@ -15,7 +15,7 @@ const interaction: IlluminatiInteraction = {
     async execute(data: ContextMenuInteraction, client) {
         const user = await client.users.fetch(data.targetId)
         if(user.bot) return data.reply({content: "Et voi antaa premiumia botille!", ephemeral: true})
-        try{
+        try {
             client.userManager(user).givePremium()
         } catch(e){
            return console.log(e)

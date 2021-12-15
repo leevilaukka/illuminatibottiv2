@@ -11,6 +11,8 @@
     "declaration": false,
     "typeRoots": ["node_modules/@types", "./src/types"],
     "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
   },  
   "include": ["./src/**/**/*"],
   "exclude": ["./node_modules/**", "./src/types/**"],
