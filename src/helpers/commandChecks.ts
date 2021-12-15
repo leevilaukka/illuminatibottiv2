@@ -19,6 +19,13 @@ export const commandChecks = async (client: IlluminatiClient, command: Command, 
         return false;
     }
 
+    if(await client.guildManager(message.guild).isCommandDisabled(command.name)) {
+        message.reply(
+            `tämä komento on estetty tällä palvelimella.`
+        );
+        return false;
+    }
+
     //Permissons check
     if (
         command.permissions &&

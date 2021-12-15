@@ -22,7 +22,8 @@ export type GuildSettings = {
     host: string
   },
   throws: string[],
-  places: Place[]
+  places: Place[],
+  disabledCommands: string[]
 }
 
 
@@ -54,6 +55,7 @@ const config: Config = {
       "https://i.imgur.com/gkr54q4.png",
       "https://i.imgur.com/OeAd8mK.png",
     ],
+    disabledCommands: [],
   },
 };
 export default config

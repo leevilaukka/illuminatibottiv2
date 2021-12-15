@@ -67,7 +67,8 @@ const GuildSchema = new Schema({
     mcdefaults: {
         action: String,
         host: String
-    }
+    },
+    disabledCommands: [String],
 });
 
 export default mongoose.model<GuildSettings>("Guild", GuildSchema);

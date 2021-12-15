@@ -76,7 +76,12 @@ const GuildFunctions = (guild: Guild) => {
         console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
     }
 
-    return { log, getGuild, updateGuild, createGuild, deleteGuild, botHexColor };
+    const isCommandDisabled = async (command: string): Promise<boolean> => {
+        const guildSettings = await GuildFunctions(guild).getGuild();
+        return guildSettings.disabledCommands.includes(command);
+    }
+
+    return { log, getGuild, updateGuild, createGuild, deleteGuild, botHexColor, isCommandDisabled };
 }
 
 export default GuildFunctions;
