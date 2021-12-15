@@ -1,28 +1,25 @@
-import { QueryType } from 'discord-player'
-import { argsToString } from '../../../helpers'
 import Command from '../../../types/IlluminatiCommand'
-import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
+import { myExtractor } from '../../../bot';
+import { argsToString } from '../../../helpers';
+import { PlayerMetadata } from '../../../types/PlayerMetadata';
 
-// TODO optimize
 const command: Command = {
-    name: 'play',
-    aliases: ['p'],
-    description: 'Plays a song',
-    category: 'music',
-    guildOnly: true,
-    async execute(message, args, settings, client, meta) {
+    name: 'playradio',
+    outOfOrder: true,
+    async execute(message: any, args, settings, client) {
         if(!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
-        }
-
+        } 
+        
         const metadata: PlayerMetadata = {
             channel: message.channel,
             message,
             author: message.author,
+            
         }
 
-        const queue = client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
+        const queue =  client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
             metadata
         });
 
@@ -33,16 +30,17 @@ const command: Command = {
             return message.channel.send('Ei voida yhdistää puhekanavaan.')
         }
 
+
+        client.player.use("Radio", myExtractor)
+
         const track = await client.player.search(argsToString(args), {
             requestedBy: message.author,
-            searchEngine: QueryType.AUTO
         }).then(x => x.tracks[0])
-        .catch(e => {
-            console.error(e)
-        });
 
-        if(!track) return message.reply('No tracks found.')
-        return queue.play(track)
+        client.player.unuse("Radio")
+
+        queue.play(track)
     }
 }
+
 export default command

@@ -5,8 +5,7 @@ import { Routes } from 'discord-api-types/v9';
 export default async (client: IlluminatiClient) => {
     const rest = new REST({ version: '9' }).setToken(process.env.TOKEN)
 	
-	const interactions = (await client.getInteractions()).map(interaction => {
-		console.log(interaction)
+	const interactions = client.getInteractions().map(interaction => {
 		return interaction.data
 	})
     

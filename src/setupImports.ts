@@ -12,6 +12,7 @@ const playerEventFiles = fs
     .filter((file: string) => file.endsWith(".js"))
 
 export const eventImports = async (client: IlluminatiClient) => {
+    console.group("Loading events...");
     try {
         for await (const file of eventFiles) {
             import(`${__dirname}/events/discord/${file}`).then(({ default: evt }) => {
@@ -32,12 +33,14 @@ export const eventImports = async (client: IlluminatiClient) => {
     } catch (error) {
         console.error(error)
     }
+    console.groupEnd();
 };
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`)
 
 export const commandImports = async (client: IlluminatiClient) => {
+    console.group("Loading commands...");
     for await (const folder of commandFolders) {
         const commandFiles = fs
             .readdirSync(`${__dirname}/actions/commands/${folder}`)
@@ -46,17 +49,16 @@ export const commandImports = async (client: IlluminatiClient) => {
         for await (const file of commandFiles) {
             import(`${__dirname}/actions/commands/${folder}/${file}`).then(({ default: cmd }) => {
                 const command: Command = cmd
-                client.isDevelopment && console.log(command)
                 client.commands.set(command.name, command);
                 console.log(`Loaded cmd: ${folder}/${file}`);
             }).catch(console.error)
         }
     };
+    console.groupEnd();
 };
 
 
 const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
-console.log(interactionFiles)
 
 export const interactionImports = async (client: IlluminatiClient) => {
     for await (const file of interactionFiles) {

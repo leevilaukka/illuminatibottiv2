@@ -67,7 +67,15 @@ const GuildSchema = new Schema({
     mcdefaults: {
         action: String,
         host: String
-    }
+    },
+    users: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    stats: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Stats",
+    },
 });
 
 export default mongoose.model<GuildSettings>("Guild", GuildSchema);
