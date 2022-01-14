@@ -10,7 +10,7 @@ const command: Command = {
     description: "Muunna yksiköitä. Saadaksesi tietoa saatavilla olevista yksiköistä, aja komento ilman argumentteja.",
     usage: "<määrä {alkuperäinen yksikkö} {uusi yksikkö}>",
     aliases: ["c", "muunna"],
-    category: "math",
+    category: Categories.math,
     run(message, args: any, _settings, client) {
         let result: any;
         if (!args.length) {
