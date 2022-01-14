@@ -84,8 +84,8 @@ const command: Command = {
             inline: true
         });
         if (command.category) fields.push({
-            name: `**Luokka:**`,
-            value: `${getCommandCategory(command.category)}`,
+            name: `**Kategoria:**`,
+            value: `${command.category[0].toUpperCase()}${command.category.slice(1)}`,
             inline: true
         });
         fields.push({
