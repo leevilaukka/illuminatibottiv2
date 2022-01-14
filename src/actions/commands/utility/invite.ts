@@ -1,10 +1,9 @@
 import { MessageActionRow, MessageButton } from 'discord.js'
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
-
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'invite',
-    async execute(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const embed = new IlluminatiEmbed(message, client, {
             title: 'Kutsu botti!',
             description: `Lisää ${client.user.username} omalle palvelimellesi!`,

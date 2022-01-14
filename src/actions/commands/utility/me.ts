@@ -1,8 +1,8 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command ,{ Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'me',
-    execute(message, args, settings, client, {user}) {
-        user.sendInfo(message, client)
+    async run(message, args, settings, client, {user}) {
+        (await user.infoAsEmbed(message, client)).send()
     }
 }
 export default command

@@ -1,7 +1,7 @@
-import Discord, { Message, User } from "discord.js"
+import Discord, {Message, User} from "discord.js"
 import IUser from "../models/User"
-import { IlluminatiEmbed, IlluminatiClient } from ".";
-import { Document } from "mongoose";
+import {IlluminatiClient, IlluminatiEmbed} from ".";
+import {Document} from "mongoose";
 
 type UserStats = {
     money: number;
@@ -47,7 +47,7 @@ export function UserFunctions(user: User) {
          * Get user from database
          */
         getUser: async (): UserPromise => {
-            return await IUser.findOne({ discordID: user.id })
+            return IUser.findOne({discordID: user.id});
         },
 
         /**
@@ -61,8 +61,7 @@ export function UserFunctions(user: User) {
                 });
 
                 await data.save().then(async (res) => {
-                    const user = res;
-                    return user;
+                    return res;
                 });
             } else return await UserFunctions(user).getUser();
         },
@@ -75,8 +74,7 @@ export function UserFunctions(user: User) {
             userData.username = data.username;
             userData.stats = { ...userData.stats, ...data.stats };
             return userData.save().then(async (res) => {
-                const result = res;
-                return result;
+                return res;
             }).catch(() => console.error(`Failed to update user:`, user.id));
         },
 
@@ -131,8 +129,7 @@ export function UserFunctions(user: User) {
                     const now = new Date();
                     const diff = now.getTime() - lastCommand.getTime();
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    if (days === 0) return true;
-                    else return false;
+                    return days === 0;
                 }
             }
         },
@@ -255,7 +252,7 @@ export function UserFunctions(user: User) {
          * @param client Client object
          */
 
-        sendInfo: async (message: Discord.Message, client: IlluminatiClient): Promise<Discord.Message> => {
+        infoAsEmbed: async (message: Discord.Message, client: IlluminatiClient): Promise<IlluminatiEmbed> => {
             const userData = await UserFunctions(user).getUser();
             if (typeof userData !== "object") return;
 
@@ -292,7 +289,7 @@ export function UserFunctions(user: User) {
                         value: `:robot:`,
                     },
                 ]
-            }).send();
+            });
         },
 
         givePremium: async (): UserPromise => {

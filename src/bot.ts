@@ -21,37 +21,16 @@ const client = new IlluminatiClient(
     }
 );
 
-
-
 // Check if ownerID given
 if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check your env variables.");
 
 setupImports(client).then(() => console.log("Imports complete!"));
 
-export const myExtractor = {
-    version: "1.0.0",
-    important: false,
-    validate: (query) => true,
-    getInfo: async (query) => {
-        return {
-            title: "Extracted by custom extractor",
-            duration: 20000,
-            thumbnail: "some thumbnail link",
-            engine: `https://supla.digitacdn.net/live/_definst_/supla/${query}/chunklist.m3u8`,
-            views: 0,
-            author: "Some Artist",
-            description: "",
-            url: "https://supla.digitacdn.net/live/_definst_/supla/radiorock/chunklist.m3u8"
-        };
-    }
-};
-
-
 // Connect to database
 mongoose.connect(
     process.env.MONGOURI,
     (cb: any) => {
-        if (cb == !null) {
+        if (cb == true) {
             console.error(cb);
         } else console.log("DB Connected!");
     }

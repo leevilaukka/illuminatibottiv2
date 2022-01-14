@@ -1,12 +1,14 @@
 import { QueueFilters } from 'discord-player'
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+
 const command: Command = {
     name: 'filter',
-    category: 'music',
+    category: Categories.music,
     description: 'Aseta toistoon filtteri',
     usage: '<type>',
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const filterName = args[0] as keyof QueueFilters
         const queue = client.player.getQueue(message.guild)
 

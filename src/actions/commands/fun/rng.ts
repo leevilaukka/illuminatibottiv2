@@ -1,11 +1,12 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "rng",
     description: "Random Number Generator",
     args: true,
     usage: "<min> <max>",
-    category: "math",
+    category: Categories.math,
     cooldown: 0,
     enableSlash: false,
     options: [{
@@ -17,7 +18,7 @@ const command: Command = {
         type: "INTEGER",
         description: "Maksimiluku"
     }],
-    execute(message, args: number[], client, settings) {;
+    run(message, args: number[], client, settings) {;
         const [min, max] = args;
         let random = 0
         // Random Number Generator from min to max

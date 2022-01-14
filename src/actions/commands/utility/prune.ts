@@ -1,4 +1,4 @@
-import Command from "../../../types/IlluminatiCommand"
+import Command, { Categories } from "../../../types/IlluminatiCommand"
 
 const command: Command = {
     name: 'prune',
@@ -6,10 +6,10 @@ const command: Command = {
     description: 'Poista jopa 99 viestiä.',
     args: true,
     usage: '<määrä>',
-    category: "general",
+    category: Categories.general,
     cooldown: 5,
     outOfOrder: true,
-    execute(message, args: any, _settings, _client) {
+    run(message, args: any, _settings, _client) {
         const amount = parseInt(args[0]) + 1;
         
         if (isNaN(amount)) {

@@ -6,8 +6,6 @@ import UserFunctions from "../structures/IlluminatiUser";
 
 export type CommandArguments = (string|number)[] 
 
-export type Category = "general" | "music" | "math" | "maps" | "config" | "date" | "other" 
-
 type ArgTypes = ("string" | "number")[] 
 
 type SlashOptions = {
@@ -17,6 +15,9 @@ type SlashOptions = {
     required?: boolean
 }
 
+// Metadata for a command, guild and user settings
+type CommandMeta = { guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions> }
+
 export default interface Command {
     name: string,
     aliases?: string[],
@@ -24,7 +25,7 @@ export default interface Command {
     guildOnly?: boolean,
     args?: boolean,
     usage?: string,
-    category?: Category,
+    category?: Categories,
     cooldown?: number,
     enableSlash?: boolean,
     outOfOrder?: boolean,
@@ -32,6 +33,17 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes
-    execute: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta:{guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions>}) => void
+    run: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta: CommandMeta) => void
 }
 
+export enum Categories {
+    general = "Yleiset",
+    music = "Musiikki",
+    math = "Matematiikka",
+    maps = "Kartat",
+    config = "Asetukset",
+    date = "Päivämäärät",
+    currency = "Raha",
+    other = "Muut",
+    undefined = "Määrittelemätön",
+}

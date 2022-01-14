@@ -1,11 +1,10 @@
 import { EmbedFieldData } from 'discord.js'
 import { toTimestamp } from '../../../utils'
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
-
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: "flight",
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const icao = args[0]
         client.axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
         .then(res => {

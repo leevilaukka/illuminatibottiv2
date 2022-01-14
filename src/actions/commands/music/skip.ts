@@ -1,11 +1,13 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+
 const command: Command = {
     name: 'skip',
     description: 'Skip the current song',
     aliases: ['s'],
-    category: 'music',
+    category: Categories.music,
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         client.player.getQueue(message.guild).skip()
     }
 }

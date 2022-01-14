@@ -1,4 +1,4 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 import Guild from "../../../models/Guild"
 
@@ -6,11 +6,11 @@ const command: Command = {
     name: 'addthrow',
     aliases: ["lisääthrow", "addheitto", "lisääheitto"],
     description: 'Lisää heitto :D',
-    category: "general",
+    category: Categories.general,
     cooldown: 10,
     args: true,
     usage: '<kuvan url (.png | .jpg | .gif)>',
-    execute(message, args: string[], settings, client) {
+    run(message, args: string[], settings, client) {
         const [heitto, ...rest] = args;
 
         if (heitto.endsWith(".png") || heitto.endsWith(".jpg") || heitto.endsWith(".gif")){

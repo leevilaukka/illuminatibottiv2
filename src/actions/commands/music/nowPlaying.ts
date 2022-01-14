@@ -1,12 +1,13 @@
 import { IlluminatiEmbed } from '../../../structures';
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'nowplaying',
     aliases: ['np'],
     description: 'Sends the currently playing song.',
-    category: 'music',
+    category: Categories.music,
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         const nowPlaying = queue.nowPlaying()
 

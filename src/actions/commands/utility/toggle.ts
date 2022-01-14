@@ -1,12 +1,11 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
-
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'toggle',
     permissions: ['MANAGE_GUILD'],
-    async execute(message, args, settings, client, meta) {
+    async run(message, args, settings, client, { guild }) {
         const commandName = args[0] as string
-        const guild = client.guildManager(message.guild)
+        
         const disabledCommands = (await guild.getGuild()).disabledCommands
 
         if (!commandName) {
@@ -15,6 +14,8 @@ const command: Command = {
                 description: disabledCommands.toString() || 'Ei estettyjä komentoja',
             }).send()
         }
+
+        
 
         const command = await client.getCommand(commandName)
 

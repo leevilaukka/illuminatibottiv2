@@ -1,4 +1,4 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: 'serverinfo',
@@ -6,8 +6,8 @@ const command: Command = {
     guildOnly: true,
     aliases: ['servu'],
     cooldown: 5,
-    category: "general",
-    execute(message, args, settings, client) {
+    category: Categories.general,
+    run(message, args, settings, client) {
         message.channel.send(`Nimi: ${message.guild.name}\nJäseniä: ${message.guild.memberCount}`);
     },
 };

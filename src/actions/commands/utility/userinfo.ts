@@ -1,13 +1,14 @@
-import Command from '../../../types/IlluminatiCommand'
-
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'userinfo',
-    async execute(message, args, settings, client, {user}) {
+    async run(message, args, settings, client, {user}) {
         const mentionedUser = message.mentions.users.first()
         if (mentionedUser) {
-            return client.userManager(mentionedUser).sendInfo(message, client)
+            const embed = await client.userManager(mentionedUser).infoAsEmbed(message, client)
+            return embed.send()
         } else {
-            return user.sendInfo(message, client)
+            const embed = await user.infoAsEmbed(message, client);
+            return embed.send()
         }
     }
 }

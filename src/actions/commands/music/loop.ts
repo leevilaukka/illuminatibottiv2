@@ -1,11 +1,12 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'loop',
     description: 'Vaihda toistimen toistotilaa',
     aliases: ['l'],
-    category: 'music',
+    category: Categories.music,
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         const loopMode = queue.repeatMode
 

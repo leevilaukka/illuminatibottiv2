@@ -3,15 +3,16 @@ import axios from "axios";
 import { umlautRemover, argsToString, formatDate } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "weather",
     description: "Säätiedot",
     aliases: ["w", "sää"],
     cooldown: 10,
-    category: "other",
-    execute(message, args, settings, client) {
+    category: Categories.other,
+    run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
             .then(res => {

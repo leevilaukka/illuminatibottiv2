@@ -1,12 +1,13 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'queue',
     aliases: ['q'],
     description: 'Näytä nykyinen jono',
-    category: 'music',
+    category: Categories.music,
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild.id)
 
         const comingUp = queue.tracks.map(track => {

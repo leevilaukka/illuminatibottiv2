@@ -1,5 +1,5 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
+import Command from "IlluminatiCommand"
 
 interface TempData {
     comment: string
@@ -17,13 +17,12 @@ interface TempData {
             temp_water: number
         }[]
     }[]
-
 }
 
 const command: Command = {
     name: 'watertemp',
     aliases: ["vesi"],
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         client.axios.request<TempData>({ url: `https://iot.fvh.fi/opendata/uiras/uiras2_v1.json` })
             .then(res => {
                 const { data } = res
@@ -57,7 +56,7 @@ const command: Command = {
                     title: 'Helsingin uimapaikkojen lämpötilat',
                     description: "Tiedot päivitetty viimeisen 30min - 1h aikana",
                     fields
-                }, ).send()
+                }).send()
             })
     }
 }

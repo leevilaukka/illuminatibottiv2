@@ -4,7 +4,8 @@ import Discord, { MessageActionRow, MessageButton } from "discord.js";
 import { argsToString, umlautRemover, valueParser, randomArray } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "places",
@@ -12,8 +13,8 @@ const command: Command = {
     aliases: ["paikka"],
     usage: "<hakusana>",
     cooldown: 7,
-    category: "maps",
-    execute(message, args, settings, client) {
+    category: Categories.maps,
+    run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
 
         // Get place id with query from Maps Places API

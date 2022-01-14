@@ -1,8 +1,10 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: 'daily',
     outOfOrder: true,
-    execute(message, args, settings, client) {
+    category: Categories.currency,
+    run(message, args, settings, client) {
         return message.reply('Daily is not implemented yet.')
     }
 }

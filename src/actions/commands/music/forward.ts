@@ -1,8 +1,9 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'forward',
     outOfOrder: true,
-    async execute(message, args: string[], settings, client) {
+    category: Categories.music,
+    async run(message, args: string[], settings, client) {
         const queue = client.player.getQueue(message.guild)
         const time = queue.getPlayerTimestamp().current.split(":")
         const seconds = Number(time[0]) * 60 + Number(time[1])

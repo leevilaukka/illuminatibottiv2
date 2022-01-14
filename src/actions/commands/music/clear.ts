@@ -1,10 +1,13 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+
+
 const command: Command = {
     name: 'clear',
-    category: 'music',
+    category: Categories.music,
     description: 'Clear the music queue',
     guildOnly: true,
-    execute(message, args, settings, client) {
+    run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         if(queue && queue.tracks.length > 0) {
             queue.clear()

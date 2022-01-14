@@ -1,11 +1,10 @@
 import Discord, { ClientOptions } from "discord.js"
-import Guild from "../models/Guild.js"
-import Command from "../types/IlluminatiCommand"
-import config, { Config, GuildSettings } from "../config.js"
+import Command from "IlluminatiCommand"
+import config, { Config } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
 import { Player,  PlayerInitOptions } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
-import { IlluminatiInteraction } from "../types/IlluminatiInteraction.js"
+import { IlluminatiInteraction } from "IlluminatiInteraction"
 import { UserFunctions } from "./IlluminatiUser.js"
 import axios, { AxiosInstance } from "axios"
 import { Downloader } from "@discord-player/downloader"
@@ -13,6 +12,7 @@ import info from "../../package.json"
 
 const setPlayerUses = (player: Player) => {
     player.use("YOUTUBE_DL", Downloader)
+    console.log("Player uses set")
 }
 
 export default class IlluminatiClient extends Discord.Client {
@@ -31,7 +31,7 @@ export default class IlluminatiClient extends Discord.Client {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
     }
-    info: typeof info
+    packageInfo: typeof info
 
     constructor(clientOptions?: ClientOptions & {intents: number[]}, playerInitOptions?: PlayerInitOptions) {
         super(clientOptions)
@@ -47,7 +47,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.player = new Player(this, playerInitOptions)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
         this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
-        this.info = info
+        this.packageInfo = info
 
         setPlayerUses(this.player)
     }
@@ -61,7 +61,7 @@ export default class IlluminatiClient extends Discord.Client {
      * client.getBotInviteLink()
      **/
 
-    async getBotInviteLink(): Promise<string> {
+    getBotInviteLink(): string {
         return this.generateInvite({scopes: ["bot", "applications.commands"]});
     }
 
@@ -71,7 +71,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @param {string} name
      */
 
-    async getCommand(name: string): Promise<Command> {
+    getCommand(name: string): Command {
         return this.commands.get(name) ||
         this.commands.find(
             (cmd) => cmd.aliases && cmd.aliases.includes(name)
@@ -119,8 +119,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @returns {IlluminatiInteraction[]} Array of IlluminatiInteractions
      * @memberof IlluminatiClient
      * @example
-     * client.getInteractions()
-     * // [IlluminatiInteraction, IlluminatiInteraction]
+     * client.getInteractions() -- [IlluminatiInteraction, IlluminatiInteraction]
      */
 
     getInteractions(): IlluminatiInteraction[] {
@@ -137,56 +136,4 @@ export default class IlluminatiClient extends Discord.Client {
     getAllInteractables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
         return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
     }
-
-    // GUILD SETTINGS | refactor to IlluminatiGuild later
-
-    /**
-     * Get Guild settings from database
-     * @method
-     * @param {Discord.Guild} guild Discord Guild object
-     * @returns Guild settings *or* Default settings
-     */
-
-    async getGuild(guild: Discord.Guild): Promise<GuildSettings> {
-        const guildSettings = await Guild.findOne({ guildID: guild.id });
-        if (guildSettings) return guildSettings;
-        else return this.config.defaultSettings;
-    }
-
-    /**
-     * Update Guild settings to database 
-     * @method
-     * @param {Discord.Guild} guild Discord Guild object
-     * @param {object} settings New settings
-     * @returns Updated guild settings
-     */
-
-    async updateGuild(guild: Discord.Guild, settings: object): Promise<GuildSettings> {
-        let data: any = await this.getGuild(guild);
-
-        if (typeof data !== "object") data = {};
-        for (const key in settings) {
-            if (data[key] !== settings[key]) data[key] = settings[key];
-            else return;
-        }
-
-        console.log(
-            `Guild "${data.guildName}" updated settings: ${Object.keys(settings)}`
-        );
-        return await data.updateOne(settings).catch((e: any) => console.error(e));
-    };
-
-    /**
-     * Clean text
-     * @method
-     * @param {String} text
-     * @returns Clean string
-     */
-    clean(text: string): string {
-        if (typeof text === "string")
-            return text
-                .replace(/`/g, "`" + String.fromCharCode(8203))
-                .replace(/@/g, "@" + String.fromCharCode(8203));
-        else return text;
-    };
 }
