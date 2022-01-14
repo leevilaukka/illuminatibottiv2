@@ -1,10 +1,10 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: 'debugeco',
     ownerOnly: true,
     description: 'Debugging economy',
     aliases: ["de"],
-    execute(message, args: number[], settings, client, meta) {
+    run(message, args: number[], settings, client, meta) {
         const amount = args[0]
         
         if (!amount) {

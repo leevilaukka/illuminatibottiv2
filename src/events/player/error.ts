@@ -1,7 +1,7 @@
 import { PlayerEvent } from "../../types/PlayerEvent"
 
 const evt: PlayerEvent = (client, queue, error) => {
-    return queue.metadata.channel.send(`:x: **${client.user.username}**: ${error}`)
+    return queue.metadata.channel.send(`:x: **${client.user.username || undefined}**: ${error}`)
     
 }
 

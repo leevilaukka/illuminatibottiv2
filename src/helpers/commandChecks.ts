@@ -3,27 +3,19 @@ import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
 import Command, { CommandArguments } from "../types/IlluminatiCommand";
 
+// Check if command can be run
 export const commandChecks = async (client: IlluminatiClient, command: Command, message: Message, settings: any, args: CommandArguments, config: Config) => {
     // Not a command
     if (!command) {
-        message.reply(
-            `tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`
-        );
-        return false
+        throw `tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`
     }
     // Command disabled
     if (command.outOfOrder && !client.isDevelopment) {
-        message.reply(
-            `tämä komento ei ole käytössä tällä hetkellä. Siinä on todennäköisesti jokin ongelma, tai sen koodaaminen on vielä kesken`
-        );
-        return false;
+        throw `tämä komento ei ole käytössä tällä hetkellä. Siinä on todennäköisesti jokin ongelma, tai sen koodaaminen on vielä kesken`;
     }
 
     if(await client.guildManager(message.guild).isCommandDisabled(command.name)) {
-        message.reply(
-            `tämä komento on estetty tällä palvelimella.`
-        );
-        return false;
+        throw `tämä komento on estetty tällä palvelimella.`
     }
 
     //Permissons check
@@ -32,24 +24,17 @@ export const commandChecks = async (client: IlluminatiClient, command: Command, 
         message.channel.type !== "DM" &&
         !message.member.permissions.has(command.permissions)
     ) {
-        message.reply("sinulla ei ole oikeuksia käyttää tätä komentoa");
-        return false
+        throw "sinulla ei ole oikeuksia käyttää tätä komentoa"
     }
 
     //guildOnly check
     if (command.guildOnly && message.channel.type !== "GUILD_TEXT") {
-        message.reply(
-            "En voi suorittaa tätä komentoa yksityiskeskustelussa!"
-        );
-        return false
+        throw "En voi suorittaa tätä komentoa yksityiskeskustelussa!"
     }
 
     //ownerOnly check
     if (command.ownerOnly && message.author.id !== config.ownerID) {
-        message.reply(
-            "et omista minua! Komennon voi suorittaa vain tämän botin omistaja."
-        );
-        return false;
+        throw "et omista minua! Komennon voi suorittaa vain tämän botin omistaja."
     }
 
     //Args check
@@ -60,18 +45,7 @@ export const commandChecks = async (client: IlluminatiClient, command: Command, 
             reply += `\nOikea käyttötapa olisi: \`${settings.prefix}${command.name} ${command.usage}\``;
         }
 
-        message.reply(reply);
-        return false
-    }
-
-    // ArgTypes check
-    if (command.argTypes) {
-        for (let i = 0; i < command.argTypes.length; i++) {
-            if (typeof (command.argTypes[i]) !== args[i]) {
-                console.error(`${i}:n argumentin tyyppi on väärä, tyypin pitäisi olla ${command.argTypes[i]}, mutta se on ${typeof args[i]}`)
-            }
-            else continue
-        }
+        throw reply;
     }
 
     return true

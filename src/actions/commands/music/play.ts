@@ -1,17 +1,16 @@
 import { QueryType } from 'discord-player'
 import { argsToString } from '../../../helpers'
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
-
 
 // TODO optimize
 const command: Command = {
     name: 'play',
     aliases: ['p'],
     description: 'Plays a song',
-    category: 'music',
+    category: Categories.music,
     guildOnly: true,
-    async execute(message, args, settings, client, meta) {
+    async run(message, args, settings, client, meta) {
         if(!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
         }
@@ -42,7 +41,8 @@ const command: Command = {
         });
 
         if(!track) return message.reply('No tracks found.')
-        return queue.play(track)
+        queue.play(track)
+        return true
     }
 }
 export default command

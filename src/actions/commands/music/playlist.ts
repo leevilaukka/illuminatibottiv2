@@ -1,16 +1,13 @@
-import { QueryType } from 'discord-player'
-import { Collector, CollectorFilter, CollectorOptions, MessageReaction, User } from 'discord.js'
 import { argsToString } from '../../../helpers'
-import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
 const command: Command = {
     name: 'playlist',
     args: true,
     guildOnly: true,
-    category: 'music',
-    async execute(message, args, settings, client) {
+    category: Categories.music,
+    async run(message, args, settings, client) {
         const query = argsToString(args)
 
         client.player.search(query, {

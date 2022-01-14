@@ -3,6 +3,5 @@ import { IlluminatiClient } from "../../structures";
 
 export default async (client: IlluminatiClient, interaction: CommandInteraction) => {
     console.log("CommandInteraction", interaction);
-    client.interactions.get(interaction.commandName).execute(interaction, client)
-
+    client && client.interactions.get(interaction.commandName).execute(interaction, client)
 }

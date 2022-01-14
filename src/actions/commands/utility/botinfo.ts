@@ -1,12 +1,11 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
-
-import {version, author, homepage} from '../../../../package.json'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { MessageActionRow, MessageButton } from 'discord.js'
 
 const command: Command = {
     name: 'botinfo',
-    async execute(message, args, settings, client) {
+    async run(message, args, settings, client) {
+        const owner = await client.getOwner()
         const embed = new IlluminatiEmbed(message, client, {
             title: 'Bot Information',
             thumbnail: {
@@ -25,7 +24,7 @@ const command: Command = {
                 },
                 {
                     name: 'Bot Owner',
-                    value: (await client.getOwner()).tag,
+                    value: owner.tag,
                     inline: true
                 },
                 {
@@ -35,12 +34,7 @@ const command: Command = {
                 },
                 {
                     name: 'Bot Version',
-                    value: version,
-                    inline: true
-                },
-                {
-                    name: 'Bot Language / Library',
-                    value: 'Typescript / Discord.js',
+                    value: `v${client.packageInfo.version}${client.isDevelopment ? '-dev' : ''}`,
                     inline: true
                 },
                 {
@@ -61,6 +55,8 @@ const command: Command = {
             ]
         })
 
+        
+
         const row = new MessageActionRow()
             .addComponents(
                 new MessageButton()
@@ -69,11 +65,11 @@ const command: Command = {
                     .setLabel('Invite Link'),
                 new MessageButton()
                     .setStyle('LINK')
-                    .setURL(homepage)
+                    .setURL(client.packageInfo.homepage)
                     .setLabel('GitHub Repository'),
                 new MessageButton()
                     .setStyle('LINK')
-                    .setURL(author.url)
+                    .setURL(client.packageInfo.author.url)
                     .setLabel('GitHub Profile'),
             )
 

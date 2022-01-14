@@ -2,19 +2,20 @@ import { gql, request } from "graphql-request";
 
 import { formatDate, valueParser } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "reitti",
     description: "Hae reittejä tallennetuilla koordinaateilla",
-    category: "maps",
+    category: Categories.maps,
     cooldown: 5,
     aliases: ["hsl"],
     args: true,
-    async execute(message, args, settings, client) {
+    async run(message, args, settings, client, {guild}) {
         const [origin, destination] = args;
-        const guild = await client.getGuild(message.guild);
-        const places = guild.places;
+        
+        const places = (await guild.getGuild()).places;
         console.log(guild);
         const originResult = places.find(({ name }) => name === origin);
         const destResult = places.find(({ name }) => name === destination);

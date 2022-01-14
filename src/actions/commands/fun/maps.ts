@@ -3,15 +3,16 @@ import fs from "fs";
 
 import { argsToString, umlautRemover } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "maps",
     description: "Google Maps- integraatio",
     aliases: ["kartta"],
     usage: "<paikka>",
-    category: "maps",
-    execute(message, args, settings, client) {
+    category: Categories.maps,
+    run(message, args, settings, client) {
         // Init variables
         const location = umlautRemover(argsToString(args));
         const token = process.env.GOOGLE_API;

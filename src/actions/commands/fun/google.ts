@@ -1,14 +1,15 @@
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "google",
     aliases: ["hae", "g", "gs"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
-    category: "other",
-    execute(message, args, settings, client) {
+    category: Categories.other,
+    run(message, args, settings, client) {
         const query = argsToString(args);
         client.axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
             .then(res => {

@@ -19,4 +19,5 @@ jobs:
             git pull origin master # clone the repo
             npm install # install dependencies
             tsc --build --verbose # build typescript
+            rm -rf src # Delete source folder
             pm2 start ecosystem.config.js # start as a background service.

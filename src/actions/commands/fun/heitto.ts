@@ -1,4 +1,4 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, {Categories} from "IlluminatiCommand";
 
 function randomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -8,10 +8,10 @@ const command: Command = {
     name: 'heitto',
     aliases: ["throw"],
     description: 'Throw :D',
-    category: "general",
+    category: Categories.other,
     cooldown: 10,
     outOfOrder: true,
-    async execute(message, args: any, settings, client) {
+    async run(message, args: any, _settings, _client, { guild }) {
         const [num = 1, option, ...rest] = args
         if (isNaN(num)) return message.reply("anna numero, saatana.");
         if (num > 5) return message.reply("viis heittoo maks :D")
@@ -30,7 +30,7 @@ const command: Command = {
             return newArr;
         }
 
-        client.getGuild(message.guild)
+        guild.getGuild()
             .then((res: any) => {
                 message.channel.send({files: randoms(num, res.imgs)})
                 if (!option || option !== "-s") {

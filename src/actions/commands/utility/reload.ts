@@ -1,12 +1,12 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "reload",
     description: "Reloads a command",
     args: true,
-    category: "config",
+    category: Categories.config,
     outOfOrder: true,
-    execute(message, args: string[], settings, client) {
+    run(message, args: string[], settings, client) {
         const commandName = args[0].toLowerCase();
         const command =
             client.commands.get(commandName) ||

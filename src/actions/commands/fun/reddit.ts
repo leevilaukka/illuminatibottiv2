@@ -1,17 +1,17 @@
 import { toTimestamp } from "../../../utils";
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
-import { Message, MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+import {ColorResolvable, Message, MessageActionRow, MessageButton, TextChannel} from "discord.js";
 
 const command: Command = {
     name: "reddit",
     aliases: ["r", "r/"],
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
-    category: "other",
+    category: Categories.other,
     guildOnly: true,
     usage: "<subreddit>",
     args: true,
-    async execute(message: Message & { channel: TextChannel }, args, settings, client) {
+    async run(message: Message & { channel: TextChannel }, args, settings, client) {
         const sender = message
 
         // Command arguments
@@ -83,11 +83,12 @@ const command: Command = {
                     });
                 }
 
+                const color = flaircolor ? `#${flaircolor}` as ColorResolvable : 0xff4500 as ColorResolvable
                 const embed = new IlluminatiEmbed(message, client, {
                     title,
                     url,
                     description: nsfw ? "**NSFW**" : null,
-                    color: flaircolor ? `#${flaircolor}` : 0xff4500,
+                    color,
                     image: {
                         url: kuva,
                     },

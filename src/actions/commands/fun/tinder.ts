@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import fs from "fs";
 
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "tinder",
@@ -10,7 +10,7 @@ const command: Command = {
     args: true,
     usage: "<määrä> <token> <aika>",
     cooldown: 10,
-    async execute(message, args: any, settings, client) {
+    async run(message, args: any, settings, client) {
         message.delete()
         
         let [maxCount, token, timeout]: [number, string, number] = args;

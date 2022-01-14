@@ -1,11 +1,12 @@
 import { IlluminatiEmbed } from "../../../structures";
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
 
 const command: Command = {
     name: "foorumi",
     description: "DiscordFoorumi-linkki",
-    category: "other",
-    execute(message, args, settings, client) {
+    category: Categories.other,
+    run(message, args, settings, client) {
         new IlluminatiEmbed(message, client, {
             title: "DiscordFoorumi",
             url: "https://foorumi.leevila.fi",

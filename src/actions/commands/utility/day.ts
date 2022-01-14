@@ -3,14 +3,14 @@ import axios from "axios";
 
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "day",
     description: "Päivän kalenteritiedot",
     aliases: ["päivä", "kalenteri"],
-    category: "date",
-    execute(message, args, _settings, client) {
+    category: Categories.date,
+    run(message, args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
 
         client.axios

@@ -1,13 +1,12 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command from 'IlluminatiCommand'
 
-import { myExtractor } from '../../../bot';
 import { argsToString } from '../../../helpers';
-import { PlayerMetadata } from '../../../types/PlayerMetadata';
+import { PlayerMetadata } from 'PlayerMetadata';
 
 const command: Command = {
     name: 'playradio',
     outOfOrder: true,
-    async execute(message: any, args, settings, client) {
+    async run(message: any, args, settings, client) {
         if(!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
         } 
@@ -29,9 +28,6 @@ const command: Command = {
             queue.destroy()
             return message.channel.send('Ei voida yhdistää puhekanavaan.')
         }
-
-
-        client.player.use("Radio", myExtractor)
 
         const track = await client.player.search(argsToString(args), {
             requestedBy: message.author,

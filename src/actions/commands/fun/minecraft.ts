@@ -3,15 +3,16 @@ import util from "minecraft-server-util";
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand"
+import Command, { Categories } from "IlluminatiCommand"
+
 
 const command: Command = {
     name: "minecraft",
     description: "Minecraft Server Info ja muita juttuja :D",
     aliases: ["mc", "mine"],
     cooldown: 15,
-    category: "other",
-    async execute(message, args, settings, client) {
+    category: Categories.other,
+    async run(message, args, settings, client) {
         // Variables for subcommand and server host
         const [subcommand, ...rest] = args;
         const host =

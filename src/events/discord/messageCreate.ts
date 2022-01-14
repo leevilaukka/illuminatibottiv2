@@ -1,11 +1,10 @@
-import { IlluminatiClient } from "../../structures";
-
 import Discord, { Collection, Message } from "discord.js";
 import config, { GuildSettings } from "../../config";
-import messageCheck from "../../helpers/messageCheck";
 import { commandChecks } from "../../helpers/commandChecks";
+import messageCheck from "../../helpers/messageCheck";
+import { IlluminatiClient } from "../../structures";
 
-const cooldowns: Collection<string, Collection<string, number>> = new Discord.Collection();
+const cooldowns: Collection<string /*command name*/, Collection<string /*user*/, number /*time*/>> = new Discord.Collection();
 
 export default async (client: IlluminatiClient, message: Message) => {
     let settings: GuildSettings;
@@ -20,19 +19,19 @@ export default async (client: IlluminatiClient, message: Message) => {
             settings = await guild.getGuild();
         }
     } catch (e) {
-        client.logger.botError(e, message);
+       await client.logger.botError(e, message);
     }
 
     if (message.author.bot) return;
 
     
 
-    if (user.getUser()) user.messageCountUp();
+    if (await user.getUser()) await user.messageCountUp();
 
-    if (settings.randomMessages) messageCheck(message);
+    if (settings.randomMessages) await messageCheck(message);
 
+    // Regex for mention
     const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
     const prefixRegex = new RegExp(
         `^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`
     );
@@ -61,15 +60,11 @@ export default async (client: IlluminatiClient, message: Message) => {
             //Cooldown check
             if (!(await user.getStats()).premium) {
                 if (timestamps.has(message.author.id)) {
-                    const expirationTime =
-                        timestamps.get(message.author.id) + cooldownAmount;
+                    const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
 
                     if (now < expirationTime) {
                         const timeLeft = (expirationTime - now) / 1000;
-                        return message.reply(
-                            `odota ${timeLeft.toFixed(1)} sekunti(a) ennen kuin käytät \`${command.name
-                            }\` komentoa uudestaan.`
-                        );
+                        return message.reply(`odota ${timeLeft.toFixed(1)} sekunti(a) ennen kuin käytät \`${command.name}\` komentoa uudestaan.`);
                     }
                 }
 
@@ -84,12 +79,13 @@ export default async (client: IlluminatiClient, message: Message) => {
             //Execute command and catch errors
             try {
                 message.channel.sendTyping();
-                command.execute(message, args, settings, client, {user, guild});
+                const meta = {guild, user};
+                command.run(message, args, settings, client, meta);
             } catch (error) {
-                client.logger.botError(error, message, command);
+                await client.logger.botError(error, message, command);
             }
-        } else return
-    });
+        }
+    }).catch(err => message.reply(err));
 };
 
 

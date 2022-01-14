@@ -1,8 +1,7 @@
-import { categories } from "../../../utils";
-import { getCommandCategory } from "../../../helpers";
+
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: `help`,
@@ -10,27 +9,29 @@ const command: Command = {
     aliases: [`commands`, `apua`],
     usage: `[komento]`,
     cooldown: 5,
-    category: "general",
-    async execute(message, args: any, settings, client) {
+    category: Categories.general,
+    async run(message, args: any, settings, client) {
 
-        const {commands} = client;
+        const { commands } = client;
         const prefix = settings.prefix;
 
         const author = {
             name: "IlluminatiBotti",
-            icon_url: client.user.avatarURL()
+            icon_url: client.user.avatarURL() || undefined
         };
 
         if (!args.length) {
             let fields = [];
 
+            console.log(Object.entries(Categories));
             // Valmistele komentojen lista
-            for (let i = 0; i < categories.length; i++) {
-                const categoryLength = commands.filter(command => command.category === categories[i].categoryCode).map(command => command.name).length;
-                if(categoryLength !== 0) {
+            for (const [category, value] of Object.entries(Categories)) {
+                const commandsInCategory = commands.filter(cmd => cmd.category === category);
+                console.log(commandsInCategory)
+                if ([...commandsInCategory].length) {
                     fields.push({
-                        name: `${categories[i].name} **[${categoryLength}]**:`,
-                        value: `${commands.filter(command => command.category === categories[i].categoryCode).map(command => command.name).join(`, `)}`
+                        name: `${value[0].toUpperCase()}${value.slice(1)} [${[...commandsInCategory].length}]`,
+                        value: commandsInCategory.map(cmd => `\`${cmd.name}\``).join(", ")
                     });
                 }
             }

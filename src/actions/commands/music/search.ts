@@ -1,16 +1,18 @@
 import { Message, MessageCollector } from 'discord.js'
 import { argsToString } from '../../../helpers'
 import { IlluminatiEmbed } from '../../../structures'
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
+
+
 const command: Command = {
     name: 'search',
     description: 'Search for a song',
     args: true,
-    category: 'music',
+    category: Categories.music,
     aliases: ['ms'],
     guildOnly: true,
-    async execute(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const query = argsToString(args)
 
         client.player.search(query, {

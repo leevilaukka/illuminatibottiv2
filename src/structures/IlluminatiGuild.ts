@@ -1,12 +1,15 @@
 import { ColorResolvable, Guild } from "discord.js";
-import IGuild from "../models/Guild"
-import config, { GuildSettings } from "../config";
 import { Document } from "mongoose";
+import config, { GuildSettings } from "../config";
+import IGuild from "../models/Guild";
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
-const GuildFunctions = (guild: Guild) => {
+export function GuildFunctions(guild: Guild) {
     return {
+        /**
+         * Log Guild to console
+         */
         log: (): void => {
             console.log("Guild log:", guild);
         },
@@ -26,7 +29,6 @@ const GuildFunctions = (guild: Guild) => {
         /**
          * Update Guild settings to database 
          * @method
-         * @param {Discord.Guild} guild Discord Guild object
          * @param {object} settings New settings
          * @returns Updated guild settings
          */
@@ -44,7 +46,7 @@ const GuildFunctions = (guild: Guild) => {
         },
 
         /**
-         * Create new Guild to database
+         * Create a new Guild to database
          * @method
          * @param {object} settings Guild settings
          * @returns New database guild settings
@@ -69,7 +71,6 @@ const GuildFunctions = (guild: Guild) => {
         /**
          * Delete guild from database
          * @method
-         * @param {Discord.Guild} guild Discord Guild object
          */
 
         deleteGuild: async (): Promise<void> => {
@@ -77,12 +78,23 @@ const GuildFunctions = (guild: Guild) => {
             console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
         },
 
+        /**
+         * Check if a command is disabled on this guild
+         * @method
+         * @param {string} command Command name
+         * @returns {boolean}
+         * @example
+         * if (GuildFunctions(guild).isCommandDisabled("ping")) {
+         *    console.log("Pinging is disabled on this guild");
+         * }
+         */
+
         isCommandDisabled: async (command: string): Promise<boolean> => {
             const guildSettings = await GuildFunctions(guild).getGuild();
             return guildSettings.disabledCommands.includes(command);
         }
-    
-    }  
+        
+    }
 }
 
 export default GuildFunctions;

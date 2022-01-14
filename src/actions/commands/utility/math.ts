@@ -2,14 +2,14 @@ import algebra from "algebra.js";
 import { argsToString }  from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "math",
     description: "Matikkaaa!",
     args: true,
-    category: "math",
-    execute(message, args, client, settings) {
+    category: Categories.math,
+    run(message, args, client, settings) {
 
         if (!args.includes("x")) {
             args.unshift("x", "=")

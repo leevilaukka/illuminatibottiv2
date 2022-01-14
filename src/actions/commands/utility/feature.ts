@@ -1,7 +1,8 @@
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
+import {ColorResolvable} from "discord.js";
 
 
 const command: Command = {
@@ -10,9 +11,9 @@ const command: Command = {
     aliases: ["report", "ilmoita"],
     usage: "<{tyyppi}/numero {viesti}>",
     cooldown: 15,
-    category: "general",
+    category: Categories.general,
     outOfOrder: true,
-    execute(message, args: any, _settings, client) {
+    run: function (message, args: any, _settings, client) {
         // Array of supported types (issue labels)
         const typelist = [
             "bug", "enhancement", "invalid", "question"
@@ -38,12 +39,13 @@ const command: Command = {
                     auth
                 })
                     .then(res => {
+                        const color = `#${res.data.labels[0].color}` as ColorResolvable
                         // Create embed from returned data
                         new IlluminatiEmbed(message, client, {
                             title: res.data.title,
                             description: res.data.body,
                             url: res.data.html_url,
-                            color: `#${res.data.labels[0].color}`,
+                            color,
                             fields: [
                                 {
                                     name: "Tila",
@@ -59,7 +61,9 @@ const command: Command = {
                                 }
                             ],
                             timestamp: res.data.updated_at
-                        }).send();
+                        })
+                            .send()
+                            .catch(console.error)
                     })
                     .catch(() => message.channel.send("Ilmoitusta ei löytynyt."))
             }// If typelist doesn't include given type and typearg is not a number, send message
@@ -81,11 +85,13 @@ const command: Command = {
             })
                 .then(res => {
                     // Create embed from returned data
+                    const color = `#${res.data.labels[0].color}` as ColorResolvable
+
                     new IlluminatiEmbed(message, client, {
                         title: "Uusi ilmoitus luotu!",
                         description: res.data.body,
                         url: res.data.html_url,
-                        color: `#${res.data.labels[0].color}`,
+                        color,
                         fields: [
                             {
                                 name: "Tägi",
@@ -97,7 +103,9 @@ const command: Command = {
                             }
                         ],
                         timestamp: Date.now()
-                    }).send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi");
+                    })
+                        .send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi")
+                        .catch(console.error);
                 })
                 .catch(e => message.channel.send("Tapahtui virhe: " + e.message))
         }

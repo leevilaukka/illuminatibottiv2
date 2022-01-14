@@ -3,7 +3,7 @@ import convert from "convert-units";
 import { argsToString, valueParser } from "../../../helpers";
 import IlluminatiEmbed from "../../../structures/IlluminatiEmbed";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "convert",
@@ -11,7 +11,7 @@ const command: Command = {
     usage: "<määrä {alkuperäinen yksikkö} {uusi yksikkö}>",
     aliases: ["c", "muunna"],
     category: "math",
-    execute(message, args: any, _settings, client) {
+    run(message, args: any, _settings, client) {
         let result: any;
         if (!args.length) {
             const measures = convert().measures();
@@ -23,7 +23,7 @@ const command: Command = {
                 },
             ];
 
-            const measuresToFields = (item) => {
+            const measuresToFields = (item: any) => {
                 fields.push({
                     name: `${valueParser(item)}`,
                     value: convert().possibilities(item).toString(),

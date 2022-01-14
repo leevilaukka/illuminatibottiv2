@@ -1,6 +1,6 @@
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command= {
   name: "config",
@@ -8,8 +8,8 @@ const command: Command= {
   guildOnly: true,
   aliases: ["asetus", "asetukset"],
   permissions: ["MANAGE_GUILD"],
-  category: "config",
-  async execute(message, args: string[], settings, client) {
+  category: Categories.config,
+  async run(message, args: string[], settings, client, {guild}) {
     const setting = args[0];
     let newSetting: any = args.slice(1).join(" ");
 
@@ -20,9 +20,7 @@ const command: Command= {
           return message.channel.send(`Nykyinen prefix:\`${settings.prefix}\``);
         }
         try {
-          await client.updateGuild(message.guild, {
-            prefix: newSetting,
-          });
+          await guild.updateGuild({prefix: newSetting});
           message.channel.send("Prefiksi päivitetty");
         } catch (e) {
           message.channel.send(`Tapahtui virhe: ${e.message}`);
@@ -43,9 +41,7 @@ const command: Command= {
               "Asetus liian suuri, äänenvoimakkuus rajoitettu 200%"
             );
           }
-          await client.updateGuild(message.guild, {
-            volume: newSetting,
-          });
+          await guild.updateGuild({volume: newSetting});
           return message.channel.send("Oletusäänenvoimakkuus päivitetty");
         } catch (e) {
           return  message.channel.send(`Tapahtui virhe: ${e.message}`);
@@ -58,9 +54,7 @@ const command: Command= {
           );
         }
         try {
-          await client.updateGuild(message.guild, {
-            removedMemberChannel: newSetting,
-          });
+          await guild.updateGuild({ removedMemberChannel: newSetting });
           return message.channel.send(`Kanava muutettu: ${newSetting}`);
         } catch (e) {
           return message.channel.send(`Tapahtui virhe: ${e.message}`);
@@ -74,9 +68,7 @@ const command: Command= {
         }
         if (newSetting === "status" || newSetting === "query") {
             try {
-                await client.updateGuild(message.guild, {
-                  "mcdefaults.action": newSetting,
-                });
+                await guild.updateGuild({"mcdefaults.action": newSetting});
                 return message.channel.send(`Oletus muutettu: ${newSetting}`);
               } catch (e) {
                 return message.channel.send(`Tapahtui virhe: ${e.message}`);
@@ -92,9 +84,7 @@ const command: Command= {
           );
         }
             try {
-                await client.updateGuild(message.guild, {
-                  "mcdefaults.host": newSetting,
-                });
+                await guild.updateGuild({"mcdefaults.host": newSetting});
                 return message.channel.send(`Oletus muutettu: ${newSetting}`);
               } catch (e) {
                 return message.channel.send(`Tapahtui virhe: ${e.message}`);
@@ -108,9 +98,7 @@ const command: Command= {
         }
         
         try {
-            await client.updateGuild(message.guild, {
-              randomMessages: newSetting,
-            });
+            await guild.updateGuild({ randomMessages: newSetting });
             return message.channel.send(`Oletus muutettu: ${newSetting}`);
         } catch (e) {
             console.error(e)

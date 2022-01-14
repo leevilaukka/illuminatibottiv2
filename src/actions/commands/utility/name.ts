@@ -2,14 +2,14 @@ import moment from "moment";
 
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command from "../../../types/IlluminatiCommand";
+import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
     name: "name",
     aliases: ["nimi", "nimipäivä"],
     description: "Päivän nimipäiväsankarit",
-    category: "date",
-    execute(message, _args, _settings, client) {
+    category: Categories.date,
+    run(message, _args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
         client.axios.get("http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
             .then(res => {

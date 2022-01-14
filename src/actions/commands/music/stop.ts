@@ -1,10 +1,12 @@
-import Command from '../../../types/IlluminatiCommand'
+import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+
 const command: Command = {
     name: 'stop',
     description: 'Stop the music',
     guildOnly: true,
-    category: 'music',
-    execute(message, args, settings, client) {
+    category: Categories.music,
+    run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         
         if (queue) {

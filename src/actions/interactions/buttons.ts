@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ButtonInteraction, CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
 import { IlluminatiInteraction } from "../../types/IlluminatiInteraction";
+
 const data = new SlashCommandBuilder()
     .setName("button")
     .setDescription("Test Buttons")
