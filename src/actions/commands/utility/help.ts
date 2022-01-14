@@ -1,7 +1,5 @@
-
-import { IlluminatiEmbed } from "../../../structures";
-
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import Command, { Categories } from 'IlluminatiCommand';
+import { IlluminatiEmbed } from '../../../structures';
 
 const command: Command = {
     name: `help`,
