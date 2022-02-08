@@ -12,7 +12,7 @@ const command: Command = {
     aliases: ["kartta"],
     usage: "<paikka>",
     category: Categories.maps,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         // Init variables
         const location = umlautRemover(argsToString(args));
         const token = process.env.GOOGLE_API;

@@ -1,8 +1,8 @@
 import { PlayerEvent } from "../../types/PlayerEvent"
 
-const evt: PlayerEvent = (client, queue, error) => {
-    return queue.metadata.channel.send(`:x: **${client.user.username || undefined}**: ${error}`)
-    
+const evt: PlayerEvent = (client, queue, error: Error) => {
+    console.error(error)
+    return client.sendError(error, queue.metadata.channel)
 }
 
 export default evt

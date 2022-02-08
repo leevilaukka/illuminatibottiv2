@@ -19,27 +19,36 @@ const command: Command = {
             channel: message.channel,
             message,
             author: message.author,
+            command: this
         }
 
+        // Create or get queue
         const queue = client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
             metadata
         });
 
-        try {
-            if (!queue.connection) await queue.connect(message.member.voice.channel)
-        } catch (e) {
-            queue.destroy()
-            return message.channel.send('Ei voida yhdistää puhekanavaan.')
+        // Connect Queue to voice channel
+        if(!queue.connection) {
+            try {
+                await queue.connect(message.member.voice.channel)
+            } catch (e) {
+                queue.destroy()
+                return client.sendError(new Error("Ei voi yhdistää puhekanavaan"), message.channel)
+            }
         }
 
+
+        // Get track
         const track = await client.player.search(argsToString(args), {
             requestedBy: message.author,
             searchEngine: QueryType.AUTO
-        }).then(x => x.tracks[0])
-        .catch(e => {
-            console.error(e)
-        });
-
+        })
+            .then(x => x.tracks[0])
+            .catch(e => {
+                console.error(e)
+                return
+            });
+        
         if(!track) return message.reply('No tracks found.')
         queue.play(track)
         return true

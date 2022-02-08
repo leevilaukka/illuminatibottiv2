@@ -1,22 +1,22 @@
 import { IlluminatiEmbed } from '../../../structures';
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
+enum queueModeEmoji {
+    ":x:",
+    ":repeat_one:",
+    ":repeat:",
+    ":infinity: (AutoPlay)"
+}
+
 const command: Command = {
     name: 'nowplaying',
     aliases: ['np'],
     description: 'Sends the currently playing song.',
     category: Categories.music,
     guildOnly: true,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         const nowPlaying = queue.nowPlaying()
-
-        const queueModeResolver = [
-            ":x:",
-            ":repeat_one:",
-            ":repeat:",
-            ":infinity: (AutoPlay)"
-        ]
 
         new IlluminatiEmbed(message, client, {
             title: `Nyt soi: ${nowPlaying.title}`,
@@ -39,7 +39,7 @@ const command: Command = {
                 },
                 {
                     name: "Toistotila",
-                    value: queueModeResolver[queue.repeatMode],
+                    value: queueModeEmoji[queue.repeatMode],
                     inline: true
                 },
                 {

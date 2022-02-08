@@ -12,7 +12,7 @@ const command: Command = {
     aliases: ["w", "sää"],
     cooldown: 10,
     category: Categories.other,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
         axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
             .then(res => {

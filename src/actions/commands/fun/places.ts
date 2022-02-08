@@ -14,7 +14,7 @@ const command: Command = {
     usage: "<hakusana>",
     cooldown: 7,
     category: Categories.maps,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
 
         // Get place id with query from Maps Places API

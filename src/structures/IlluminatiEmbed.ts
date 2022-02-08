@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, MessageEmbedOptions } from "discord.js";
+import { MessageEmbed, Message, MessageEmbedOptions, MessageOptions } from "discord.js";
 import { IlluminatiClient } from ".";
 
 /**
@@ -24,29 +24,29 @@ export default class IlluminatiEmbed extends MessageEmbed {
     /**
      * Send to channel
      * @method
-     * @param {string} content Content to send with embed
+     * @param {MessageOptions} options MessageOptions to send with the embed
      */
     
-    async send(content?: string) {
-        return this.message.channel.send({content, embeds: [this]})
+    async send(options?: MessageOptions) {
+        return this.message.channel.send({...options, embeds: [this]})
     }
 
-    async reply(content?: string) {
-        return this.message.reply({content, embeds: [this]})
+    async reply(options?: MessageOptions) {
+        return this.message.reply({...options, embeds: [this]})
     }
 
     /**
      * Send many embeds at once
      * @method
-     * @param {string} content Content to send with embed
+     * @param {MessageOptions} options MessageOptions to send with the embed
      * @param {MessageEmbed[] | IlluminatiEmbed[]} embeds Array of MessageEmbed or IlluminatiEmbed objects
      */
 
-    async sendMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], content?: string) {
-        await this.message.channel.send({content, embeds: [this, ...embeds]})
+    async sendMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], options?: MessageOptions) {
+        await this.message.channel.send({...options, embeds: [this, ...embeds]})
     }
 
-    async replyMany(embeds?: (MessageEmbed | IlluminatiEmbed)[], content?: string) {
-        await this.message.reply({content, embeds: [this, ...embeds]})
+    async replyMany(embeds: (MessageEmbed | IlluminatiEmbed)[], options?: MessageOptions) {
+        await this.message.reply({embeds: [this, ...embeds], ...options})
     }
 }

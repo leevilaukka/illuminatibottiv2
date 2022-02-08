@@ -9,7 +9,7 @@ const command: Command = {
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     category: Categories.other,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const query = argsToString(args);
         client.axios.get(`https://kgsearch.googleapis.com/v1/entities:search?query=${query}&languages=fi&key=${process.env.GOOGLE_API}`)
             .then(res => {

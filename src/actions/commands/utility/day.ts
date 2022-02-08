@@ -10,7 +10,7 @@ const command: Command = {
     description: "Päivän kalenteritiedot",
     aliases: ["päivä", "kalenteri"],
     category: Categories.date,
-    run(message, args, _settings, client) {
+    async run(message, args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
 
         client.axios

@@ -47,7 +47,7 @@ const command: Command = {
                     console.log(collected)
                     const trackIdx = parseInt(collected.first().content.trim()) - 1
                     const queue = client.player.getQueue(message.guild)
-                    
+
                     if (queue) {
                         queue.play(res.tracks[trackIdx])
                     } else {
@@ -68,7 +68,7 @@ const command: Command = {
                             queue.destroy()
                             return message.channel.send('Unable to connect to voice channel.')
                         }
-                        
+
                         await queue.play(res.tracks[trackIdx])
                         return collected.first()
                     }

@@ -104,7 +104,7 @@ const command: Command = {
                         ],
                         timestamp: Date.now()
                     })
-                        .send("Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi")
+                        .send({content: "Voit tarkistaa ilmoituksen tilan kirjoittamalla ilmoituksen numeron komennon ainoaksi argumentiksi"})
                         .catch(console.error);
                 })
                 .catch(e => message.channel.send("Tapahtui virhe: " + e.message))

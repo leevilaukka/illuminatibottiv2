@@ -7,7 +7,7 @@ const command: Command = {
     aliases: ['s'],
     category: Categories.music,
     guildOnly: true,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         client.player.getQueue(message.guild).skip()
     }
 }

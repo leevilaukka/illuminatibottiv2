@@ -6,7 +6,7 @@ const command: Command = {
     name: "foorumi",
     description: "DiscordFoorumi-linkki",
     category: Categories.other,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         new IlluminatiEmbed(message, client, {
             title: "DiscordFoorumi",
             url: "https://foorumi.leevila.fi",

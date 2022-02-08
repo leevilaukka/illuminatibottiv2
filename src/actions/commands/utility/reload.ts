@@ -1,3 +1,4 @@
+import { IlluminatiClient } from '../../../structures';
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
@@ -9,8 +10,8 @@ const command: Command = {
     run(message, args: string[], settings, client) {
         const commandName = args[0].toLowerCase();
         const command =
-            client.commands.get(commandName) ||
-            client.commands.find(
+            IlluminatiClient.commands.get(commandName) ||
+            IlluminatiClient.commands.find(
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
 
@@ -26,7 +27,7 @@ const command: Command = {
 
         try {
             const newCommand = require(`./${command.name}.js`);
-            client.commands.set(newCommand.name, newCommand);
+            IlluminatiClient.commands.set(newCommand.name, newCommand);
             message.channel.send(`Command \`${command.name}\` was reloaded!`);
         } catch (error) {
             console.error(error);

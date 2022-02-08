@@ -18,7 +18,7 @@ const command: Command = {
         type: "INTEGER",
         description: "Maksimiluku"
     }],
-    run(message, args: number[], client, settings) {;
+    async run(message, args: number[], client, settings) {;
         const [min, max] = args;
         let random = 0
         // Random Number Generator from min to max

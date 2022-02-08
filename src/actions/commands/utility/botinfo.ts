@@ -1,4 +1,4 @@
-import { IlluminatiEmbed } from '../../../structures'
+import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { MessageActionRow, MessageButton } from 'discord.js'
 
@@ -34,7 +34,7 @@ const command: Command = {
                 },
                 {
                     name: 'Bot Version',
-                    value: `v${client.packageInfo.version}${client.isDevelopment ? '-dev' : ''}`,
+                    value: `v${IlluminatiClient.packageInfo.version}${client.isDevelopment ? '-dev' : ''}`,
                     inline: true
                 },
                 {
@@ -61,15 +61,15 @@ const command: Command = {
             .addComponents(
                 new MessageButton()
                     .setStyle('LINK')
-                    .setURL(await client.getBotInviteLink())    
+                    .setURL(client.botInviteLink)    
                     .setLabel('Invite Link'),
                 new MessageButton()
                     .setStyle('LINK')
-                    .setURL(client.packageInfo.homepage)
+                    .setURL(IlluminatiClient.packageInfo.homepage)
                     .setLabel('GitHub Repository'),
                 new MessageButton()
                     .setStyle('LINK')
-                    .setURL(client.packageInfo.author.url)
+                    .setURL(IlluminatiClient.packageInfo.author.url)
                     .setLabel('GitHub Profile'),
             )
 

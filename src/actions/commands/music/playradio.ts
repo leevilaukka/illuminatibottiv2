@@ -7,18 +7,18 @@ const command: Command = {
     name: 'playradio',
     outOfOrder: true,
     async run(message: any, args, settings, client) {
-        if(!message.member.voice.channelId) {
+        if (!message.member.voice.channelId) {
             return message.channel.send('Et ole puhekanavalla!')
-        } 
-        
+        }
+
         const metadata: PlayerMetadata = {
             channel: message.channel,
             message,
             author: message.author,
-            
+
         }
 
-        const queue =  client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
+        const queue = client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
             metadata
         });
 
