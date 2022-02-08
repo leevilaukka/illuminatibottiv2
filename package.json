@@ -35,7 +35,7 @@
     "minecraft-server-util": "^3.5.1",
     "moment": "^2.29.1",
     "mongoose": "^6.0.4",
-    "ytdl-core": "^4.8.2"
+    "ytdl-core": "^4.10.1"
   },
   "devDependencies": {
     "@types/algebra.js": "^0.2.1",

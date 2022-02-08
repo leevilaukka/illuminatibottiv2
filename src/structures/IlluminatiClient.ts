@@ -17,8 +17,8 @@ const setPlayerUses = (player: Player) => {
 
 export default class IlluminatiClient extends Discord.Client {
     // Types
-    commands: Discord.Collection<string, Command>
-    interactions: Discord.Collection<string, IlluminatiInteraction>
+    static commands: Discord.Collection<string, Command>
+    static interactions: Discord.Collection<string, IlluminatiInteraction>
     player: Player
     config: Config
     userManager: typeof UserFunctions
@@ -31,13 +31,14 @@ export default class IlluminatiClient extends Discord.Client {
         search: (query: string) => Promise<Lyrics.LyricsData>
         client: any
     }
-    packageInfo: typeof info
+    static packageInfo: typeof info
 
+    
     constructor(clientOptions?: ClientOptions & {intents: number[]}, playerInitOptions?: PlayerInitOptions) {
         super(clientOptions)
 
         this.config = config
-        this.commands = new Discord.Collection();
+        IlluminatiClient.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
         this.env = process.env.NODE_ENV
         this.logger = new IlluminatiLogger(this)
@@ -46,22 +47,21 @@ export default class IlluminatiClient extends Discord.Client {
         this.axios = axios.create()
         this.player = new Player(this, playerInitOptions)
         this.lyrics = Lyrics.init(process.env.GENIUSAPI)
-        this.interactions = new Discord.Collection<string, IlluminatiInteraction>();
-        this.packageInfo = info
+        IlluminatiClient.interactions = new Discord.Collection<string, IlluminatiInteraction>();
+        IlluminatiClient.packageInfo = info
 
         setPlayerUses(this.player)
     }
 
-
     /**
      * Get the bot invite link
-     * @method
+     * @getter
      * @returns Invite link
      * @example
-     * client.getBotInviteLink()
+     * client.botInviteLink
      **/
 
-    getBotInviteLink(): string {
+    get botInviteLink(): string {
         return this.generateInvite({scopes: ["bot", "applications.commands"]});
     }
 
@@ -71,7 +71,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @param {string} name
      */
 
-    getCommand(name: string): Command {
+    static getCommand(name: string): Command {
         return this.commands.get(name) ||
         this.commands.find(
             (cmd) => cmd.aliases && cmd.aliases.includes(name)
@@ -93,7 +93,7 @@ export default class IlluminatiClient extends Discord.Client {
      * })
      */
 
-    getCommands(): Command[] {
+    static getCommands(): Command[] {
         return [...this.commands.values()];
     }
 
@@ -109,7 +109,7 @@ export default class IlluminatiClient extends Discord.Client {
      * })
      */
 
-    getInteraction(name: string): IlluminatiInteraction {
+    static getInteraction(name: string): IlluminatiInteraction {
         return this.interactions.get(name)
     }
 
@@ -122,7 +122,7 @@ export default class IlluminatiClient extends Discord.Client {
      * client.getInteractions() -- [IlluminatiInteraction, IlluminatiInteraction]
      */
 
-    getInteractions(): IlluminatiInteraction[] {
+    static getInteractions(): IlluminatiInteraction[] {
         return [...this.interactions.values()];
     }
 
@@ -133,7 +133,35 @@ export default class IlluminatiClient extends Discord.Client {
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
      */
-    getAllInteractables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
+    static getAllInteractables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
         return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
+    }
+
+    sendError(error: Error, channel: Discord.TextBasedChannels): Promise<Discord.Message> {
+        return channel.send(`:x: **${this.user.username}**: ${error.message}`)
+    }
+
+    // Log this object
+    log() {
+        console.log(this)
+    }
+
+    // toString 
+    toString(): string {
+        return `[IlluminatiClient] {
+            version: ${IlluminatiClient.packageInfo.version},
+            isDevelopment: ${this.isDevelopment},
+            ${
+                this.user ? `user: {
+                    tag: ${this.user.tag},
+                    id: ${this.user.id}
+                },` : ""
+            }
+            guilds: ${this.guilds.cache.size},
+            commands: ${IlluminatiClient.commands.size},
+            interactions: ${IlluminatiClient.interactions.size}
+            readyAt: ${this.readyAt}
+            shard: ${this.shard}
+        }`
     }
 }

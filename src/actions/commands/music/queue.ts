@@ -7,7 +7,7 @@ const command: Command = {
     description: 'Näytä nykyinen jono',
     category: Categories.music,
     guildOnly: true,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild.id)
 
         const comingUp = queue.tracks.map(track => {
@@ -39,7 +39,7 @@ const command: Command = {
             title: 'Tulossa',
             description: `${queue.tracks.length} kappale${queue.tracks.length > 1 ? "tta": ""}`,
             fields: comingUp
-        }).sendMany(queue.previousTracks.length && [embed2], "Jono")
+        }).sendMany(queue.previousTracks.length && [embed2], {content: "Jono"})
     }
 }
 export default command

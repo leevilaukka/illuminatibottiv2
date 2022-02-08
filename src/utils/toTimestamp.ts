@@ -1,3 +1,4 @@
+import { strikethrough } from "@discordjs/builders"
 import { Formatters } from "discord.js"
 
 export default (time: Date | string | number, format: "mm-dd-yy" | "md-t" | "t" | "mdy" | "full" | "since" | "T", divider?: number) => {

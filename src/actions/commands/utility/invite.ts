@@ -16,7 +16,7 @@ const command: Command = {
             .addComponents(
                 new MessageButton()
                     .setStyle("LINK")
-                    .setURL(await client.getBotInviteLink())
+                    .setURL(await client.botInviteLink)
                     .setLabel('Kutsu botti!'),
             )
 

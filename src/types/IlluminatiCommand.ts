@@ -25,7 +25,7 @@ export default interface Command {
     guildOnly?: boolean,
     args?: boolean,
     usage?: string,
-    category?: Categories,
+    category?: Categories | keyof typeof Categories,
     cooldown?: number,
     enableSlash?: boolean,
     outOfOrder?: boolean,
@@ -33,7 +33,8 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes
-    run: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta: CommandMeta) => void
+    run: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta: CommandMeta) => Promise<any>
+    onInit?: (client: IlluminatiClient) => Promise<any>
 }
 
 export enum Categories {

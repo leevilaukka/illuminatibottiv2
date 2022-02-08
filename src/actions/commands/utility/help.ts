@@ -1,5 +1,5 @@
-import Command, { Categories } from 'IlluminatiCommand';
-import { IlluminatiEmbed } from '../../../structures';
+import Command, { Categories } from '../../../types/IlluminatiCommand';
+import { IlluminatiClient, IlluminatiEmbed } from '../../../structures';
 
 const command: Command = {
     name: `help`,
@@ -10,7 +10,7 @@ const command: Command = {
     category: Categories.general,
     async run(message, args: any, settings, client) {
 
-        const { commands } = client;
+        const { commands } = IlluminatiClient;
         const prefix = settings.prefix;
 
         const author = {

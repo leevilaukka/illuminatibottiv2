@@ -43,7 +43,7 @@ export default async (client: IlluminatiClient, message: Message) => {
     const args: string[] = message.content.slice(matchedPrefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    const command = await client.getCommand(commandName)
+    const command = IlluminatiClient.getCommand(commandName)
 
     commandChecks(client, command, message, settings, args, config).then(async (res) => {
         if (res) {
@@ -80,7 +80,7 @@ export default async (client: IlluminatiClient, message: Message) => {
             try {
                 message.channel.sendTyping();
                 const meta = {guild, user};
-                command.run(message, args, settings, client, meta);
+                await command.run(message, args, settings, client, meta);
             } catch (error) {
                 await client.logger.botError(error, message, command);
             }

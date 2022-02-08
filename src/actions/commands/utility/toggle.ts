@@ -1,4 +1,4 @@
-import { IlluminatiEmbed } from '../../../structures'
+import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'toggle',
@@ -17,7 +17,7 @@ const command: Command = {
 
         
 
-        const command = await client.getCommand(commandName)
+        const command = IlluminatiClient.getCommand(commandName)
 
         if (!command) {
             message.reply(`komentoa \`${commandName}\` ei löydy`)

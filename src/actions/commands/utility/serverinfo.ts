@@ -7,7 +7,7 @@ const command: Command = {
     aliases: ['servu'],
     cooldown: 5,
     category: Categories.general,
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         message.channel.send(`Nimi: ${message.guild.name}\nJäseniä: ${message.guild.memberCount}`);
     },
 };

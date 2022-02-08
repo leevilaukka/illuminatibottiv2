@@ -4,7 +4,7 @@ import { IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: "flight",
-    run(message, args, settings, client) {
+    async run(message, args, settings, client) {
         const icao = args[0]
         client.axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
         .then(res => {
