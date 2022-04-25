@@ -15,8 +15,9 @@ const client = new IlluminatiClient(
         connectionTimeout: 10000,
         ytdlOptions: {
             filter: "audioonly",
-            highWaterMark: 1,
-            dlChunkSize: 1 << 25
+            highWaterMark: 1 << 62,
+            liveBuffer: 1 << 62,
+            dlChunkSize: 0, //disabling chunking is recommended in discord bot
         },
     }
 );
