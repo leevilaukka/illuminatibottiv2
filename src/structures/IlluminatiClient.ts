@@ -24,6 +24,7 @@ export default class IlluminatiClient extends Discord.Client {
     userManager: typeof UserFunctions
     guildManager: typeof IlluminatiGuild
     isDevelopment: boolean
+    isProduction: boolean
     env: string
     axios: AxiosInstance
     logger: IlluminatiLogger
@@ -40,6 +41,7 @@ export default class IlluminatiClient extends Discord.Client {
         this.config = config
         IlluminatiClient.commands = new Discord.Collection();
         this.isDevelopment = (process.env.NODE_ENV === "development");
+        this.isProduction = !this.isDevelopment;
         this.env = process.env.NODE_ENV
         this.logger = new IlluminatiLogger(this)
         this.userManager = IlluminatiUser

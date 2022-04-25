@@ -8,22 +8,29 @@ const command: Command = {
     category: Categories.maps,
     cooldown: 5,
     args: true,
-    run(message, args: number[], settings, client) {
-       const [name, lat, lon, ...rest] = args;
-       const newSettings = {
-           name,
-           coords: {
-               lat,
-               lon
-           }
-       }
-       if (isNaN(lat) || isNaN(lon)) {
-           return message.reply("koordinaattien tulee olla numeroita esim 123.45")
-       }
-       Guild.findOneAndUpdate({guildID: message.guild.id}, {
-           $push: {places: newSettings}
-       })
-           .catch(e => console.error(e))
+    run(message, args, settings, client) {
+        const [name, lat, lon, ...rest] = args;
+        const description = rest.join(' ');
+
+        const newSettings = {
+            type: "Point",
+            coordinates: [lon, lat]
+        }
+
+        if (isNaN(parseFloat(lat)) || isNaN(parseFloat(lon))) {
+            return message.reply("koordinaattien tulee olla numeroita esim 123.45")
+        }
+
+        Guild.findOneAndUpdate({ guildID: message.guild.id }, {
+            $push: {
+                places: {
+                    name,
+                    location: newSettings,
+                    description
+                }
+            }
+        })
+            .catch(e => console.error(e))
     }
 }
 

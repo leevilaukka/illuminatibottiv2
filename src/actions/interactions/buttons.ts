@@ -7,7 +7,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Test Buttons")
     .toJSON();
 
-const interaction: IlluminatiInteraction = {
+export default {
     data,
     async execute(data: CommandInteraction, client) {
         const row = new MessageActionRow()
@@ -24,6 +24,4 @@ const interaction: IlluminatiInteraction = {
         console.log(data)
         data.reply("Painoit nappia")
     }
-}
-
-export default interaction
+} as IlluminatiInteraction;

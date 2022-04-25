@@ -1,3 +1,4 @@
+import { QueueRepeatMode } from 'discord-player'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 
@@ -8,7 +9,13 @@ const command: Command = {
     category: Categories.music,
     guildOnly: true,
     async run(message, args, settings, client) {
-        client.player.getQueue(message.guild).skip()
+        const queue = client.player.getQueue(message.guild)
+
+        if(queue.repeatMode === QueueRepeatMode.TRACK) {
+            queue.setRepeatMode(QueueRepeatMode.OFF)
+            queue.skip()
+            queue.setRepeatMode(QueueRepeatMode.TRACK)
+        } else queue.skip()
     }
 }
 export default command

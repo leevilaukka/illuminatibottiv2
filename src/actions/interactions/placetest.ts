@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, MessageActionRow, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from "discord.js";
+import { IlluminatiEmbed } from "../../structures";
 import { IlluminatiInteraction } from "../../types/IlluminatiInteraction";
 
 const data = new SlashCommandBuilder()
@@ -19,7 +20,7 @@ const interaction: IlluminatiInteraction = {
             return {
                 label: place.name,
                 value: place.name,
-                description: `${place.coords.lat} - ${place.coords.lon}`,
+                description: `${place.location.coordinates[0]} - ${place.location.coordinates[1]}`,
             }
         })
 
@@ -33,37 +34,27 @@ const interaction: IlluminatiInteraction = {
                         ...options
                     ),
             );
-        const row2 = new MessageActionRow()
-            .addComponents(
-                new MessageSelectMenu()
-                    .setCustomId('placetest:place2')
-                    .setPlaceholder('Valitse toinen paikka')
-                    .addOptions(
-                        ...options
-                    ),
-            );
 
-        return data.reply({ content: 'Valitse!', components: [row, row2] });
+        await data.reply({ content: 'Valitse!', components: [row] });
     },
     async update(data: SelectMenuInteraction, client) {
         console.log(data);
         data.deferUpdate();
 
-        let place1, place2;
+        let place;
         if (data.customId === 'placetest:place') {
-            place1 = (await client.guildManager(data.guild).getGuild()).places.filter((place) => place.name === data.values[0]);
-        }
-        if (data.customId === 'placetest:place2') {
-            place2 = (await client.guildManager(data.guild).getGuild()).places.filter((place) => place.name === data.values[0]);
+            place = (await client.guildManager(data.guild).getGuild()).places.filter((place) => place.name === data.values[0]);
         }
 
-        if (place1 && place2) {
-            const embed = new MessageEmbed()
-                .setTitle(`${place1.name} / ${place2.name}`)
-                .setDescription(`${place1.coords.lat} - ${place1.coords.lon} /${place2.coords.lat} - ${place2.coords.lon} `)
+        if (!place) return
 
-            data.reply({ content: `Paikka`, embeds: [embed] });
-        }
+        const embed = new MessageEmbed()
+            .setTitle(place[0].name)
+            .setDescription(`${place[0].location.coordinates[0]} - ${place[0].location.coordinates[1]}`)
+            .setColor(0x00ff00)
+            .addField("Description", place[0].description)
+
+        await data.reply({ embeds:[embed] });      
     }
 }
 

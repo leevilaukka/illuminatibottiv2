@@ -18,12 +18,12 @@ const command: Command = {
         type: "INTEGER",
         description: "Maksimiluku"
     }],
-    async run(message, args: number[], client, settings) {;
+    async run(message, args, client, settings) {;
         const [min, max] = args;
         let random = 0
         // Random Number Generator from min to max
         if (min && max) {
-            random = Math.floor(Math.random() * (max - min + 1)) + min;
+            random = Math.floor(Math.random() * (parseInt(max) - parseInt(min) + 1)) + parseInt(min);
         } else {
             random = Math.floor(Math.random() * 10);
         }

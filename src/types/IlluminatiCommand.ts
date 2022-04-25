@@ -4,7 +4,7 @@ import { IlluminatiClient } from "../structures";
 import GuildFunctions from "../structures/IlluminatiGuild";
 import UserFunctions from "../structures/IlluminatiUser";
 
-export type CommandArguments = (string|number)[] 
+export type CommandArguments = string[] | string;
 
 type ArgTypes = ("string" | "number")[] 
 

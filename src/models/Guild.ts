@@ -2,12 +2,25 @@ import mongoose, { Model } from "mongoose"
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 
+const pointSchema = new Schema({
+    type: {
+        type: String,
+        enum: ["Point"],
+        required: true     
+    },
+    coordinates: {
+        type: [Number],
+        required: true
+    }
+});
+
 const PlaceSchema = new Schema({
     name: String,
-    coords: {
-        lat: Number,
-        lon: Number,
+    location: {
+        type: pointSchema,
+        required: true
     },
+    description: String
 });
 
 const MemberSchema = new Schema({
@@ -70,5 +83,5 @@ const GuildSchema = new Schema({
     },
     disabledCommands: [String],
 });
-
-export default mongoose.model<GuildSettings>("Guild", GuildSchema);
+const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
+export default model

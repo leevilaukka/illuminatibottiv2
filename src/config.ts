@@ -1,3 +1,4 @@
+
 export type Config = {
   token: string,
   devServerID: string,
@@ -7,9 +8,9 @@ export type Config = {
 
 type Place = {
   name: string,
-  coords: {
-    lat: number,
-    lon: number
+  location: {
+    type: string,
+    coordinates: [number, number]
   }
 }
 

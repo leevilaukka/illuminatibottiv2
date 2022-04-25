@@ -9,6 +9,7 @@ type UserStats = {
     xp: number;
     nextLevelXP: number;
     messageCount: number;
+    lastMessageAt: Date;
     commandsUsed: [
         {
             command: string;
@@ -199,6 +200,13 @@ export function UserFunctions(user: User) {
             return userData.save().catch((e: any) => console.error(e));
         },
 
+        setLastMessageAt: async (message: Message) => {
+            const userData = await UserFunctions(user).getUser();
+            if (typeof user !== "object") return;
+            userData.stats.lastMessageAt = message.createdAt;
+            return userData.save().catch((e: any) => console.error(e));
+        },
+
         /**
          * Add money to user
          * @param amount Amount of money to add
@@ -220,7 +228,7 @@ export function UserFunctions(user: User) {
          */
 
         tradeMoney: async (giveTo: User, amount: number, message: Discord.Message): Promise<Message | UserPromise[]> => {
-            if (giveTo.bot) return message.reply("älä tue bottien itsevaltaa!");
+            if (giveTo.bot) return message.reply("boteille ei voi antaa rahaa");
 
             const data = await UserFunctions(user).getUser();
             const giveToUser = await UserFunctions(giveTo).getUser();

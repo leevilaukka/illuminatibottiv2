@@ -34,7 +34,7 @@ export const commandChecks = async (client: IlluminatiClient, command: Command, 
 
     //ownerOnly check
     if (command.ownerOnly && message.author.id !== config.ownerID) {
-        throw "et omista minua! Komennon voi suorittaa vain tämän botin omistaja."
+        throw `Tämän komennon voi suorittaa vain tämän botin omistaja, ${(await client.getOwner()).tag} .`
     }
 
     //Args check

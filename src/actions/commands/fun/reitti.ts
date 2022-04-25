@@ -26,8 +26,8 @@ const command: Command = {
         const query = gql`
               {
                   plan(
-                      from: {lat: ${originResult.coords.lat},lon: ${originResult.coords.lon}}
-                      to: {lat: ${destResult.coords.lat}, lon: ${destResult.coords.lon}}
+                      from: {lat: ${originResult.location.coordinates[1]},lon: ${originResult.location.coordinates[0]}},
+                      to: {lat: ${destResult.location.coordinates[1]}, lon: ${destResult.location.coordinates[0]}},
                   ) {
                       itineraries {
                           legs {

@@ -12,7 +12,7 @@ const command: Command = {
     run(message, args, client, settings) {
 
         if (!args.includes("x")) {
-            args.unshift("x", "=")
+            args.toString().split("").unshift("x", "=")
         }
 
         try {

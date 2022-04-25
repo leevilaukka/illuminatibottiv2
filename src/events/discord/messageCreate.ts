@@ -9,6 +9,8 @@ const cooldowns: Collection<string /*command name*/, Collection<string /*user*/,
 export default async (client: IlluminatiClient, message: Message) => {
     let settings: GuildSettings;
 
+    if (message.author.bot) return;
+
     const user = client.userManager(message.author);
     const guild = client.guildManager(message.guild);
 
@@ -22,9 +24,6 @@ export default async (client: IlluminatiClient, message: Message) => {
        await client.logger.botError(e, message);
     }
 
-    if (message.author.bot) return;
-
-    
 
     if (await user.getUser()) await user.messageCountUp();
 

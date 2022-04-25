@@ -9,6 +9,7 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, Model<IlluminatiUse
             {command: String, count: Number}
         ],
         messageCount: { type: Number, default: 0 },
+        lastMessageAt: { type : Date, default: Date.now()},
         level: { type: Number, default: 0 },
         xp: { type: Number, default: 0 },
         nextLevelXP: { type: Number, default: 0 },
