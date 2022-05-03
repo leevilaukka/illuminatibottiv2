@@ -129,7 +129,7 @@ export default class IlluminatiClient extends Discord.Client {
     }
 
         /**
-     * Get all userinteractable objects
+     * Get all user-interactable objects
      * @method
      * @see getCommands Method for commands
      * @see getInteractions Method for interactions
@@ -143,12 +143,11 @@ export default class IlluminatiClient extends Discord.Client {
         return channel.send(`:x: **${this.user.username}**: ${error.message}`)
     }
 
-    // Log this object
+    // Log this
     log() {
         console.log(this)
     }
-
-    // toString 
+    
     toString(): string {
         return `[IlluminatiClient] {
             version: ${IlluminatiClient.packageInfo.version},

@@ -1,6 +1,15 @@
 # IlluminatiBotti
-
 Custom (mostly) Finnish Discord.js bot made with TypeScript.
+
+## Features
+- Music playback
+- Weather reports
+- Math & unit conversion
+- Some Reddit functionality
+- Much more...
+
+## Invite to your server
+You can invite the bot to your server using [this](https://discord.com/oauth2/authorize?client_id=670016290840379411&scope=bot&permissions=8) link.
 
 ## Local installation
 If you want to test the bot locally follow these steps:
@@ -14,5 +23,5 @@ If you want to test the bot locally follow these steps:
 - Build the bot using `tsc`.
 - Run `build/bot.js` using Node.
 
-## Changing default settings
+### Changing default settings
 Most of the default settings come from env variables, but some default settings, for example the command prefix and music volume, have to be set in `src/config.ts`. 

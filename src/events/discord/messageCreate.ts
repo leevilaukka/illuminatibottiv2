@@ -86,5 +86,3 @@ export default async (client: IlluminatiClient, message: Message) => {
         }
     }).catch(err => message.reply(err));
 };
-
-
