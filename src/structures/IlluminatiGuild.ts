@@ -34,7 +34,7 @@ export function GuildFunctions(guild: Guild) {
          * @returns Updated guild settings
          */
 
-        updateGuild: async (settings: Partial<GuildSettings>): Promise<object> => {
+        updateGuild: async (settings: Partial<GuildSettings & {guildName: string}> ): Promise<object> => {
             let data: any = await GuildFunctions(guild).getGuild();
 
             if (typeof data !== "object") data = {};

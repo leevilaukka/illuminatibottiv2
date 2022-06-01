@@ -16,8 +16,8 @@ const command: Command = {
         // Variables for subcommand and server host
         const [subcommand, ...rest] = args;
         const host =
-            settings.mcdefaults.host ||
-            client.config.defaultSettings.mcdefaults.host;
+            settings.minecraft.host ||
+            client.config.defaultSettings.minecraft.host;
 
         const rconClient = new util.RCON(host, {
             password: process.env.MCRCONPASS,
@@ -28,8 +28,8 @@ const command: Command = {
         // Switch-case depending on given subcommand. If no subcommand given, default to guild default if set, if not default to config default
         switch (
             subcommand ||
-            settings.mcdefaults.action ||
-            client.config.defaultSettings.mcdefaults.action
+            settings.minecraft.action ||
+            client.config.defaultSettings.minecraft.action
         ) {
             // Case for "status" subcommand
             case "status":
