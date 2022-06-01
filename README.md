@@ -11,6 +11,10 @@ Custom (mostly) Finnish Discord.js bot made with TypeScript.
 ## Invite to your server
 You can invite the bot to your server using [this](https://discord.com/oauth2/authorize?client_id=670016290840379411&scope=bot&permissions=8) link.
 
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=1948a87c9c07&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
+
+
 ## Local installation
 If you want to test the bot locally follow these steps:
 - Clone the repo.
