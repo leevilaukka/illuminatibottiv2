@@ -53,6 +53,10 @@ const GuildSchema = new Schema({
         type: String,
         required: true,
     },
+    leaveOnEmpty: {
+        type: Boolean,
+        default: false,
+    },
     prefix: {
         type: String,
         default: config.defaultSettings.prefix,

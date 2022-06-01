@@ -1,3 +1,4 @@
+import { BotError } from './../types/BotError';
 import { ColorResolvable, Guild } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
@@ -33,7 +34,7 @@ export function GuildFunctions(guild: Guild) {
          * @returns Updated guild settings
          */
 
-        updateGuild: async (settings: object): Promise<object> => {
+        updateGuild: async (settings: Partial<GuildSettings>): Promise<object> => {
             let data: any = await GuildFunctions(guild).getGuild();
 
             if (typeof data !== "object") data = {};
@@ -44,6 +45,19 @@ export function GuildFunctions(guild: Guild) {
 
             return await data.updateOne(settings).catch((e: any) => console.error(e));
         },
+
+        changeSetting: async <S extends keyof GuildSettings>(setting: S, newSetting: GuildSettings[S]) => {
+            try {
+                await GuildFunctions(guild).updateGuild({[setting]: newSetting });
+                return `${setting} päivitetty`;
+            } catch (e) {
+                throw {
+                    error: e,
+                    message: `Tapahtui virhe: ${e.message}`
+                };
+            }
+        },
+        
 
         /**
          * Create a new Guild to database

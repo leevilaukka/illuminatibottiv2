@@ -8,5 +8,7 @@ export default async (client: IlluminatiClient, interaction: Interaction)  => {
     if(interaction.isContextMenu()) return ContextMenu(client, interaction);
     if(interaction.isCommand()) return SlashCommand(client, interaction);
     if(interaction.isButton()) return Button(client, interaction);
-    if(interaction.isSelectMenu()) return SelectMenu(client, interaction);    
+    if(interaction.isSelectMenu()) return SelectMenu(client, interaction);   
+    
+    return
 }

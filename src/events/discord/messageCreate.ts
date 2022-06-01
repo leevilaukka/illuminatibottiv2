@@ -81,8 +81,8 @@ export default async (client: IlluminatiClient, message: Message) => {
                 const meta = {guild, user};
                 await command.run(message, args, settings, client, meta);
             } catch (error) {
-                await client.logger.botError(error, message, command);
+                await client.sendError(error, message.channel);
             }
         }
-    }).catch(err => message.reply(err));
+    }).catch(err => client.sendError(err, message.channel));
 };

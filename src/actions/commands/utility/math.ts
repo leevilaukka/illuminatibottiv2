@@ -9,7 +9,7 @@ const command: Command = {
     description: "Matikkaaa!",
     args: true,
     category: Categories.math,
-    run(message, args, client, settings) {
+    run(message, args, _settings, client) {
 
         if (!args.includes("x")) {
             args.toString().split("").unshift("x", "=")

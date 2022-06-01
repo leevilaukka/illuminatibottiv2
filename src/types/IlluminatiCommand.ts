@@ -1,3 +1,4 @@
+import { GuildSettings } from './../config';
 import { Message, PermissionResolvable } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
@@ -33,7 +34,7 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes
-    run: (message: Message, args: CommandArguments, settings: Config | any, client: IlluminatiClient, meta: CommandMeta) => Promise<any>
+    run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<any>
     onInit?: (client: IlluminatiClient) => Promise<any>
 }
 

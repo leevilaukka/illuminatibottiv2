@@ -16,15 +16,17 @@ type Place = {
 
 export type GuildSettings = {
   prefix: string,
-  volume: string,
+  volume: number,
   randomMessages: boolean,
-  mcdefaults: {
+  minecraft: {
     action: string,
     host: string
   },
+  leaveOnEmpty: boolean,
   throws: string[],
   places: Place[],
-  disabledCommands: string[]
+  disabledCommands: string[],
+  removedMemberChannel: string,
 }
 
 
@@ -33,10 +35,12 @@ const config: Config = {
   devServerID: process.env.DEVSERVERID,
   ownerID: process.env.OWNERID,
   defaultSettings: {
+    removedMemberChannel: "",
+    leaveOnEmpty: false, 
     prefix: "*",
-    volume: "1",
+    volume: 1,
     randomMessages: false,
-    mcdefaults: {
+    minecraft: {
       action: "status",
       host: process.env.MCHOST,
     },
