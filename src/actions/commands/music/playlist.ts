@@ -14,7 +14,7 @@ const command: Command = {
             requestedBy: message.author,
         }).then(async res => {
             if (!res.playlist) {
-                return message.channel.send(`Yhtäkään soittolistaa haulla \`${query}\` ei löytynyt`)
+                throw new Error(`Yhtäkään soittolistaa haulla \`${query}\` ei löytynyt`)
             }
 
             const queue = client.player.getQueue(message.guild)
@@ -37,7 +37,7 @@ const command: Command = {
                     if (!queue.connection) await queue.connect(message.member.voice.channel)
                 } catch (e) {
                     queue.destroy()
-                    return message.channel.send('Unable to connect to voice channel.')
+                    throw new Error("Ei voitu yhdistää puhekanavaan")
                 }
 
                 queue.addTracks(res.playlist.tracks)

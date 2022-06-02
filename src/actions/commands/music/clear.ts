@@ -1,6 +1,5 @@
+import { UserError } from '../../../structures/Errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
-
-
 
 const command: Command = {
     name: 'clear',
@@ -13,7 +12,7 @@ const command: Command = {
             queue.clear()
             return message.reply("Jono tyhjennetty!")
         } else {
-            return message.reply("Ei jonoa")
+            throw new UserError("Ei jonoa!")
         }
     }
 }

@@ -1,5 +1,6 @@
 import { IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from 'IlluminatiCommand'
+import { BotError, UserError } from '../../../structures/Errors'
 
 const command: Command = {
     name: 'lyrics',
@@ -13,13 +14,13 @@ const command: Command = {
         const { title } = queue.nowPlaying() as { title: string }
 
         if(!title) {
-            return message.reply('There is no song currently playing.')
+            throw new UserError('No song playing.')
         }
         const lyrics = await client.lyrics.search(title)
         console.log(lyrics)
         
         if(!lyrics) {
-            return message.reply('No lyrics found for this song.')
+            throw new BotError('No lyrics found.')
         }
 
         return new IlluminatiEmbed(message, client, {

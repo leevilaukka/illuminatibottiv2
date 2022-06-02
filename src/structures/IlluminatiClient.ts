@@ -1,4 +1,4 @@
-import Discord, { ClientOptions } from "discord.js"
+import Discord, { ClientOptions, Formatters } from "discord.js"
 import Command from "IlluminatiCommand"
 import config, { Config } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
@@ -139,8 +139,22 @@ export default class IlluminatiClient extends Discord.Client {
         return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
     }
 
-    sendError(error: Error, channel: Discord.TextBasedChannels): Promise<Discord.Message> {
-        return channel.send(`:x: **${this.user.username}**: ${error.message}`)
+    sendError(error: Error, target: Discord.Message | Discord.TextBasedChannels, showStack?: boolean): Promise<Discord.Message> {
+        console.error(error)
+
+        if (target instanceof Discord.Message) {
+            return this.replyError(error, target, showStack);
+        } else {
+            return this.sendErrorToChannel(error, target, showStack);
+        }
+    }
+
+    sendErrorToChannel(error: Error, channel: Discord.TextBasedChannels, showStack?: boolean): Promise<Discord.Message> {
+        return channel.send(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
+    }
+
+    replyError(error: Error, message: Discord.Message, showStack?: boolean): Promise<Discord.Message> {
+        return message.reply(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
 
     // Log this

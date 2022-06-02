@@ -12,7 +12,7 @@ const command: Command = {
     guildOnly: true,
     async run(message, args, _settings, client, _meta) {
         if(!message.member.voice.channelId) {
-            return message.channel.send('Et ole puhekanavalla!')
+            return client.replyError(new Error("Et ole puhekanavalla!"), message)
         }
 
         const metadata: PlayerMetadata = {
@@ -33,7 +33,7 @@ const command: Command = {
                 await queue.connect(message.member.voice.channel)
             } catch (e) {
                 queue.destroy()
-                return client.sendError(new Error("Ei voi yhdistää puhekanavaan"), message.channel)
+                throw new Error("Ei voitu yhdistää puhekanavaan")
             }
         }
 
@@ -49,7 +49,7 @@ const command: Command = {
                 return
             });
         
-        if(!track) return message.reply('No tracks found.')
+        if(!track) throw new Error("Kappaletta ei löytynyt")
         queue.play(track)
         return true
     }

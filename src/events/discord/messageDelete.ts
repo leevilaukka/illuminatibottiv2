@@ -1,3 +1,4 @@
+import { ErrorWithStack } from './../../structures/Errors';
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
 
@@ -45,7 +46,7 @@ export default async (client: IlluminatiClient, deletedMessage: any) => {
             $push: { deletedMessages: newDoc }
         }).catch(e => console.error(e))
     } catch (e) {
-        console.error(e);
+        throw new ErrorWithStack(e)
     }
 };
 
