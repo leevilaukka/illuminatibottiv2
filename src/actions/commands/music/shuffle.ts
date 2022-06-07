@@ -1,3 +1,4 @@
+import { UserError } from '../../../structures/errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 
@@ -12,7 +13,7 @@ const command: Command = {
             queue.shuffle()
             return message.reply('Sekoitetaan jono :twisted_rightwards_arrows:')
         } else {
-            return message.reply('Jono on tällä hetkellä tyhjä tai siinä on liian vähän kappaleita')
+            throw new UserError('Jono on tällä hetkellä tyhjä tai siinä on liian vähän kappaleita')
         }
     }
 }

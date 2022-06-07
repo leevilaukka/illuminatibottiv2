@@ -11,7 +11,8 @@ import { IlluminatiClient } from ".";
  */
 
 export default class IlluminatiEmbed extends MessageEmbed {
-    message: Message;
+    private message: Message;
+    
     constructor(message: Message, client: IlluminatiClient, data: MessageEmbedOptions) {
         super(data)
         this.message = message

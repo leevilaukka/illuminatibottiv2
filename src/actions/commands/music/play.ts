@@ -1,3 +1,4 @@
+import { BotError, UserError } from './../../../structures/errors';
 import { QueryType } from 'discord-player'
 import { argsToString } from '../../../helpers'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
@@ -12,7 +13,7 @@ const command: Command = {
     guildOnly: true,
     async run(message, args, _settings, client, _meta) {
         if(!message.member.voice.channelId) {
-            return client.replyError(new Error("Et ole puhekanavalla!"), message)
+            throw new UserError("Et ole puhekanavalla!")
         }
 
         const metadata: PlayerMetadata = {
@@ -49,7 +50,7 @@ const command: Command = {
                 return
             });
         
-        if(!track) throw new Error("Kappaletta ei löytynyt")
+        if(!track) throw new BotError("Kappaletta ei löytynyt")
         queue.play(track)
         return true
     }

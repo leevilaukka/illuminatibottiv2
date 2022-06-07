@@ -1,7 +1,6 @@
-import { toTimestamp } from "../../../utils";
 import { IlluminatiEmbed } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
-import {ColorResolvable, Message, MessageActionRow, MessageButton, TextChannel} from "discord.js";
+import {ColorResolvable, Formatters, Message, MessageActionRow, MessageButton, TextChannel} from "discord.js";
 
 const command: Command = {
     name: "reddit",
@@ -71,7 +70,7 @@ const command: Command = {
                     },
                     {
                         name: "Luotu",
-                        value: toTimestamp(Math.trunc(created), "md-t")
+                        value: Formatters.time(Math.trunc(created), "F"),
                     }
                 ];
 

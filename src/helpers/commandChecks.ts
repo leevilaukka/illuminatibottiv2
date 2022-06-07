@@ -1,3 +1,4 @@
+import { CommandNotFoundError } from './../structures/errors';
 import { Message } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
@@ -7,7 +8,7 @@ import Command, { CommandArguments } from "../types/IlluminatiCommand";
 export const commandChecks = async (client: IlluminatiClient, command: Command, message: Message, settings: any, args: CommandArguments, config: Config) => {
     // Not a command
     if (!command) {
-        throw `tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`
+        throw new CommandNotFoundError(`tuota komentoa ei löytynyt, kirjoita \`${settings.prefix}help\` saadaksesi apua komentojen kanssa.`)
     }
     // Command disabled
     if (command.outOfOrder && !client.isDevelopment) {

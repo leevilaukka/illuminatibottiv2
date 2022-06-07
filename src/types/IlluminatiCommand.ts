@@ -5,7 +5,7 @@ import { IlluminatiClient } from "../structures";
 import GuildFunctions from "../structures/IlluminatiGuild";
 import UserFunctions from "../structures/IlluminatiUser";
 
-export type CommandArguments = string[] | string;
+export type CommandArguments = string[];
 
 type ArgTypes = ("string" | "number")[] 
 
@@ -35,7 +35,7 @@ export default interface Command {
     ownerOnly?: boolean,
     argTypes?: ArgTypes
     run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<any>
-    onInit?: (client: IlluminatiClient) => Promise<any>
+    onInit?: (client: IlluminatiClient) => void
 }
 
 export enum Categories {

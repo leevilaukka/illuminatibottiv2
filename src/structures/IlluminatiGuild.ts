@@ -3,10 +3,11 @@ import { ColorResolvable, Guild } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
 import IGuild from "../models/Guild";
+import { DatabaseError } from './errors';
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
-export function GuildFunctions(guild: Guild) {
+export function GuildFunctions<T extends Guild>(guild: T) {
     return {
         /**
          * Log Guild to console
@@ -43,7 +44,9 @@ export function GuildFunctions(guild: Guild) {
                 else return;
             }
 
-            return await data.updateOne(settings).catch((e: any) => console.error(e));
+            return await data.updateOne(settings).catch((e) => {
+                throw new DatabaseError(e);
+            });
         },
 
         changeSetting: async <S extends keyof GuildSettings>(setting: S, newSetting: GuildSettings[S]) => {
@@ -51,10 +54,7 @@ export function GuildFunctions(guild: Guild) {
                 await GuildFunctions(guild).updateGuild({[setting]: newSetting });
                 return `${setting} päivitetty`;
             } catch (e) {
-                throw {
-                    error: e,
-                    message: `Tapahtui virhe: ${e.message}`
-                };
+                throw new DatabaseError(e)
             }
         },
         
@@ -73,8 +73,8 @@ export function GuildFunctions(guild: Guild) {
                 .then((res) => {
                     return res;
                 })
-                .catch((error: any) => {
-                    console.error(error);
+                .catch((error) => {
+                    throw new DatabaseError(error);
                 });
         },
 

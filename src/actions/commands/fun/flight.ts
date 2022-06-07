@@ -1,5 +1,4 @@
-import { EmbedFieldData } from 'discord.js'
-import { toTimestamp } from '../../../utils'
+import { EmbedFieldData, Formatters } from 'discord.js'
 import { IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
@@ -18,12 +17,12 @@ const command: Command = {
             const fields: EmbedFieldData[] = [
                 {
                     name: "Lähtö",
-                    value: `${data.departure.airport} | ${data.departure.icao}\n${toTimestamp(data.departure.actual || data.departure.estimated, "full", 1000)}`,
+                    value: `${data.departure.airport} | ${data.departure.icao}\n${Formatters.time(data.departure.actual || data.departure.estimated, "F")})`,
                     inline: true
                 },
                 {
                     name: "Saapuminen",
-                    value: `${data.arrival.airport} | ${data.arrival.icao}\n${toTimestamp(data.arrival.actual || data.arrival.estimated, "full", 1000)}`,
+                    value: `${data.arrival.airport} | ${data.arrival.icao}\n${Formatters.time(data.arrival.actual || data.arrival.estimated, "F")}`,
                     inline: true
                 }
             ];

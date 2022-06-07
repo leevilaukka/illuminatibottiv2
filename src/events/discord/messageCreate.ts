@@ -1,4 +1,4 @@
-import {  ErrorWithStack, UserError } from './../../structures/Errors';
+import {  ErrorWithStack, UserError } from '../../structures/errors';
 import Discord, { Collection, Message } from "discord.js";
 import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
@@ -82,6 +82,7 @@ export default async (client: IlluminatiClient, message: Message) => {
                 const meta = {guild, user};
                 await command.run(message, args, settings, client, meta);
             } catch (error) {
+                console.error(error);
                 if (error instanceof ErrorWithStack) return client.sendError(error, message.channel, true);
                 if (error instanceof UserError) return client.sendError(error, message);
                 return client.sendError(error, message);

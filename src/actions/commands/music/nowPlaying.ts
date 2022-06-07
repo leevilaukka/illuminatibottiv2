@@ -1,4 +1,5 @@
 import { IlluminatiEmbed } from '../../../structures';
+import { UserError } from '../../../structures/errors';
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 enum queueModeEmoji {
@@ -17,6 +18,8 @@ const command: Command = {
     async run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
         const nowPlaying = queue.nowPlaying()
+
+        if (!nowPlaying) throw new UserError('No song playing.')
 
         new IlluminatiEmbed(message, client, {
             title: `Nyt soi: ${nowPlaying.title}`,

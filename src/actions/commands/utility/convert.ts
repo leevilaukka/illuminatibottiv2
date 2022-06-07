@@ -1,6 +1,7 @@
 import convert from "convert-units";
 
 import { argsToString, valueParser } from "../../../helpers";
+import { BotError } from "../../../structures/errors";
 import IlluminatiEmbed from "../../../structures/IlluminatiEmbed";
 
 import Command, { Categories } from '../../../types/IlluminatiCommand'
@@ -64,7 +65,7 @@ const command: Command = {
                     ]
                 }).send()
             } catch (e) {
-                return message.channel.send(e.message);
+                throw new BotError(e)
             }
 
 
@@ -73,7 +74,7 @@ const command: Command = {
             try {
                 result = convert(value).from(from).toBest();
             } catch (e) {
-                return message.channel.send(e.message);
+                throw new BotError(e)
             }
 
             const fieldValue = `${result.val} ${result.unit}`;
@@ -96,7 +97,7 @@ const command: Command = {
         try {
             result = convert(value).from(from).to(to);
         } catch (e) {
-            return message.channel.send(e.message);
+            throw new BotError(e)
         }
 
         new IlluminatiEmbed(message, client, {

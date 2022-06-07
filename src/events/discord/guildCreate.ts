@@ -1,5 +1,6 @@
 import { Guild } from "discord.js";
 import { IlluminatiClient } from "../../structures";
+import { DatabaseError } from "../../structures/errors";
 
 const evt = async (client: IlluminatiClient, guild: Guild) => {
     try {
@@ -12,7 +13,7 @@ const evt = async (client: IlluminatiClient, guild: Guild) => {
         await client.guildManager(guild).createGuild(newGuild)
 
     } catch (e) {
-        console.error(e)
+        throw new DatabaseError(e)
     }
 };
 

@@ -3,8 +3,7 @@ import util from "minecraft-server-util";
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command, { Categories } from "IlluminatiCommand"
-
+import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 const command: Command = {
     name: "minecraft",

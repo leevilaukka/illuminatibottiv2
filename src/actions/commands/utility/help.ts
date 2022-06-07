@@ -23,8 +23,8 @@ const command: Command = {
 
             console.log(Object.entries(Categories));
             // Valmistele komentojen lista
-            for (const [category, value] of Object.entries(Categories)) {
-                const commandsInCategory = commands.filter(cmd => cmd.category === category);
+            for (const [_category, value] of Object.entries(Categories)) {
+                const commandsInCategory = commands.filter(cmd => cmd.category === value);
                 console.log(commandsInCategory)
                 if ([...commandsInCategory].length) {
                     fields.push({

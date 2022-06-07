@@ -1,10 +1,9 @@
-import { BotError } from '../../../types/BotError';
 import { GuildSettings } from '../../../config';
 
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
-    name: "newconfig",
+    name: "config",
     description: "Tarkastele ja vaihda botin asetuksia palvelimellasi",
     guildOnly: true,
     aliases: ["asetus", "asetukset"],
@@ -22,8 +21,6 @@ const command: Command = {
         } else {
             guild.changeSetting(setting, newSetting).then((res) => {
                 message.channel.send(res)
-            }).catch((err) => {
-                client.sendError(err, message.channel)
             })
         }
     }

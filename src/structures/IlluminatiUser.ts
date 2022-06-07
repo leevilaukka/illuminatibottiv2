@@ -1,7 +1,8 @@
-import Discord, {Message, User} from "discord.js"
+import Discord, { Message, User } from "discord.js"
 import IUser from "../models/User"
-import {IlluminatiClient, IlluminatiEmbed} from ".";
-import {Document} from "mongoose";
+import { IlluminatiClient, IlluminatiEmbed } from ".";
+import { Document } from "mongoose";
+import { BotError, DatabaseError } from "./errors";
 
 type UserStats = {
     money: number;
@@ -29,13 +30,13 @@ export type IlluminatiUserTypes = {
 
 type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiUserTypes>
 
-export function UserFunctions(user: User) {
+export function UserFunctions<T extends User>(user: T) {
     return {
         /**
          * Returns Discord User Object
-         * @returns {Discord.User}
+         * @returns {T}
          */
-        getDiscordUser: (): Discord.User => user,
+        getDiscordUser: (): T => user,
 
         /**
          * Log user object
@@ -48,7 +49,10 @@ export function UserFunctions(user: User) {
          * Get user from database
          */
         getUser: async (): UserPromise => {
-            return IUser.findOne({discordID: user.id});
+            return IUser.findOne({ discordID: user.id })
+                .catch((e) => {
+                    throw new DatabaseError(e);
+                });
         },
 
         /**
@@ -69,14 +73,16 @@ export function UserFunctions(user: User) {
 
         updateUser: async (data: IlluminatiUserTypes): Promise<void | UserPromise> => {
             const userData = await UserFunctions(user).getUser();
-            if (typeof userData !== "object") return console.error(`User does not exist:`, user.id);
+            if (typeof userData !== "object") throw new BotError(`User does not exist: ${user.id}`);
 
             // Update user
             userData.username = data.username;
             userData.stats = { ...userData.stats, ...data.stats };
             return userData.save().then(async (res) => {
                 return res;
-            }).catch(() => console.error(`Failed to update user:`, user.id));
+            }).catch((e) => {
+                throw new DatabaseError(e)
+            });
         },
 
         /**
@@ -99,9 +105,11 @@ export function UserFunctions(user: User) {
             if (userData) {
                 await userData.remove().then((res) => {
                     console.log(`Deleted user:`, res)
+                }).catch((e) => {
+                    throw new DatabaseError(e)
                 });
             } else {
-                console.log(`User does not exist:`, user.id);
+                throw new BotError(`User does not exist: ${user.id}`);
             }
         },
 
@@ -116,9 +124,11 @@ export function UserFunctions(user: User) {
                 userData.stats = { ...userData.stats, ...data };
                 await userData.save().then(async (res) => {
                     return res
+                }).catch((e) => {
+                    throw new DatabaseError(e)
                 });
             } else {
-                console.log(`User does not exist:`, user.id);
+                throw new BotError(`User does not exist: ${user.id}`);
             }
         },
 
@@ -143,7 +153,7 @@ export function UserFunctions(user: User) {
                     return res
                 });
             } else {
-                console.log(`User does not exist:`, user.id);
+                throw new BotError(`User does not exist: ${user.id}`);
             }
         },
 
@@ -155,7 +165,7 @@ export function UserFunctions(user: User) {
                     return res
                 });
             } else {
-                console.log(`User does not exist:`, user.id);
+                throw new BotError(`User does not exist: ${user.id}`);
             }
         },
 
@@ -197,14 +207,18 @@ export function UserFunctions(user: User) {
             const userData = await UserFunctions(user).getUser();
             if (typeof user !== "object") return;
             userData.stats.messageCount++;
-            return userData.save().catch((e: any) => console.error(e));
+            return userData.save().catch((e: any) => {
+                throw new DatabaseError(e)
+            });
         },
 
         setLastMessageAt: async (message: Message) => {
             const userData = await UserFunctions(user).getUser();
             if (typeof user !== "object") return;
             userData.stats.lastMessageAt = message.createdAt;
-            return userData.save().catch((e: any) => console.error(e));
+            return userData.save().catch((e: any) => {
+                throw new DatabaseError(e)
+            });
         },
 
         /**
@@ -216,7 +230,7 @@ export function UserFunctions(user: User) {
             if (typeof user !== "object") return;
             userData.stats.money += amount;
             return userData.save().catch((e: string) => {
-                console.error(e);
+                throw new DatabaseError(e)
             });
         },
 
@@ -251,7 +265,9 @@ export function UserFunctions(user: User) {
                 });
 
                 return [data, giveToUser];
-            }).catch((e: any) => console.error(e));
+            }).catch((e: any) => {
+                throw new DatabaseError(e)
+            });
         },
 
         /**
@@ -305,7 +321,9 @@ export function UserFunctions(user: User) {
             if (typeof userData !== "object") return;
 
             userData.stats.premium = true;
-            return await userData.save()
+            return await userData.save().catch((e: any) => {
+                throw new DatabaseError(e)
+            });
         }
     }
 }

@@ -1,10 +1,11 @@
 import { Track } from "discord-player";
 import { IlluminatiEmbed } from "../../structures";
+import { PlayerError } from "../../structures/errors";
 import { PlayerEvent } from "../../types/PlayerEvent";
 
 const evt: PlayerEvent = (client, queue, track: Track | Error) => {
     if (track instanceof Error) {
-        return queue.metadata.channel.send(`:x: **${client.user.username || undefined}**: ${track}`)
+        throw new PlayerError(track.message)
     }
     
     const embed = new IlluminatiEmbed(queue.metadata.message, client, {

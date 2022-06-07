@@ -1,3 +1,4 @@
+import { ErrorWithStack } from './../../../structures/errors';
 import { ContextMenuInteraction, Formatters, Util } from "discord.js";
 import { argsToString } from "../../../helpers";
 import { clean } from "../../../structures/IlluminatiHelpers";
@@ -20,10 +21,10 @@ const command: Command = {
             const splitMessage = Util.splitMessage(clean(evaled))
 
             for (const block of splitMessage) {
-               await message.channel.send({content: Formatters.codeBlock(block)});
+               await message.channel.send({content: Formatters.codeBlock("js" ,block)});
             }
         } catch (err) {
-            message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+            throw new ErrorWithStack(err)
         }
     }
 }

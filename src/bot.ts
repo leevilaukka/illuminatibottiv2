@@ -26,7 +26,7 @@ const client = new IlluminatiClient(
     // Check if ownerID given
     if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check your env variables.");
 
-    await setupImports(client).then(() => console.log("Imports complete!"));
+    await setupImports(client).then(() => console.log("Setup imports done!"));
 
     // Connect to database
     mongoose.connect(

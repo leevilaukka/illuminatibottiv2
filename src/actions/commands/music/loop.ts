@@ -1,3 +1,4 @@
+import { UserError } from './../../../structures/errors';
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {
@@ -20,7 +21,7 @@ const command: Command = {
         if (queue && loopMode < 3) {
             queue.setRepeatMode(loopMode + 1)
         } else if (!queue) {
-            return message.reply("Ei jonoa mitä toistaa")
+            throw new UserError("Ei jonoa mitä toistaa")
         } else {
             queue.setRepeatMode(0)
         }

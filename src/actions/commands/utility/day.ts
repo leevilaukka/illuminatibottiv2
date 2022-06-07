@@ -1,5 +1,4 @@
 import moment from "moment";
-import axios from "axios";
 
 import { IlluminatiEmbed } from "../../../structures";
 

@@ -1,3 +1,4 @@
+import { UserError } from '../../../structures/errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 
@@ -14,7 +15,7 @@ const command: Command = {
             queue.destroy(true)
             return message.reply("Heippa!")
         } else {
-            return message.reply("Mikään ei soi")
+            throw new UserError("Mikään ei soi!")
         }
     }
 }

@@ -1,3 +1,4 @@
+import { DatabaseError } from './../../../structures/errors';
 import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 import Guild from "../../../models/Guild"
@@ -13,11 +14,13 @@ const command: Command = {
     run(message, args: string[], settings, client) {
         const [heitto, ...rest] = args;
 
-        if (heitto.endsWith(".png") || heitto.endsWith(".jpg") || heitto.endsWith(".gif")){
-            Guild.findOneAndUpdate({guildID: message.guild.id}, {
-                $push: {throws: heitto}
+        if (heitto.endsWith(".png") || heitto.endsWith(".jpg") || heitto.endsWith(".gif")) {
+            Guild.findOneAndUpdate({ guildID: message.guild.id }, {
+                $push: { throws: heitto }
             })
-                .catch((e: any) => console.error(e))
+                .catch((e: any) => {
+                    throw new DatabaseError(e)
+                })
         } else return message.reply("anna png, jpg tai gif päätteinen osoite!")
     }
 }

@@ -1,6 +1,6 @@
 import { Interaction } from "discord.js";
 import { IlluminatiClient } from "../../structures";
-import { SlashCommand, Button, SelectMenu, ContextMenu } from "../interactions"
+import { SlashCommand, Button, SelectMenu, ContextMenu } from "../../helpers/interactions"
 
 export default async (client: IlluminatiClient, interaction: Interaction)  => {
     console.log(interaction);

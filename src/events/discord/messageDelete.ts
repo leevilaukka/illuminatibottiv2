@@ -1,4 +1,4 @@
-import { ErrorWithStack } from './../../structures/Errors';
+import { ErrorWithStack } from '../../structures/errors';
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
 

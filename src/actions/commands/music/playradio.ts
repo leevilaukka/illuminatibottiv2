@@ -2,6 +2,7 @@ import Command from 'IlluminatiCommand'
 
 import { argsToString } from '../../../helpers';
 import { PlayerMetadata } from 'PlayerMetadata';
+import { PlayerError } from '../../../structures/errors';
 
 const command: Command = {
     name: 'playradio',
@@ -26,7 +27,7 @@ const command: Command = {
             if (!queue.connection) await queue.connect(message.member.voice.channel)
         } catch (e) {
             queue.destroy()
-            return message.channel.send('Ei voida yhdistää puhekanavaan.')
+            throw new PlayerError('Ei voida yhdistää puhekanavaan.')
         }
 
         const track = await client.player.search(argsToString(args), {

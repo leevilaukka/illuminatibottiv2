@@ -1,4 +1,4 @@
-import { UserError } from '../../../structures/Errors'
+import { UserError } from '../../../structures/errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 const command: Command = {

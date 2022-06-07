@@ -1,6 +1,6 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from 'IlluminatiCommand'
-import { BotError, UserError } from '../../../structures/Errors'
+import Command, { Categories } from "../../../types/IlluminatiCommand";
+import { BotError, UserError } from '../../../structures/errors'
 
 const command: Command = {
     name: 'lyrics',

@@ -1,4 +1,4 @@
-import Command, {Categories} from "IlluminatiCommand";
+import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 function randomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
