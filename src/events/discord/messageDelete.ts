@@ -1,9 +1,12 @@
-import { ErrorWithStack } from '../../structures/errors';
+import { DatabaseError, ErrorWithStack } from '../../structures/Errors';
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
+import { Message, TextChannel } from 'discord.js';
 
-export default async (client: IlluminatiClient, deletedMessage: any) => {
+export default async (client: IlluminatiClient, deletedMessage: Message) => {
     try {
+        if (!(deletedMessage.channel instanceof TextChannel)) return;
+        if (deletedMessage.author.bot) return;
         if (!deletedMessage.guild) return;
 
         const fetchedLogs = await deletedMessage.guild.fetchAuditLogs({
@@ -33,7 +36,7 @@ export default async (client: IlluminatiClient, deletedMessage: any) => {
                 id: executor.id
             } : null,
             message,
-            timestamp: new Date(Date.now()),
+            timestamp: Date.now(),
             messageID,
             channel: {
                 name: channel.name,
@@ -44,7 +47,9 @@ export default async (client: IlluminatiClient, deletedMessage: any) => {
 
         Guild.findOneAndUpdate({ guildID: deletedMessage.channel.guild.id }, {
             $push: { deletedMessages: newDoc }
-        }).catch(e => console.error(e))
+        }).catch(e => {
+            throw new DatabaseError(e)
+        })
     } catch (e) {
         throw new ErrorWithStack(e)
     }

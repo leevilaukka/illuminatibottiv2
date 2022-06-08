@@ -1,4 +1,4 @@
-import {  ErrorWithStack, UserError } from '../../structures/errors';
+import {  ErrorWithStack, UserError } from '../../structures/Errors';
 import Discord, { Collection, Message } from "discord.js";
 import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";

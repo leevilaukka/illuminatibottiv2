@@ -1,4 +1,4 @@
-import { CommandNotFoundError } from './../structures/errors';
+import { CommandNotFoundError } from '../structures/Errors';
 import { Message } from "discord.js";
 import { Config } from "../config";
 import { IlluminatiClient } from "../structures";

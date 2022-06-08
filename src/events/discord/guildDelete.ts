@@ -1,5 +1,6 @@
 import { Guild } from "discord.js";
 import { IlluminatiClient } from "../../structures";
+import { BotError } from "../../structures/Errors";
 
 const evt = async (client: IlluminatiClient, guild: Guild) => {
     try {
@@ -7,7 +8,7 @@ const evt = async (client: IlluminatiClient, guild: Guild) => {
             await client.guildManager(guild).deleteGuild();
         }
     } catch (e) {
-        console.error(e)
+        throw new BotError(e)
     }
 };
 

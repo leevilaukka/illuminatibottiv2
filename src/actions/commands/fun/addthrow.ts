@@ -1,4 +1,4 @@
-import { DatabaseError } from './../../../structures/errors';
+import { DatabaseError } from '../../../structures/Errors';
 import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 import Guild from "../../../models/Guild"

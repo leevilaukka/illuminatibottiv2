@@ -1,4 +1,4 @@
-import { ErrorWithStack } from './../../../structures/errors';
+import { ErrorWithStack } from '../../../structures/Errors';
 import { ContextMenuInteraction, Formatters, Util } from "discord.js";
 import { argsToString } from "../../../helpers";
 import { clean } from "../../../structures/IlluminatiHelpers";

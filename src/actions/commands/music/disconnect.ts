@@ -1,4 +1,4 @@
-import { UserError } from '../../../structures/errors'
+import { UserError } from '../../../structures/Errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 

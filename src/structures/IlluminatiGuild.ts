@@ -3,7 +3,8 @@ import { ColorResolvable, Guild } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
 import IGuild from "../models/Guild";
-import { DatabaseError } from './errors';
+import { DatabaseError } from './Errors';
+
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 

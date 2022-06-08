@@ -1,4 +1,4 @@
-import { BotError, UserError } from './../../../structures/errors';
+import { BotError, UserError } from '../../../structures/Errors';
 import { QueryType } from 'discord-player'
 import { argsToString } from '../../../helpers'
 import Command, { Categories } from '../../../types/IlluminatiCommand'

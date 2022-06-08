@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
 import { IlluminatiClient } from "../../structures";
-import { DatabaseError } from "../../structures/errors";
+import { DatabaseError } from "../../structures/Errors";
 
 const evt = async (client: IlluminatiClient, guild: Guild) => {
     try {

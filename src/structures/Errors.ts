@@ -1,10 +1,13 @@
-export class UserError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "UserError";
-    }
-}
+import { Player } from "discord-player";
+import Command from "IlluminatiCommand";
 
+
+
+/**
+ * @class
+ * General purpose class for handling bot errors.
+ * @extends Error
+ */
 export class BotError extends Error {
     constructor(message: string) {
         super(message);
@@ -12,13 +15,35 @@ export class BotError extends Error {
     }
 }
 
-export class CommandNotFoundError extends Error {
+/**
+ * @class
+ * Error for user input errors etc.
+ * @extends BotError
+ */
+export class UserError extends BotError {
+    constructor(message: string) {
+        super(message);
+        this.name = "UserError";
+    }
+}
+
+/**
+ * @class
+ * Error to be thrown when command is not found
+ * @extends BotError
+ */
+export class CommandNotFoundError extends BotError {
     constructor(message: string) {
         super(message);
         this.name = "CommandNotFoundError";
     }
 }
 
+/**
+ * @class
+ * Error to be thrown when a stack trace is wanted to be sent to the guild
+ * @extends BotError
+ */
 export class ErrorWithStack extends BotError {
     constructor(message: string) {
         super(message);
@@ -26,13 +51,29 @@ export class ErrorWithStack extends BotError {
     }
 }
 
+/**
+ * @class
+ * Error to be thrown when an player error is thrown, sends stack trace to guild
+ * @extends ErrorWithStack
+ */
 export class PlayerError extends ErrorWithStack {
-    constructor(message: string) {
+    private Player: Player;
+    constructor(message: string, player: Player) {
         super(message);
         this.name = "PlayerError";
+        this.Player = player;
+    }
+
+    get player() {
+        return this.Player;
     }
 }
 
+/**
+ * @class
+ * Error to be thrown when an database error is thrown, sends stack trace to guild
+ * @extends ErrorWithStack
+ */
 export class DatabaseError extends ErrorWithStack {
     constructor(message: string) {
         super(message);
@@ -40,9 +81,21 @@ export class DatabaseError extends ErrorWithStack {
     }
 }
 
+
+/**
+ * @class
+ * Error to be thrown when an error in a command is thrown, sends stack trace to guild
+ * @extends ErrorWithStack
+ */
 export class CommandError extends ErrorWithStack {
-    constructor(message: string) {
+    private Command: Command; 
+    constructor(message: string, command: Command) {
         super(message);
         this.name = "CommandError";
+        this.Command = command;
+    }
+
+    get command() {
+        return this.Command;
     }
 }

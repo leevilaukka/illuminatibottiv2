@@ -8,11 +8,18 @@ import setupImports from "./setupImports";
 
 const client = new IlluminatiClient(
     {
-        intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
-        userAgentSuffix: ["IlluminatiBotti"]
+        intents: 36495,
+        userAgentSuffix: ["IlluminatiBotti"],
+        presence: {
+            status: "online",
+            activities: [{
+                name: "over the Illuminati",
+                type: 3
+            }]
+        },
     },
     {
-        connectionTimeout: 10000,
+        connectionTimeout: 1000 * 30, // 30 seconds
         ytdlOptions: {
             filter: "audioonly",
             highWaterMark: 1 << 62,

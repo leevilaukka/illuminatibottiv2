@@ -1,7 +1,7 @@
 import { Message, MessageCollector } from 'discord.js'
 import { argsToString } from '../../../helpers'
 import { IlluminatiEmbed } from '../../../structures'
-import { PlayerError, UserError } from '../../../structures/errors'
+import { PlayerError, UserError } from '../../../structures/Errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
@@ -67,7 +67,7 @@ const command: Command = {
                             if (!queue.connection) await queue.connect(message.member.voice.channel)
                         } catch (e) {
                             queue.destroy()
-                            throw new PlayerError('Unable to connect to voice channel.')
+                            throw new PlayerError('Unable to connect to voice channel.', queue.player)
                         }
 
                         await queue.play(res.tracks[trackIdx])

@@ -1,7 +1,7 @@
 import fs from "fs"
 import registerInteractions from "./helpers/interactions/registerInteractions";
 import { IlluminatiClient } from "./structures";
-import { ErrorWithStack } from "./structures/errors";
+import { ErrorWithStack } from "./structures/Errors";
 import Command from "./types/IlluminatiCommand";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;

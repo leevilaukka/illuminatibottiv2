@@ -1,4 +1,4 @@
-import Discord, { ClientOptions, Formatters } from "discord.js"
+import Discord, { Client, ClientOptions, Formatters, MessageMentions } from "discord.js"
 import Command from "IlluminatiCommand"
 import config, { Config } from "../config.js"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
@@ -9,6 +9,7 @@ import { UserFunctions } from "./IlluminatiUser.js"
 import axios, { AxiosInstance } from "axios"
 import { Downloader } from "@discord-player/downloader"
 import info from "../../package.json"
+import { Client as GeniusClient } from 'genius-lyrics';
 
 const setPlayerUses = (player: Player) => {
     player.use("YOUTUBE_DL", Downloader)
@@ -30,12 +31,11 @@ export default class IlluminatiClient extends Discord.Client {
     logger: IlluminatiLogger
     lyrics: {
         search: (query: string) => Promise<Lyrics.LyricsData>
-        client: any
+        client: GeniusClient
     }
     static packageInfo: typeof info
 
-    
-    constructor(clientOptions?: ClientOptions & {intents: number[]}, playerInitOptions?: PlayerInitOptions) {
+    constructor(clientOptions?: ClientOptions, playerInitOptions?: PlayerInitOptions) {
         super(clientOptions)
 
         this.config = config
@@ -120,17 +120,15 @@ export default class IlluminatiClient extends Discord.Client {
      * @method getInteractions
      * @returns {IlluminatiInteraction[]} Array of IlluminatiInteractions
      * @memberof IlluminatiClient
-     * @example
-     * client.getInteractions() -- [IlluminatiInteraction, IlluminatiInteraction]
      */
 
     static getInteractions(): IlluminatiInteraction[] {
         return [...this.interactions.values()];
     }
 
-        /**
+    /**
      * Get all user-interactable objects
-     * @method
+     * @static
      * @see getCommands Method for commands
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
@@ -139,7 +137,21 @@ export default class IlluminatiClient extends Discord.Client {
         return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
     }
 
-    sendError(error: Error, target: Discord.Message | Discord.TextBasedChannels, showStack?: boolean): Promise<Discord.Message> {
+    static getUserFromMention(mention: string, client: IlluminatiClient): Discord.User {
+            // The id is the first and only match found by the RegEx.
+        const matches = mention.matchAll(MessageMentions.USERS_PATTERN).next().value;
+
+        // If supplied variable was not a mention, matches will be null instead of an array.
+        if (!matches) return;
+
+        // The first element in the matches array will be the entire mention, not just the ID,
+        // so use index 1.
+        const id = matches[1];
+
+        return client.users.cache.get(id);
+    }
+
+    sendError(error: Error, target: Discord.Message | Discord.TextBasedChannel, showStack?: boolean): Promise<Discord.Message> {
         console.error(error)
 
         if (target instanceof Discord.Message) {
@@ -149,11 +161,11 @@ export default class IlluminatiClient extends Discord.Client {
         }
     }
 
-    sendErrorToChannel(error: Error, channel: Discord.TextBasedChannels, showStack?: boolean): Promise<Discord.Message> {
+    private sendErrorToChannel(error: Error, channel: Discord.TextBasedChannel, showStack?: boolean): Promise<Discord.Message> {
         return channel.send(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
 
-    replyError(error: Error, message: Discord.Message, showStack?: boolean): Promise<Discord.Message> {
+    private replyError(error: Error, message: Discord.Message, showStack?: boolean): Promise<Discord.Message> {
         return message.reply(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
 
@@ -180,3 +192,4 @@ export default class IlluminatiClient extends Discord.Client {
         }`
     }
 }
+

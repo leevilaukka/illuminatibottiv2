@@ -1,7 +1,7 @@
 import convert from "convert-units";
 
 import { argsToString, valueParser } from "../../../helpers";
-import { BotError } from "../../../structures/errors";
+import { BotError } from "../../../structures/Errors";
 import IlluminatiEmbed from "../../../structures/IlluminatiEmbed";
 
 import Command, { Categories } from '../../../types/IlluminatiCommand'

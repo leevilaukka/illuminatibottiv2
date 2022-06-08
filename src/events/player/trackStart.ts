@@ -1,11 +1,11 @@
 import { Track } from "discord-player";
 import { IlluminatiEmbed } from "../../structures";
-import { PlayerError } from "../../structures/errors";
+import { PlayerError } from "../../structures/Errors";
 import { PlayerEvent } from "../../types/PlayerEvent";
 
 const evt: PlayerEvent = (client, queue, track: Track | Error) => {
     if (track instanceof Error) {
-        throw new PlayerError(track.message)
+        throw new PlayerError(track.message, queue.player)
     }
     
     const embed = new IlluminatiEmbed(queue.metadata.message, client, {

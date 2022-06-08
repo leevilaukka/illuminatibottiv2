@@ -2,7 +2,7 @@ import Discord, { Message, User } from "discord.js"
 import IUser from "../models/User"
 import { IlluminatiClient, IlluminatiEmbed } from ".";
 import { Document } from "mongoose";
-import { BotError, DatabaseError } from "./errors";
+import { BotError, DatabaseError } from "./Errors";
 
 type UserStats = {
     money: number;

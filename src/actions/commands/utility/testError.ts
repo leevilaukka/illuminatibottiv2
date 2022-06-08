@@ -1,6 +1,6 @@
-import { CommandError, CommandNotFoundError, DatabaseError, ErrorWithStack, PlayerError } from '../../../structures/errors';
+import { CommandError, CommandNotFoundError, DatabaseError, ErrorWithStack, PlayerError } from '../../../structures/Errors';
 import Command from "IlluminatiCommand";
-import { BotError, UserError } from "../../../structures/errors";
+import { BotError, UserError } from "../../../structures/Errors";
 
 const command: Command = {
     name: 'testerror',
@@ -21,13 +21,13 @@ const command: Command = {
                 error = new CommandNotFoundError(errorMessage)
                 break
             case 'player':
-                error = new PlayerError(errorMessage)
+                error = new PlayerError(errorMessage, client.player.getQueue(message.guild).player)
                 break
             case 'database':
                 error = new DatabaseError(errorMessage)
                 break
             case 'command':
-                error = new CommandError(errorMessage)
+                error = new CommandError(errorMessage, command)
                 break
             case 'errorWithStack':
                 error = new ErrorWithStack(errorMessage)

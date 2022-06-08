@@ -44,7 +44,7 @@ const command: Command = {
             if(data.live) {
                 fields.push({
                     name: "Reaaliaikaiset tiedot",
-                    value: `Korkeus: ${data.live.altitude}\nSuunta: ${data.live.direction}°\nMaanopeus: ${data.live.speed_horizontal / 1.852} kts\nPäivitetty viimeksi: ${toTimestamp(data.live.updated, "since", 1000)}`
+                    value: `Korkeus: ${data.live.altitude}\nSuunta: ${data.live.direction}°\nMaanopeus: ${data.live.speed_horizontal / 1.852} kts\nPäivitetty viimeksi: ${Formatters.time(data.live.updated, "R")}`
                 })
             }
 

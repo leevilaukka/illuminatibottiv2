@@ -1,5 +1,5 @@
 import { argsToString } from '../../../helpers'
-import { PlayerError } from '../../../structures/errors'
+import { PlayerError } from '../../../structures/Errors'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
@@ -38,7 +38,7 @@ const command: Command = {
                     if (!queue.connection) await queue.connect(message.member.voice.channel)
                 } catch (e) {
                     queue.destroy()
-                    throw new PlayerError("Ei voitu yhdistää puhekanavaan")
+                    throw new PlayerError("Ei voitu yhdistää puhekanavaan", queue.player)
                 }
 
                 queue.addTracks(res.playlist.tracks)

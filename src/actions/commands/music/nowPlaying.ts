@@ -1,5 +1,5 @@
 import { IlluminatiEmbed } from '../../../structures';
-import { UserError } from '../../../structures/errors';
+import { UserError } from '../../../structures/Errors';
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
 enum queueModeEmoji {
