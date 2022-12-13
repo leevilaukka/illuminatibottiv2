@@ -1,28 +1,41 @@
-import Discord, { Client, ClientOptions, Formatters, MessageMentions } from "discord.js"
-import Command from "IlluminatiCommand"
-import config, { Config } from "../config.js"
-import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
+// discord.js
+import { Client, ClientOptions, Formatters, MessageMentions, Collection, User, Message, TextBasedChannel } from "discord.js"
+
+// DiscordPlayer
 import { Player,  PlayerInitOptions } from "discord-player"
 import { Lyrics } from "@discord-player/extractor"
-import { IlluminatiInteraction } from "IlluminatiInteraction"
-import { UserFunctions } from "./IlluminatiUser.js"
-import axios, { AxiosInstance } from "axios"
 import { Downloader } from "@discord-player/downloader"
-import info from "../../package.json"
 import { Client as GeniusClient } from 'genius-lyrics';
+
+import axios, { AxiosInstance } from "axios"
+
+// Local imports
+import Command from "IlluminatiCommand"
+import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
+import { IlluminatiInteraction } from "IlluminatiInteraction"
+
+// Config imports
+import config from "../config.js"
+import info from "../../package.json"
 
 const setPlayerUses = (player: Player) => {
     player.use("YOUTUBE_DL", Downloader)
     console.log("Player uses set")
 }
 
-export default class IlluminatiClient extends Discord.Client {
+
+/**
+ * @name IlluminatiClient
+ * @description Custom class for the bot client.
+ * @extends Discord.Client 
+ */
+export default class IlluminatiClient extends Client {
     // Types
-    static commands: Discord.Collection<string, Command>
-    static interactions: Discord.Collection<string, IlluminatiInteraction>
+    static commands: Collection<string, Command>
+    static interactions: Collection<string, IlluminatiInteraction>
     player: Player
-    config: Config
-    userManager: typeof UserFunctions
+    config: typeof config
+    userManager: typeof IlluminatiUser
     guildManager: typeof IlluminatiGuild
     isDevelopment: boolean
     isProduction: boolean
@@ -35,44 +48,48 @@ export default class IlluminatiClient extends Discord.Client {
     }
     static packageInfo: typeof info
 
-    constructor(clientOptions?: ClientOptions, playerInitOptions?: PlayerInitOptions) {
+
+    constructor(clientOptions: ClientOptions, playerInitOptions: PlayerInitOptions) {
         super(clientOptions)
 
-        this.config = config
-        IlluminatiClient.commands = new Discord.Collection();
-        this.isDevelopment = (process.env.NODE_ENV === "development");
-        this.isProduction = !this.isDevelopment;
-        this.env = process.env.NODE_ENV
-        this.logger = new IlluminatiLogger(this)
-        this.userManager = IlluminatiUser
-        this.guildManager = IlluminatiGuild
-        this.axios = axios.create()
-        this.player = new Player(this, playerInitOptions)
-        this.lyrics = Lyrics.init(process.env.GENIUSAPI)
-        IlluminatiClient.interactions = new Discord.Collection<string, IlluminatiInteraction>();
+        // Set static members
+        IlluminatiClient.commands = new Collection();
+        IlluminatiClient.interactions = new Collection<string, IlluminatiInteraction>();
         IlluminatiClient.packageInfo = info
 
+        // Metadata
+        this.config = config
+        this.isDevelopment = (this.env === "development");
+        this.isProduction = !this.isDevelopment;
+        this.env = process.env.NODE_ENV
+
+        // Helpers
+        this.logger = new IlluminatiLogger(this)
+        this.player = new Player(this, playerInitOptions)
+        this.lyrics = Lyrics.init(process.env.GENIUSAPI)
+        this.axios = axios.create()
+
+        // Manager instances
+        this.userManager = IlluminatiUser
+        this.guildManager = IlluminatiGuild
+        
         setPlayerUses(this.player)
     }
 
-    /**
-     * Get the bot invite link
-     * @getter
-     * @returns Invite link
-     * @example
-     * client.botInviteLink
-     **/
 
-    get botInviteLink(): string {
-        return this.generateInvite({scopes: ["bot", "applications.commands"]});
+    
+    /**
+     * Helper method to get the managers from the client
+     * @param message Message to get the managers from
+     */
+    getManagersFromMessage(message: Message) {
+        return {user: this.userManager(message.author), guild: this.guildManager(message.guild)}
     }
 
     /**
      * Get command by name
      * @method getCommand
-     * @param {string} name
      */
-
     static getCommand(name: string): Command {
         return this.commands.get(name) ||
         this.commands.find(
@@ -80,13 +97,24 @@ export default class IlluminatiClient extends Discord.Client {
         );
     }
 
-    async getOwner(): Promise<Discord.User> {
-        return await this.users.fetch(this.config.ownerID).then((user) => user);
+    /**
+     * Get bot owner as a user
+     * @returns Promise with the user
+     */
+    get owner(): Promise<User> {
+        return this.users.fetch(this.config.ownerID).then((user) => user);
+    }
+
+    /**
+     * Get WebSocket ping
+     */
+    get wsPing(): number {
+        return this.ws.ping
     }
 
     /**
      * Get all commands as array
-     * @method getCommands
+     * @method Commands
      * @return {Command[]} Commands
      * @see getCommand
      * @example
@@ -95,7 +123,7 @@ export default class IlluminatiClient extends Discord.Client {
      * })
      */
 
-    static getCommands(): Command[] {
+    static get Commands(): Command[] {
         return [...this.commands.values()];
     }
 
@@ -122,7 +150,7 @@ export default class IlluminatiClient extends Discord.Client {
      * @memberof IlluminatiClient
      */
 
-    static getInteractions(): IlluminatiInteraction[] {
+    static get Interactions(): IlluminatiInteraction[] {
         return [...this.interactions.values()];
     }
 
@@ -133,13 +161,18 @@ export default class IlluminatiClient extends Discord.Client {
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
      */
-    static getAllInteractables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
-        return {commands: [...this.getCommands()], interactions: [...this.getInteractions()]};
+    static get Interactables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
+        return {commands: [...this.Commands], interactions: [...this.Interactions]};
     }
 
-    static getUserFromMention(mention: string, client: IlluminatiClient): Discord.User {
+    /**
+     * Get mentioned user
+     * @param {string} mention Message content
+     */
+
+    static getUserFromMention(mention: string): User {
             // The id is the first and only match found by the RegEx.
-        const matches = mention.matchAll(MessageMentions.USERS_PATTERN).next().value;
+        const matches = mention.matchAll(MessageMentions.UsersPattern).next().value;
 
         // If supplied variable was not a mention, matches will be null instead of an array.
         if (!matches) return;
@@ -148,24 +181,24 @@ export default class IlluminatiClient extends Discord.Client {
         // so use index 1.
         const id = matches[1];
 
-        return client.users.cache.get(id);
+        return this.prototype.users.cache.get(id);
     }
 
-    sendError(error: Error, target: Discord.Message | Discord.TextBasedChannel, showStack?: boolean): Promise<Discord.Message> {
+    sendError(error: Error, target: Message | TextBasedChannel, showStack?: boolean): Promise<Message> {
         console.error(error)
 
-        if (target instanceof Discord.Message) {
-            return this.replyError(error, target, showStack);
+        if (target instanceof Message) {
+            return this._replyError(error, target, showStack);
         } else {
-            return this.sendErrorToChannel(error, target, showStack);
+            return this._sendErrorToChannel(error, target, showStack);
         }
     }
 
-    private sendErrorToChannel(error: Error, channel: Discord.TextBasedChannel, showStack?: boolean): Promise<Discord.Message> {
+    private _sendErrorToChannel(error: Error, channel: TextBasedChannel, showStack?: boolean): Promise<Message> {
         return channel.send(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
 
-    private replyError(error: Error, message: Discord.Message, showStack?: boolean): Promise<Discord.Message> {
+    private _replyError(error: Error, message: Message, showStack?: boolean): Promise<Message> {
         return message.reply(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
 
@@ -189,6 +222,7 @@ export default class IlluminatiClient extends Discord.Client {
             interactions: ${IlluminatiClient.interactions.size}
             readyAt: ${this.readyAt}
             shard: ${this.shard}
+            ping: ${this.wsPing}
         }`
     }
 }

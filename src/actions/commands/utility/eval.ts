@@ -1,5 +1,5 @@
 import { ErrorWithStack } from '../../../structures/Errors';
-import { ContextMenuInteraction, Formatters, Util } from "discord.js";
+import { codeBlock, Formatters, Utils } from "discord.js";
 import { argsToString } from "../../../helpers";
 import { clean } from "../../../structures/IlluminatiHelpers";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
@@ -12,16 +12,15 @@ const command: Command = {
     category: Categories.config,
     async run(message, args, _settings, client, user) {
         try {
-            this.arguments = {message, args, _settings, client, user};
             const code = argsToString(args)
             let evaled = eval(code)
 
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
-            const splitMessage = Util.splitMessage(clean(evaled))
+            const splitMessage = clean(evaled).match(/[\s\S]{1,1900}/g) || []
 
             for (const block of splitMessage) {
-               await message.channel.send({content: Formatters.codeBlock("js" ,block)});
+               await message.channel.send({content: codeBlock("js" ,block)});
             }
         } catch (err) {
             throw new ErrorWithStack(err)

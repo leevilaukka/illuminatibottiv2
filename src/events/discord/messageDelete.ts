@@ -1,7 +1,7 @@
 import { DatabaseError, ErrorWithStack } from '../../structures/Errors';
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
-import { Message, TextChannel } from 'discord.js';
+import { AuditLogEvent, Message, TextChannel } from 'discord.js';
 
 export default async (client: IlluminatiClient, deletedMessage: Message) => {
     try {
@@ -11,7 +11,7 @@ export default async (client: IlluminatiClient, deletedMessage: Message) => {
 
         const fetchedLogs = await deletedMessage.guild.fetchAuditLogs({
             limit: 1,
-            type: "MESSAGE_DELETE",
+            type: AuditLogEvent.MessageDelete,
         });
 
         // Pick first entry from deletedLog and destructure executor out

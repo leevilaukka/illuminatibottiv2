@@ -99,3 +99,13 @@ export class CommandError extends ErrorWithStack {
         return this.Command;
     }
 }
+
+export default {
+    BotError,
+    UserError,
+    CommandNotFoundError,
+    ErrorWithStack,
+    PlayerError,
+    DatabaseError,
+    CommandError
+}

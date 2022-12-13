@@ -85,6 +85,10 @@ const GuildSchema = new Schema({
         action: String,
         host: String
     },
+    embeds: {
+        type: Array,
+        default: config.defaultSettings.embeds
+    },
     disabledCommands: [String],
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);

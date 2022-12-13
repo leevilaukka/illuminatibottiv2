@@ -1,7 +1,7 @@
+import { PlayerEvents } from "discord-player";
 import fs from "fs"
 import registerInteractions from "./helpers/interactions/registerInteractions";
-import { IlluminatiClient } from "./structures";
-import { ErrorWithStack } from "./structures/Errors";
+import { IlluminatiClient, Errors } from "./structures";
 import Command from "./types/IlluminatiCommand";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;
@@ -13,26 +13,37 @@ export const eventImports = async (client: IlluminatiClient) => {
     console.group("Loading events...");
     console.time("events");
     try {
-        for await (const innerFolder of eventFolders) {
-            console.group(`Loading events from events/${innerFolder}/`);
-            const eventFiles = fs.readdirSync(`${__dirname}/events/${innerFolder}`).filter((file: string) => file.endsWith(".js"));
-            for await (const file of eventFiles) {
-                import(`${__dirname}/events/${innerFolder}/${file}`).then(({ default: evt }: { default: EventType }) => {
-                    let evtName = file.split(".")[0];
-                    client.on(evtName, evt.bind(null, client));
-                    if (client.isDevelopment) console.log(`Loaded and bound ${innerFolder}Evt: ${evtName}`);
-                })
-            }
-            console.groupEnd();
+        
+        const eventFiles = fs.readdirSync(`${__dirname}/events/discord/`).filter((file: string) => file.endsWith(".js"));
+        for await (const file of eventFiles) {
+            import(`${__dirname}/events/discord/${file}`).then(({ default: evt }: { default: EventType }) => {
+                let evtName = file.split(".")[0];
+                client.on(evtName, evt.bind(null, client));
+                if (client.isDevelopment) console.log(`Loaded Evt: ${evtName}`);
+            })
         }
+
+        const playerEventFiles = fs.readdirSync(`${__dirname}/events/player/`).filter((file: string) => file.endsWith(".js"));
+        for await (const file of playerEventFiles) {
+            import(`${__dirname}/events/player/${file}`).then(({ default: evt }: { default: EventType }) => {
+                let evtName = file.split(".")[0] as keyof PlayerEvents
+                client.player.on(evtName, evt.bind(null, client));
+                if (client.isDevelopment) console.log(`Loaded and bound playerEvt: ${evtName}`);
+            })
+        }
+
         console.groupEnd();
 
     } catch (error) {
-        throw new ErrorWithStack(error);
+        throw new Errors.ErrorWithStack(error);
     }
     console.groupEnd();
     console.timeEnd("events");
 };
+
+// Import Player events
+
+
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`)
@@ -54,14 +65,14 @@ export const commandImports = async (client: IlluminatiClient) => {
                     console.log(`Loaded cmd: ${folder}/${file}`);
                     await command.onInit?.(client);
                 }).catch(err => {
-                    throw new ErrorWithStack(`Command ${file} failed to load.\n${err}`)
+                    throw new Errors.ErrorWithStack(`Command ${file} failed to load.\n${err}`)
                 })
                 console.groupEnd();
             }
             console.groupEnd();
         };
     } catch (error) {
-        throw new ErrorWithStack(error);
+        throw new Errors.ErrorWithStack(error);
     }
     console.groupEnd();
     console.timeEnd("Loaded commands");
@@ -82,7 +93,7 @@ export const interactionImports = async (client: IlluminatiClient) => {
         registerInteractions(client).then(() => console.log(`Interactions registered!`))
         console.groupEnd();
     } catch (error) {
-        throw new ErrorWithStack(error);
+        throw new Errors.ErrorWithStack(error);
     }
 };
 
@@ -92,7 +103,7 @@ export default async (client: IlluminatiClient) => {
         commandImports(client),
         interactionImports(client)
     ]).catch(err => {
-        throw new ErrorWithStack(err);
+        throw new Errors.ErrorWithStack(err);
     });
 
     return

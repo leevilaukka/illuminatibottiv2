@@ -1,3 +1,4 @@
+import Errors from "./Errors";
 import IlluminatiClient  from "./IlluminatiClient";
 import IlluminatiEmbed from "./IlluminatiEmbed";
 import IlluminatiGuild from "./IlluminatiGuild";
@@ -9,5 +10,6 @@ export {
     IlluminatiEmbed,
     IlluminatiLogger,
     IlluminatiUser,
-    IlluminatiGuild
+    IlluminatiGuild,
+    Errors
 }

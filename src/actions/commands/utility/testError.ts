@@ -5,6 +5,9 @@ import { BotError, UserError } from "../../../structures/Errors";
 const command: Command = {
     name: 'testerror',
     ownerOnly: true,
+    description: 'Test error',
+    aliases: ["te"],
+    category: "utility",
     async run(message, args, settings, client) {
         const errorType = args[0]
         const errorMessage = args.slice(1).join(' ')

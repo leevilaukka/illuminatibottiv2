@@ -1,7 +1,7 @@
-import { DatabaseError } from '../../../structures/Errors';
 import Command, { Categories } from "../../../types/IlluminatiCommand";
 
 import Guild from "../../../models/Guild"
+import { Errors } from "../../../structures";
 
 const command: Command = {
     name: 'addthrow',
@@ -11,7 +11,7 @@ const command: Command = {
     cooldown: 10,
     args: true,
     usage: '<kuvan url (.png | .jpg | .gif)>',
-    run(message, args: string[], settings, client) {
+    run(message, args, settings, client) {
         const [heitto, ...rest] = args;
 
         if (heitto.endsWith(".png") || heitto.endsWith(".jpg") || heitto.endsWith(".gif")) {
@@ -19,7 +19,7 @@ const command: Command = {
                 $push: { throws: heitto }
             })
                 .catch((e: any) => {
-                    throw new DatabaseError(e)
+                    throw new Errors.DatabaseError(e)
                 })
         } else return message.reply("anna png, jpg tai gif päätteinen osoite!")
     }

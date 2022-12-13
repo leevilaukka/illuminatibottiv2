@@ -15,7 +15,7 @@ const command: Command = {
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
 
-            console.log(command);
+        console.log(command);
 
         if (!command) {
             return message.channel.send(

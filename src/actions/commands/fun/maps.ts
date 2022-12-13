@@ -2,9 +2,8 @@ import Discord from "discord.js";
 import fs from "fs";
 
 import { argsToString, umlautRemover } from "../../../helpers";
-import { IlluminatiEmbed } from "../../../structures";
+import { IlluminatiEmbed, Errors } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
-
 
 const command: Command = {
     name: "maps",
@@ -31,7 +30,8 @@ const command: Command = {
 
                 // When writer done, init new Embed with file from pipe
                 writer.on('finish', resolve => {
-                    const file = new Discord.MessageAttachment('./pipes/maps.png');
+                    
+                    const file = new Discord.AttachmentBuilder('./pipes/maps.png');
 
                     let embed = new IlluminatiEmbed(message, client, {
                         title: `Karttasi!`,
@@ -42,15 +42,17 @@ const command: Command = {
                             text: "Google Maps x IlluminatiBotti",
                             icon_url: "https://cdn.vox-cdn.com/thumbor/pOMbzDvdEWS8NIeUuhxp23wi_cU=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/19700731/googlemaps.png"
                         },
-                        timestamp: Date.now()
+                        timestamp: Date.now().toString()
                     });
                     // Send embed
-                    message.channel.send({files: [file], embeds: [embed]});
+                    message.channel.send({files: [file], embeds: [embed.embedObject]});
                 })
 
             })
             // Catch errors
-            .catch(e => console.error(e))
+            .catch(e =>  {
+                throw new Errors.BotError(e)
+            })
     }
 };
 

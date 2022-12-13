@@ -11,7 +11,7 @@ const command: Command = {
     async run(message, args, settings, client) {
         const queue = client.player.getQueue(message.guild)
 
-        const { title } = queue.nowPlaying() as { title: string }
+        const { title } = queue.nowPlaying() 
 
         if(!title) {
             throw new UserError('No song playing.')

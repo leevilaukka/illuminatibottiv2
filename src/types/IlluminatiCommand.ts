@@ -1,6 +1,5 @@
 import { GuildSettings } from './../config';
 import { Message, PermissionResolvable } from "discord.js";
-import { Config } from "../config";
 import { IlluminatiClient } from "../structures";
 import GuildFunctions from "../structures/IlluminatiGuild";
 import UserFunctions from "../structures/IlluminatiUser";
@@ -16,7 +15,7 @@ type SlashOptions = {
     required?: boolean
 }
 
-// Metadata for a command, guild and user settings
+//** Metadata for a command, guild and user settings */ 
 type CommandMeta = { guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions> }
 
 export default interface Command {
@@ -33,7 +32,7 @@ export default interface Command {
     options?: SlashOptions[],
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
-    argTypes?: ArgTypes
+    argTypes?: ArgTypes,
     run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<any>
     onInit?: (client: IlluminatiClient) => void
 }
@@ -45,7 +44,10 @@ export enum Categories {
     maps = "Kartat",
     config = "Asetukset",
     date = "Päivämäärät",
-    currency = "Raha",
+    economy = "Raha",
+    utility = "Apuohjelmat",
+    fun = "Hauskat",
+    
     other = "Muut",
     undefined = "Määrittelemätön",
 }

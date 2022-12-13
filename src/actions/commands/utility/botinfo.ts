@@ -1,11 +1,15 @@
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentBuilder} from 'discord.js'
+import { Button } from '../../../helpers/interactions'
 import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
-import { MessageActionRow, MessageButton } from 'discord.js'
 
 const command: Command = {
     name: 'botinfo',
+    aliases: ['bi', 'bot', 'info'],
+    description: 'Shows bot info',
+    category: Categories.utility,
     async run(message, args, settings, client) {
-        const owner = await client.getOwner()
+        const owner = await client.owner
         const embed = new IlluminatiEmbed(message, client, {
             title: 'Bot Information',
             thumbnail: {
@@ -57,23 +61,8 @@ const command: Command = {
 
         
 
-        const row = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setStyle('LINK')
-                    .setURL(client.botInviteLink)    
-                    .setLabel('Invite Link'),
-                new MessageButton()
-                    .setStyle('LINK')
-                    .setURL(IlluminatiClient.packageInfo.homepage)
-                    .setLabel('GitHub Repository'),
-                new MessageButton()
-                    .setStyle('LINK')
-                    .setURL(IlluminatiClient.packageInfo.author.url)
-                    .setLabel('GitHub Profile'),
-            )
 
-        message.reply({embeds: [embed], components: [row]})
+        message.reply({embeds: [embed.embedObject]})
     }
 }
 

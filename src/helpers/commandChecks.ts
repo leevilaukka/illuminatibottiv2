@@ -1,8 +1,9 @@
 import { CommandNotFoundError } from '../structures/Errors';
-import { Message } from "discord.js";
-import { Config } from "../config";
+import { ChannelType, Message } from "discord.js";
+
 import { IlluminatiClient } from "../structures";
 import Command, { CommandArguments } from "../types/IlluminatiCommand";
+import { Config } from '../config';
 
 // Check if command can be run
 export const commandChecks = async (client: IlluminatiClient, command: Command, message: Message, settings: any, args: CommandArguments, config: Config) => {
@@ -22,20 +23,20 @@ export const commandChecks = async (client: IlluminatiClient, command: Command, 
     //Permissons check
     if (
         command.permissions &&
-        message.channel.type !== "DM" &&
+        message.channel.type !== ChannelType.DM &&
         !message.member.permissions.has(command.permissions)
     ) {
         throw "sinulla ei ole oikeuksia käyttää tätä komentoa"
     }
 
     //guildOnly check
-    if (command.guildOnly && message.channel.type !== "GUILD_TEXT") {
+    if (command.guildOnly && message.channel.type !== ChannelType.GuildText) {
         throw "En voi suorittaa tätä komentoa yksityiskeskustelussa!"
     }
 
     //ownerOnly check
     if (command.ownerOnly && message.author.id !== config.ownerID) {
-        throw `Tämän komennon voi suorittaa vain tämän botin omistaja, ${(await client.getOwner()).tag} .`
+        throw `Tämän komennon voi suorittaa vain tämän botin omistaja, ${(await client.owner).tag} .`
     }
 
     //Args check

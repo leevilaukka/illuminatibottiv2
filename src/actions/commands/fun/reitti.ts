@@ -4,6 +4,47 @@ import { formatDate, valueParser } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
+type RequestResultData = {
+    plan: {
+        itineraries: Itinerany[];
+    }
+}
+
+type Itinerany = {
+    startTime: number
+    endTime: number
+    duration: number
+    legs: Leg[]
+    waitingTime: number
+    walkTime: number
+    walkDistance: number,
+    fares: {
+        type: string,
+        currency: string,
+        cents: number,
+        components: any
+    }[],
+    elevationGained: number,
+    elevationLost: number,
+}
+
+
+type Leg = { 
+    startTime: number 
+    endTime: number 
+    distance: number; 
+    departureDelay: number;
+    legGeometry: {
+        length: number;
+        points: string;
+    }
+    duration: number; 
+    from: { name: string; }; 
+    to: { name: string; }; 
+    mode: string; 
+    trip: { tripHeadsign: string; routeShortName: string; }; 
+};
+
 
 const command: Command = {
     name: "reitti",
@@ -12,9 +53,9 @@ const command: Command = {
     cooldown: 5,
     aliases: ["hsl"],
     args: true,
-    async run(message, args, settings, client, {guild}) {
+    async run(message, args, settings, client, { guild }) {
         const [origin, destination] = args;
-        
+
         const places = (await guild.getGuild()).places;
         console.log(guild);
         const originResult = places.find(({ name }) => name === origin);
@@ -56,11 +97,11 @@ const command: Command = {
         request(
             "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql",
             query
-        ).then((data) => {
-            client.isDevelopment && console.log(data.plan.itineraries[0]);
+        ).then((data: RequestResultData) => {
             const route = data.plan.itineraries[0];
             message.channel.send("Reittisi!");
-            route.legs.map((leg: { startTime: string | number | Date; endTime: string | number | Date; distance: number; duration: number; from: { name: any; }; to: { name: any; }; mode: any; trip: { tripHeadsign: any; routeShortName: any; }; }, index: number) => {
+
+            route.legs.map((leg, index) => {
                 const startTime = new Date(leg.startTime);
                 const endTime = new Date(leg.endTime);
                 const embed = new IlluminatiEmbed(message, client, {
@@ -98,13 +139,13 @@ const command: Command = {
                     ],
                 });
                 if (leg.trip) {
-                    embed.fields.push({
+                    embed.setFields([{
                         name: "Trip",
                         value: `${leg.trip.tripHeadsign} / ${leg.trip.routeShortName}`,
                         inline: true,
-                    });
+                    }]);
                 }
-                message.channel.send({ embeds: [embed] });
+                message.channel.send({ embeds: [embed.embedObject] });
             });
         });
     },

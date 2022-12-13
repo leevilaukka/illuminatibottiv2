@@ -1,13 +1,6 @@
-/**
- * !!! CURRENTLY UNUSED !!!
- */
-
-
 import { Message } from "discord.js";
 import { CommandArguments } from "../types/IlluminatiCommand";
 import { translateTable } from "../utils";
-
-
 
 /**
  * Clean text
@@ -17,11 +10,10 @@ import { translateTable } from "../utils";
  */
 
 export function clean(text: string): string {
-    if (typeof text === "string")
-        return text
-            .replace(/`/g, "`" + String.fromCharCode(8203))
-            .replace(/@/g, "@" + String.fromCharCode(8203));
-    else return text;
+    return text
+        .replace(/`/g, "`" + String.fromCharCode(8203))
+        .replace(/@/g, "@" + String.fromCharCode(8203));
+  
 }
 
 export function argsToString(args: CommandArguments): string {

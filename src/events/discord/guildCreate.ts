@@ -4,14 +4,11 @@ import { DatabaseError } from "../../structures/Errors";
 
 const evt = async (client: IlluminatiClient, guild: Guild) => {
     try {
-        const newGuild = {
+        await client.guildManager(guild).createGuild({
             guildID: guild.id,
             guildName: guild.name,
             joinedAt: guild.joinedAt
-        };
-
-        await client.guildManager(guild).createGuild(newGuild)
-
+        })
     } catch (e) {
         throw new DatabaseError(e)
     }

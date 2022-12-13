@@ -1,3 +1,4 @@
+import { EmbedBuilder } from 'discord.js'
 import { IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
@@ -16,30 +17,17 @@ const command: Command = {
                 value: track.author,
             }
         })
-
-        const previousTracks = queue.previousTracks.map(track => {
-            return {
-                name: track.title,
-                value: track.author,
-            }
-        })
-
-
-        const embed2 = new IlluminatiEmbed(
-            message,
-            client,
-            {
-                title: "Edelliset kappaleet",
-                description: `${queue.previousTracks.length} kappale${queue.previousTracks.length > 1 ? "tta": ""}`,
-                fields: previousTracks
-            },
-        )
         
-        new IlluminatiEmbed(message, client, {
-            title: 'Tulossa',
-            description: `${queue.tracks.length} kappale${queue.tracks.length > 1 ? "tta": ""}`,
-            fields: comingUp
-        }).sendMany(queue.previousTracks.length && [embed2], {content: "Jono"})
+        const embed = new EmbedBuilder()
+            .setTitle('Jono')
+            .setDescription(`Nyt soi: ${queue.nowPlaying().title}`)
+            .addFields(comingUp)
+            .setThumbnail(queue.nowPlaying().thumbnail)
+            .setFooter({
+                text: `Kappaleita jonossa: ${queue.tracks.length}`
+            })
+
+        return message.channel.send({ embeds: [embed] })
     }
 }
 export default command

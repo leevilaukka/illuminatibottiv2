@@ -1,17 +1,11 @@
+import { APIEmbed } from "discord.js"
+import { IlluminatiEmbed } from "./structures"
 
 export type Config = {
   token: string,
   devServerID: string,
   ownerID: string,
   defaultSettings: GuildSettings
-}
-
-type Place = {
-  name: string,
-  location: {
-    type: string,
-    coordinates: [number, number]
-  }
 }
 
 export type GuildSettings = {
@@ -22,45 +16,61 @@ export type GuildSettings = {
     action: string,
     host: string
   },
+  embeds: IlluminatiEmbed[]
   leaveOnEmpty: boolean,
   throws: string[],
-  places: Place[],
+  places: {
+    name: string,
+    location: {
+      type: string,
+      coordinates: [number, number]
+    }
+  }[],
   disabledCommands: string[],
   removedMemberChannel: string,
 }
 
-
-const config: Config = {
+const config = {
   token: process.env.TOKEN,
   devServerID: process.env.DEVSERVERID,
   ownerID: process.env.OWNERID,
   defaultSettings: {
+    // CHANGE THESE TO YOUR OWN IF HOSTING
+
+    // Channel to send notifications of removed members to
     removedMemberChannel: "",
+    
+    // Leave voice channel when empty
     leaveOnEmpty: false, 
+    
+    // Prefix for commands
     prefix: "*",
+    
+    // Volume of the bot
     volume: 1,
+    
+    // Random messages
     randomMessages: false,
+    
+    // Minecraft server defaults
     minecraft: {
       action: "status",
       host: process.env.MCHOST,
     },
-    places: [],
-    throws: [
-      "https://i.imgur.com/qrzJlKR.jpg",
-      "https://i.imgur.com/K5WcvWk.png",
-      "https://i.imgur.com/4FEtyd9.png",
-      "https://i.imgur.com/f0jDgS9.png",
-      "https://i.imgur.com/f0jDgS9.png",
-      "https://i.imgur.com/ls7jWCt.png",
-      "https://i.imgur.com/vlMWwEk.png",
-      "https://i.imgur.com/avQq1Yv.png",
-      "https://i.imgur.com/3LzycVP.png",
-      "https://i.imgur.com/ZsUP3qK.png",
-      "https://i.imgur.com/GxzvpmA.png",
-      "https://i.imgur.com/gkr54q4.png",
-      "https://i.imgur.com/OeAd8mK.png",
-    ],
-    disabledCommands: [],
+    
+    // Don't edit these
+    embeds: [] as IlluminatiEmbed[],
+    places: [] as {
+      name: string,
+      location: {
+        type: string,
+        coordinates: [number, number]
+      }
+    }[],
+    throws: [] as string[],
+    disabledCommands: [] as string[],
   },
-};
+} as const
+
+
 export default config

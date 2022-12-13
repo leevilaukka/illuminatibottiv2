@@ -1,7 +1,7 @@
 import util from "minecraft-server-util";
 
 import { argsToString } from "../../../helpers";
-import { IlluminatiEmbed } from "../../../structures";
+import { IlluminatiEmbed, Errors } from "../../../structures";
 
 import Command, { Categories } from "../../../types/IlluminatiCommand";
 
@@ -33,10 +33,8 @@ const command: Command = {
             // Case for "status" subcommand
             case "status":
                 try {
-                    const res = await util
-                        .status(host);
-                    if (client.isDevelopment)
-                        console.log(res);
+                    const res = await util.status(host);
+                    if (client.isDevelopment) console.log(res);
                     const embed = {
                         title: res.host,
                         fields: [
@@ -55,17 +53,13 @@ const command: Command = {
                     };
                     message.channel.send({ embeds: [embed] });
                 } catch (e) {
-                    return await message.reply(
-                        `nyt kävi virhe :( - Palvelinta ei löytynyt tai se on offline-tilassa - ${e}`
-                    );
+                    throw new Errors.BotError(e);
                 }
             // Case for "query" subcommand
             case "query":
                 try {
-                    const res_1 = await util
-                        .queryFull(host);
-                    if (client.isDevelopment)
-                        console.log(res_1);
+                    const res_1 = await util.queryFull(host);
+                    if (client.isDevelopment) console.log(res_1);
                     const embed_1 = new IlluminatiEmbed(message, client, {
                         title: res_1.host,
                         fields: [
@@ -86,24 +80,24 @@ const command: Command = {
 
                     // If res.players isn't empty, push players to embed
                     if (res_1.players) {
-                        embed_1.fields.push({
-                            name: "Pelaajat online",
-                            value: res_1.players.join(),
-                            inline: false
-                        });
+                        embed_1.embedObject.addFields([
+                            {
+                                name: "Pelaajat online",
+                                value: res_1.players.join(),
+                                inline: false,
+                            },
+                        ]);
                     }
                     embed_1.send();
                 } catch (e_1) {
-                    message.reply(
+                    throw new Errors.BotError(
                         `nyt kävi virhe :( - Palvelinta ei oletettavasti löytynyt tai se on offline-tilassa - ${e_1}`
                     );
-                    client.isDevelopment && console.error(e_1);
                 }
             case "say":
                 const mcmessage = argsToString(rest);
                 try {
-                    await rconClient
-                        .connect();
+                    await rconClient.connect();
                     await rconClient
                         .run(
                             `tellraw @a {"text":"DC | ${message.author.username} - ${mcmessage}"}`
@@ -112,26 +106,30 @@ const command: Command = {
 
                     rconClient.close();
                 } catch (e_3) {
-                    return console.error(e_3);
+                    throw new Errors.BotError(e_3);
                 }
 
             case "run":
                 try {
-                    const ping = await client.axios
-                        .get(`http://illuminati.serveminecraft.net:25555/ping`);
+                    const ping = await client.axios.get(
+                        `http://illuminati.serveminecraft.net:25555/ping`
+                    );
                     if (ping.data.status === "OK") {
                         client.axios
                             .post(
-                                `http://illuminati.serveminecraft.net:25555/run`, { author: message.author.username }
+                                `http://illuminati.serveminecraft.net:25555/run`,
+                                { author: message.author.username }
                             )
                             .then((res_2) => {
                                 message.reply(res_2.data.message);
                             });
                     } else {
-                        return message.reply(`servukone ei oo päällä, valita Laukalle!`);
+                        return message.reply(
+                            `servukone ei oo päällä, valita Laukalle!`
+                        );
                     }
                 } catch (err) {
-                    return console.error(err);
+                    throw new Errors.BotError(err);
                 }
 
             // Return default case. Only happens when user gives an undefined subcommand, because switch defaults to guild default when !subcommand.

@@ -40,7 +40,7 @@ const command: Command = {
             res.data.pipe(writer);
             writer.on("finish", async () => {
                 // Additional variables for new embed
-                const file = new Discord.MessageAttachment('./pipes/tinder.png');
+                const file = new Discord.AttachmentBuilder('./pipes/tinder.png');
                 !easyMode ? easyMode = await message.channel.send({content: "Tästä helppo match, jos tulee vastaan.", files: [file]}) : easyMode = null;
                 fs.unlink(path, () => {return})
             })
@@ -103,7 +103,7 @@ const command: Command = {
                 fields,
             })
 
-            message.channel.send({ embeds: [embed] }).then(async (tMessage) => {
+            message.channel.send({ embeds: [embed.embedObject] }).then(async (tMessage) => {
                 await tMessage.react('👍');
                 await tMessage.react('👎');
 

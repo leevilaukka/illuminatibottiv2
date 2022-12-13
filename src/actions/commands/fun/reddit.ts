@@ -1,6 +1,6 @@
-import { IlluminatiEmbed } from "../../../structures";
+import { IlluminatiEmbed, Errors } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
-import {ColorResolvable, Formatters, Message, MessageActionRow, MessageButton, TextChannel} from "discord.js";
+import {ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Formatters, Message, TextChannel} from "discord.js";
 
 const command: Command = {
     name: "reddit",
@@ -87,7 +87,7 @@ const command: Command = {
                     title,
                     url,
                     description: nsfw ? "**NSFW**" : null,
-                    color,
+                    color: Number(color),
                     image: {
                         url: kuva,
                     },
@@ -98,35 +98,33 @@ const command: Command = {
                     fields,
                 });
 
-                const row = new MessageActionRow()
+                const row = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
-                        new MessageButton()
-                            .setStyle("LINK")
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
                             .setURL(url)
                             .setLabel("Postaus"),
-                        new MessageButton()
-                            .setStyle("LINK")
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
                             .setURL(postaajaurl)
                             .setLabel("Postaaja"),
-                        new MessageButton()
-                            .setStyle("LINK")
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
                             .setURL(subURL)
                             .setLabel("Subreddit"),
                     )
 
 
-                sender.reply({ embeds: [embed], components: [row] })
+                sender.reply({ embeds: [embed.embedObject], components: [row] })
             })
             // Catch error with Axios GET
             .catch((e) => {
                 // Send error response to channel
                 if (e.response) {
-                    sender.reply(
+                    throw new Errors.BotError(
                         `Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`
                     );
                 }
-                // Console log error
-                throw new Error(e)
             });
     },
 };

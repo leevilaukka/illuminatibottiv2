@@ -1,7 +1,7 @@
-import { ApplicationCommandData, ApplicationCommandOption, ButtonInteraction, CommandInteraction, CommandInteractionOptionResolver, ContextMenuInteraction, MessageComponentInteraction, MessageInteraction, SelectMenuInteraction } from "discord.js"
+import { ApplicationCommandData, ApplicationCommandOption, ButtonInteraction, CommandInteraction, CommandInteractionOptionResolver, MessageComponentInteraction, MessageInteraction, SelectMenuInteraction } from "discord.js"
 import { IlluminatiClient } from "../structures"
 
-type Interactions = CommandInteraction | MessageInteraction | ButtonInteraction | ContextMenuInteraction | SelectMenuInteraction | MessageComponentInteraction
+type Interactions = CommandInteraction | MessageInteraction | ButtonInteraction  | SelectMenuInteraction | MessageComponentInteraction
 
 export type IlluminatiInteraction = {
     data: any,

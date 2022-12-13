@@ -1,10 +1,8 @@
-import { BotError } from './../types/BotError';
-import { ColorResolvable, Guild } from "discord.js";
+import { ColorResolvable, Guild, GuildMemberManager } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
-import IGuild from "../models/Guild";
-import { DatabaseError } from './Errors';
-
+import GuildModel  from "../models/Guild";
+import { Errors } from '.';
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
@@ -14,7 +12,7 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          * Log Guild to console
          */
         log: (): void => {
-            console.log("Guild log:", guild);
+            console.log("Guild:", guild);
         },
 
         /**
@@ -24,10 +22,35 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          */
 
         getGuild: async (): GuildPromise => {
-            const guildSettings = await IGuild.findOne({ guildID: guild.id });
+            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
             if (guildSettings) return guildSettings;
             else return config.defaultSettings;
         },
+
+        updateGuildInfo: async <K extends keyof GuildSettings>(key: K, value: GuildSettings[K]): GuildPromise => {
+            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
+            if (guildSettings) {
+                return await guildSettings.updateOne({ [key]: value }).catch(err => {
+                    throw new Errors.DatabaseError(err);
+                });
+            } else {
+                throw new Errors.DatabaseError("Guild settings not found");
+            }
+        },
+
+        pushToArray: async <K extends keyof GuildSettings>(key: K, value: GuildSettings[K]): GuildPromise => {
+            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
+            if (guildSettings) {
+                return await guildSettings.updateOne({
+                    $push: { [key]: value }
+                }).catch(err => {
+                    throw new Errors.DatabaseError(err);
+                });
+            } else {
+                throw new Errors.DatabaseError("Guild settings not found");
+            }
+        },
+
 
         /**
          * Update Guild settings to database 
@@ -36,7 +59,7 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          * @returns Updated guild settings
          */
 
-        updateGuild: async (settings: Partial<GuildSettings & {guildName: string}> ): Promise<object> => {
+        batchUpdateGuild: async (settings: Partial<GuildSettings & { guildName: string }>): Promise<object> => {
             let data: any = await GuildFunctions(guild).getGuild();
 
             if (typeof data !== "object") data = {};
@@ -46,19 +69,19 @@ export function GuildFunctions<T extends Guild>(guild: T) {
             }
 
             return await data.updateOne(settings).catch((e) => {
-                throw new DatabaseError(e);
+                throw new Errors.DatabaseError(e);
             });
         },
 
         changeSetting: async <S extends keyof GuildSettings>(setting: S, newSetting: GuildSettings[S]) => {
             try {
-                await GuildFunctions(guild).updateGuild({[setting]: newSetting });
+                await GuildFunctions(guild).batchUpdateGuild({ [setting]: newSetting });
                 return `${setting} päivitetty`;
             } catch (e) {
-                throw new DatabaseError(e)
+                throw new Errors.DatabaseError(e)
             }
         },
-        
+
 
         /**
          * Create a new Guild to database
@@ -68,19 +91,15 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          */
 
         createGuild: async (settings: object): Promise<void | GuildPromise> => {
-            const newGuild = new IGuild(settings);
+            const newGuild = new GuildModel(settings);
             return newGuild
                 .save()
                 .then((res) => {
                     return res;
                 })
                 .catch((error) => {
-                    throw new DatabaseError(error);
+                    throw new Errors.DatabaseError(error);
                 });
-        },
-
-        botHexColor: (): ColorResolvable => {
-            return guild.me.displayHexColor;
         },
 
         /**
@@ -89,7 +108,7 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          */
 
         deleteGuild: async (): Promise<void> => {
-            await IGuild.deleteOne({ guildID: guild.id });
+            await GuildModel.deleteOne({ guildID: guild.id });
             console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
         },
 
@@ -107,8 +126,11 @@ export function GuildFunctions<T extends Guild>(guild: T) {
         isCommandDisabled: async (command: string): Promise<boolean> => {
             const guildSettings = await GuildFunctions(guild).getGuild();
             return guildSettings.disabledCommands.includes(command);
+        },
+
+        equals: (compareToGuild: Guild): boolean => {
+            return compareToGuild.id === guild.id;
         }
-        
     }
 }
 

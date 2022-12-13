@@ -1,5 +1,6 @@
 import Command, { Categories } from '../../../types/IlluminatiCommand';
 import { IlluminatiClient, IlluminatiEmbed } from '../../../structures';
+import { ChannelType } from 'discord.js';
 
 const command: Command = {
     name: `help`,
@@ -43,8 +44,8 @@ const command: Command = {
 
             //Lähetä DM
             try {
-                await message.author.send({ embeds: [embed] });
-                if (message.channel.type === `DM`)
+                await message.author.send({ embeds: [embed.embedObject] });
+                if (message.channel.type === ChannelType.DM)
                     return;
                 return message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
             } catch (error) {

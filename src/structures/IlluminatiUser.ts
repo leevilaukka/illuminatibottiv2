@@ -284,9 +284,8 @@ export function UserFunctions<T extends User>(user: T) {
                 title: `${user.username} (${user.id})`,
                 description: `**Käyttäjän tiedot**`,
                 thumbnail: {
-                    url: user.displayAvatarURL({ size: 1024, dynamic: true }),
+                    url: user.displayAvatarURL(),
                 },
-                color: message.member.displayHexColor,
                 fields: !user.bot ? [
                     {
                         name: "Lähetetyt viestit",

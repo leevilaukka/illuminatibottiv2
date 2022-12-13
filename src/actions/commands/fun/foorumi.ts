@@ -1,7 +1,6 @@
 import { IlluminatiEmbed } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
-
 const command: Command = {
     name: "foorumi",
     description: "DiscordFoorumi-linkki",

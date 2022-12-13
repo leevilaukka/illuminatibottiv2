@@ -34,7 +34,7 @@ const command: Command = {
                 }),
             })
 
-            const sentEmbed = await message.channel.send({ embeds: [embed] })
+            const sentEmbed = await message.channel.send({ embeds: [embed.embedObject] })
 
             const filter = (m: Message) => {
                 const author = m.author.id === message.author.id

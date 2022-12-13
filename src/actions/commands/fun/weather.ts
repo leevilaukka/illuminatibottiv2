@@ -1,9 +1,39 @@
-import axios from "axios";
-
 import { umlautRemover, argsToString, formatDate } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
 import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+interface WeatherData {
+    weather: {
+        description: string;
+        icon: string;
+    }[]
+    main: {
+        temp: number
+        pressure: number
+        humidity: number
+        temp_min: number
+        temp_max: number
+        feels_like: number
+    }
+    wind: {
+        speed: number
+        deg: number
+    }
+    clouds: {
+        all: number
+    }
+    sys: {
+        sunrise: number
+        sunset: number
+        country: string
+    }
+    timezone: number
+    name: string
+    code: number
+    message: string
+    success: boolean
+}
 
 
 const command: Command = {
@@ -14,7 +44,7 @@ const command: Command = {
     category: Categories.other,
     async run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
-        axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
+        client.axios.get<WeatherData>(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
             .then(res => {
                 const weather = res.data.weather[0];
                 const main = res.data.main;
@@ -85,7 +115,7 @@ const command: Command = {
                         icon_url: `http://openweathermap.org/img/wn/${weather.icon}@2x.png`,
                         text: "Sää"
                     },
-                    timestamp: Date.now()
+                    timestamp: Date.now().toString()
                 }).send()
             })
             .catch(e => console.error(e))

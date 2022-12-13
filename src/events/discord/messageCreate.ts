@@ -1,5 +1,5 @@
-import {  ErrorWithStack, UserError } from '../../structures/Errors';
-import Discord, { Collection, Message } from "discord.js";
+import { ErrorWithStack, UserError } from '../../structures/Errors';
+import Discord, { ChannelType, Collection, Message } from "discord.js";
 import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
@@ -8,21 +8,20 @@ import { IlluminatiClient } from "../../structures";
 const cooldowns: Collection<string /*command name*/, Collection<string /*user*/, number /*time*/>> = new Discord.Collection();
 
 export default async (client: IlluminatiClient, message: Message) => {
-    let settings: GuildSettings;
-
     if (message.author.bot) return;
 
-    const user = client.userManager(message.author);
-    const guild = client.guildManager(message.guild);
+    let settings: GuildSettings;
+
+    const { user, guild } = client.getManagersFromMessage(message);
 
     try {
-        if (message.channel.type === "DM") {
+        if (message.channel.type === ChannelType.DM) {
             settings = client.config.defaultSettings;
         } else {
             settings = await guild.getGuild();
         }
     } catch (e) {
-       await client.logger.botError(e, message);
+       throw new ErrorWithStack(e);
     }
 
 
@@ -32,9 +31,8 @@ export default async (client: IlluminatiClient, message: Message) => {
 
     // Regex for mention
     const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const prefixRegex = new RegExp(
-        `^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`
-    );
+
+    const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`);
 
     if (!prefixRegex.test(message.content)) return;
 
@@ -79,8 +77,7 @@ export default async (client: IlluminatiClient, message: Message) => {
             //Execute command and catch errors
             try {
                 message.channel.sendTyping();
-                const meta = {guild, user};
-                await command.run(message, args, settings, client, meta);
+                await command.run(message, args, settings, client, {guild, user});
             } catch (error) {
                 console.error(error);
                 if (error instanceof ErrorWithStack) return client.sendError(error, message.channel, true);
@@ -88,5 +85,8 @@ export default async (client: IlluminatiClient, message: Message) => {
                 return client.sendError(error, message);
             }
         }
-    }).catch(err => client.sendError(err, message.channel));
+    }).catch(err => {
+        console.error(err);
+        client.sendError(err, message.channel);
+    });
 };

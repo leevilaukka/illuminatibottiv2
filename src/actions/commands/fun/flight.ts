@@ -1,8 +1,18 @@
-import { EmbedFieldData, Formatters } from 'discord.js'
-import { IlluminatiEmbed } from '../../../structures'
+import { Formatters } from 'discord.js'
+import { IlluminatiEmbed, Errors } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
+
+type Field = {
+    name: string,
+    value: string,
+    inline?: boolean
+}
+
 const command: Command = {
     name: "flight",
+    category: Categories.utility,
+    args: true,
+    description: "Get information about a flight",
     async run(message, args, settings, client) {
         const icao = args[0]
         client.axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
@@ -14,7 +24,7 @@ const command: Command = {
                 return message.reply("lentoa ei löytynyt!");
             }
 
-            const fields: EmbedFieldData[] = [
+            const fields: Field[] = [
                 {
                     name: "Lähtö",
                     value: `${data.departure.airport} | ${data.departure.icao}\n${Formatters.time(data.departure.actual || data.departure.estimated, "F")})`,
@@ -54,6 +64,9 @@ const command: Command = {
             })
 
             embed.send()
+                .catch(e => {
+                    throw new Errors.BotError(e)
+                })
         })
     }
 }

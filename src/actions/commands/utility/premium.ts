@@ -2,6 +2,8 @@ import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'premium',
     ownerOnly: true,
+    description: 'Give Premium',
+    category: Categories.utility,
     run(message, args, settings, client) {
         const mentionUser = client.userManager(message.mentions.users.first())
 

@@ -19,7 +19,6 @@
     "@discord-player/downloader": "^3.0.1",
     "@discord-player/extractor": "^3.0.2",
     "@discordjs/builders": "^0.5.0",
-    "@discordjs/opus": "^0.5.3",
     "@discordjs/rest": "^0.1.0-canary.0",
     "@types/node": "^17.0.41",
     "algebra": "^1.0.1",
@@ -27,8 +26,9 @@
     "axios": "^0.21.1",
     "convert-units": "^2.3.4",
     "discord-api-types": "^0.22.0",
-    "discord-player": "^5.2.0",
-    "discord.js": "^13.8.0",
+    "discord-player": "^5.3.2",
+    "discord.js": "^14.7.1",
+    "discord.js-games": "^1.1.8",
     "ffmpeg-static": "^4.4.0",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
@@ -38,7 +38,8 @@
     "moment": "^2.29.1",
     "mongodb": "^4.7.0",
     "mongoose": "^6.3.6",
-    "ytdl-core": "^4.10.1"
+    "opusscript": "^0.0.8",
+    "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
     "@types/algebra.js": "^0.2.1",

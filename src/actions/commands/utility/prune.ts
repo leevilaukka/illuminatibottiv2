@@ -1,4 +1,5 @@
 import { Message, TextChannel } from "discord.js";
+import { BotError } from "../../../structures/Errors";
 import Command, { Categories } from "../../../types/IlluminatiCommand" 
 import wait from "../../../utils/wait";
 
@@ -8,7 +9,7 @@ export default {
     description: 'Poista jopa 99 viestiä.',
     args: true,
     usage: '<määrä>',
-    category: Categories.general,
+    category: Categories.utility,
     cooldown: 5,
     outOfOrder: true,
     guildOnly: true,
@@ -22,11 +23,10 @@ export default {
         }
         const channel = message.channel as TextChannel;
 
-        channel.bulkDelete(amount, true).catch((err: any) => {
-            console.error(err);
-            message.channel.send('tapahtui virhe!');
+        channel.bulkDelete(amount, true).catch((err) => {
+            throw new BotError(err)
         }).then(() => {
-            message.channel.send(`poistettu ${amount - 1} viestiä.`).then(async msg => wait(5000).then(() => msg.delete()));
+            message.channel.send(`poistettu ${amount - 1} viestiä.`).then(async msg => wait(3000).then(() => msg.delete()));
         });
     },
 } as Command;

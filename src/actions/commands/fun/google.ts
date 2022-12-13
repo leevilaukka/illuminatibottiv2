@@ -2,7 +2,6 @@ import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
-
 const command: Command = {
     name: "google",
     aliases: ["hae", "g", "gs"],
@@ -34,7 +33,7 @@ const command: Command = {
                     })
                 }
 
-                new IlluminatiEmbed(message, client, {
+                return new IlluminatiEmbed(message, client, {
                     title: result.name,
                     url: result.detailedDescription && result.detailedDescription.url ,
                     description: result.description,

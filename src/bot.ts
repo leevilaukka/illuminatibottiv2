@@ -1,15 +1,15 @@
 // Structures
-import { IlluminatiClient } from "./structures";
-import { Intents } from "discord.js";
+import { Errors, IlluminatiClient } from "./structures";
 
 // Node modules
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
 
+// Setup client
 const client = new IlluminatiClient(
     {
         intents: 36495,
-        userAgentSuffix: ["IlluminatiBotti"],
+        // Presence data
         presence: {
             status: "online",
             activities: [{
@@ -18,6 +18,7 @@ const client = new IlluminatiClient(
             }]
         },
     },
+    // YTDL options
     {
         connectionTimeout: 1000 * 30, // 30 seconds
         ytdlOptions: {
@@ -29,18 +30,25 @@ const client = new IlluminatiClient(
     }
 );
 
+// STARTUP
 (async () => {
     // Check if ownerID given
-    if (!client.config.ownerID && !client.isDevelopment) throw new Error("No ownerID given! Check your env variables.");
+    if (!client.config.ownerID && !client.isDevelopment) throw new Errors.BotError("No ownerID given! Check your env variables.");
 
-    await setupImports(client).then(() => console.log("Setup imports done!"));
+    await setupImports(client).then(() => console.log("Imports setup done!"));
+
+    console.log(client.eventNames())
+
+    client.on("trackAdd", (queue, track) => {
+        console.log(queue, track)
+    })
 
     // Connect to database
     mongoose.connect(
         process.env.MONGOURI,
         (cb: any) => {
             if (cb == true) {
-                console.error(cb);
+                throw new Errors.DatabaseError("Could not connect to database!");
             } else console.log("DB Connected!");
         }
     );
@@ -55,7 +63,12 @@ const client = new IlluminatiClient(
         } else {
             console.log("Ready! ✔");
         }
+    })
+    .catch((err: any) => {
+        if (err.message.includes("invalid token")) {
+            throw new Errors.BotError("Invalid token!");
+        } else {
+            throw new Errors.BotError(err.message);
+        }
     });
-
-    console.log(client.toString());
 })();

@@ -1,8 +1,8 @@
 import fs from "fs";
-import Discord, { MessageActionRow, MessageButton } from "discord.js";
+import Discord from "discord.js";
 
 import { argsToString, umlautRemover, valueParser, randomArray } from "../../../helpers";
-import { IlluminatiEmbed } from "../../../structures";
+import { IlluminatiEmbed, Errors } from "../../../structures";
 
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 
@@ -14,20 +14,21 @@ const command: Command = {
     usage: "<hakusana>",
     cooldown: 7,
     category: Categories.maps,
-    async run(message, args, settings, client) {
+    async run(message, args, settings, client, meta) {
         const query = umlautRemover(argsToString(args));
 
         // Get place id with query from Maps Places API
-        client.axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=${process.env.GOOGLE_API}&inputtype=textquery&locationbias=point:60.400991,25.102139&input=${query}`)
+        client.axios
+            .get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=${process.env.GOOGLE_API}&inputtype=textquery&locationbias=point:60.400991,25.102139&input=${query}`)
             .then(res => {
-                console.log(res.data)
+  
                 // If no results, return error message
                 if (!res.data.candidates[0] && res.data.status === "ZERO_RESULTS") {
                     return message.channel.send("Antamaasi paikkaa ei löytynyt :cry:")
                 }
                 const place_id = res.data.candidates[0].place_id;
                 // Get Maps Places API Details data with place id
-                client.axios.get(`https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.GOOGLE_API}&place_id=${place_id}&language=fi`)
+                return client.axios.get(`https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.GOOGLE_API}&place_id=${place_id}&language=fi`)
                     .then(res => {
                         console.log(res.data)
                         // Variables for embed fields
@@ -71,19 +72,6 @@ const command: Command = {
                             })
                         }
 
-
-                        const row = new MessageActionRow()
-                            .addComponents(
-                                new MessageButton()
-                                    .setStyle("LINK")
-                                    .setURL(data.url)
-                                    .setLabel("Avaa kartalla"),
-                                new MessageButton()
-                                    .setStyle("LINK")
-                                    .setDisabled(!data.website)
-                                    .setURL(data.website || "https://maps.google.com")
-                                    .setLabel("Nettisivut")
-                            );
                         // If data has the photos array, Axios GET random photo from array
                         if (photos) {
                             const randomPhoto = randomArray(photos);
@@ -98,10 +86,9 @@ const command: Command = {
 
                                     // Pipe photo to writer
                                     res.data.pipe(writer);
-                                    writer.on("finish", resolve => {
-                                        console.log(resolve)
+                                    writer.on("finish", (): void => {
                                         // Additional variables for new embed
-                                        const file = new Discord.MessageAttachment(`${__dirname}/pipes/places.png`);
+                                        const file = new Discord.AttachmentBuilder(`${__dirname}/pipes/places.png`);
 
                                         // Parse photographer name from HTML tag
                                         const photographer = randomPhoto.html_attributions[0].match("(?<=>)(.+?)(?=</a>)")[0];
@@ -130,12 +117,12 @@ const command: Command = {
                                             fields
                                         });
 
-                                        message.channel.send({ files: [file], embeds: [embed], components: [row] })
+                                        message.channel.send({ files: [file], embeds: [embed.embedObject]})
                                     })
                                 })
                                 // Catch errors with getting the photo
                                 .catch(e => {
-                                    message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+                                    throw new Errors.BotError(e)
                                 });
                         } else {
                             // If no photos found, send embed without photos
@@ -149,16 +136,16 @@ const command: Command = {
                             })
 
 
-                            message.reply({ embeds: [embed], components: [row] })
+                            return message.reply({ embeds: [embed.embedObject]})
                         }
                     })
                     // Catch errors getting Details data
                     .catch(e => {
-                        message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+                        throw new Errors.BotError(e)
                     })
                 // Catch errors getting any data
             }).catch(e => {
-                message.channel.send(`Tapahtui virhe :cry: - ${e.message}`)
+                throw new Errors.BotError(e)
             })
     }
 };

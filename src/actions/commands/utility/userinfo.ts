@@ -1,6 +1,9 @@
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'userinfo',
+    description: 'Näyttää tietoja käyttäjästä',
+    guildOnly: true,
+    category: Categories.utility,
     async run(message, args, settings, client, {user}) {
         const mentionedUser = message.mentions.users.first()
         if (mentionedUser) {

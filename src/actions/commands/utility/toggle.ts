@@ -2,7 +2,12 @@ import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
 import Command, { Categories } from '../../../types/IlluminatiCommand'
 const command: Command = {
     name: 'toggle',
-    permissions: ['MANAGE_GUILD'],
+    permissions: ['ManageGuild'],
+    args: true,
+    description: 'Toggles a command on or off',
+    usage: "<command>",
+    category: Categories.utility,
+    cooldown: 5,
     async run(message, args, settings, client, { guild }) {
         const commandName = args[0] as string
         
@@ -26,11 +31,11 @@ const command: Command = {
 
         if (await guild.isCommandDisabled(command.name)) {
             disabledCommands.splice(disabledCommands.indexOf(command.name), 1)
-            guild.updateGuild({ disabledCommands })
+            guild.batchUpdateGuild({ disabledCommands })
             message.reply(`komento \`${command.name}\` on nyt käytössä`)
         } else {
             disabledCommands.push(command.name)
-            guild.updateGuild({ disabledCommands })
+            guild.batchUpdateGuild({ disabledCommands })
             message.reply(`komento \`${command.name}\` on nyt estetty`)
         }
             
