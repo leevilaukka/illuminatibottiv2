@@ -14,11 +14,11 @@ const command: Command = {
         const comingUp = queue.tracks.map(track => {
             return {
                 name: track.title,
-                value: track.author,
+                value: `${track.author} | Requested by ${track.requestedBy.username}`,
             }
         })
         
-        const embed = new EmbedBuilder()
+        const embed = new IlluminatiEmbed(message, client)
             .setTitle('Jono')
             .setDescription(`Nyt soi: ${queue.nowPlaying().title}`)
             .addFields(comingUp)
@@ -26,6 +26,7 @@ const command: Command = {
             .setFooter({
                 text: `Kappaleita jonossa: ${queue.tracks.length}`
             })
+            .setTimestamp()
 
         return message.channel.send({ embeds: [embed] })
     }

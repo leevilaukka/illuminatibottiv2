@@ -3,6 +3,7 @@ import { Message, PermissionResolvable } from "discord.js";
 import { IlluminatiClient } from "../structures";
 import GuildFunctions from "../structures/IlluminatiGuild";
 import UserFunctions from "../structures/IlluminatiUser";
+import { RawInteractionData } from 'discord.js/typings/rawDataTypes';
 
 export type CommandArguments = string[];
 
@@ -33,6 +34,12 @@ export default interface Command {
     permissions?: PermissionResolvable[],
     ownerOnly?: boolean,
     argTypes?: ArgTypes,
+    interaction?: {
+        data: RawInteractionData,
+        execute: (interaction: any, client: IlluminatiClient) => Promise<any>,
+        update?: (interaction: any, client: IlluminatiClient) => Promise<any>
+        reply?: (interaction: any, client: IlluminatiClient) => Promise<any>
+    }
     run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<any>
     onInit?: (client: IlluminatiClient) => void
 }

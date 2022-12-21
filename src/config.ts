@@ -18,7 +18,7 @@ export type GuildSettings = {
   },
   embeds: IlluminatiEmbed[]
   leaveOnEmpty: boolean,
-  throws: string[],
+  throws: Array<string>,
   places: {
     name: string,
     location: {

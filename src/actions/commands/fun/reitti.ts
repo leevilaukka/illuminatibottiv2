@@ -145,7 +145,7 @@ const command: Command = {
                         inline: true,
                     }]);
                 }
-                message.channel.send({ embeds: [embed.embedObject] });
+                message.channel.send({ embeds: [embed] });
             });
         });
     },

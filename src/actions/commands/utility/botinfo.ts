@@ -62,7 +62,7 @@ const command: Command = {
         
 
 
-        message.reply({embeds: [embed.embedObject]})
+        message.reply({embeds: [embed]})
     }
 }
 

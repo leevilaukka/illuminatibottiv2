@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
+import { IlluminatiEmbed } from "../structures/index.js";
 
 const pointSchema = new Schema({
     type: {
@@ -44,7 +45,23 @@ const DeletedMessageSchema = new Schema({
     embeds: Array,
 });
 
-const GuildSchema = new Schema({
+type GuildProperties = {
+    guildName: string,
+    guildID: string,
+    joinedAt: Date,
+    removedMembers: typeof MemberSchema[],
+    removedMemberChannel: string,
+    deletedMessages: typeof DeletedMessageSchema[],
+    places: typeof PlaceSchema[],
+    embeds: IlluminatiEmbed[],
+    disabledCommands: string[],
+    mcdefaults: {
+        action: string,
+        host: string
+    }
+}
+
+const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     guildName: {
         type: String,
         required: true,
@@ -62,7 +79,7 @@ const GuildSchema = new Schema({
         default: config.defaultSettings.prefix,
     },
     volume: {
-        type: String,
+        type: Number,
         default: config.defaultSettings.volume,
     },
     joinedAt: {
@@ -78,7 +95,7 @@ const GuildSchema = new Schema({
         default: true
     },
     throws: {
-        type: Array,
+        type: [String],
         default: config.defaultSettings.throws,
     },
     mcdefaults: {
@@ -86,7 +103,7 @@ const GuildSchema = new Schema({
         host: String
     },
     embeds: {
-        type: Array,
+        type: [Object],
         default: config.defaultSettings.embeds
     },
     disabledCommands: [String],

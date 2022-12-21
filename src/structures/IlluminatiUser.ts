@@ -100,6 +100,7 @@ export function UserFunctions<T extends User>(user: T) {
         /**
          * Delete user from database
          */
+        
         deleteUser: async (): Promise<void> => {
             const userData = await UserFunctions(user).getUser();
             if (userData) {

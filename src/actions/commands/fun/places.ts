@@ -117,7 +117,7 @@ const command: Command = {
                                             fields
                                         });
 
-                                        message.channel.send({ files: [file], embeds: [embed.embedObject]})
+                                        message.channel.send({ files: [file], embeds: [embed]})
                                     })
                                 })
                                 // Catch errors with getting the photo
@@ -136,7 +136,7 @@ const command: Command = {
                             })
 
 
-                            return message.reply({ embeds: [embed.embedObject]})
+                            return message.reply({ embeds: [embed]})
                         }
                     })
                     // Catch errors getting Details data

@@ -14,8 +14,9 @@ const command: Command = {
                 name: "IlluminatiBotti",
                 icon_url: client.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png"
             }
-        }).send()
+        })       
+        .send()
     }
-};
+}
 
 export default command

@@ -80,7 +80,7 @@ const command: Command = {
 
                     // If res.players isn't empty, push players to embed
                     if (res_1.players) {
-                        embed_1.embedObject.addFields([
+                        embed_1.addFields([
                             {
                                 name: "Pelaajat online",
                                 value: res_1.players.join(),

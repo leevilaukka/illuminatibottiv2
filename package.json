@@ -1,11 +1,12 @@
 {
   "name": "illuminatibotti2.0",
-  "version": "4.2.0",
+  "version": "5.0.5",
   "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon bot.js"
+    "start": "nodemon bot.js",
+    "release": "npm version patch --no-git-tag-version && git add . && git commit && git push && git push --tags"
   },
   "author": {
     "name": "leevilaukka",
@@ -20,7 +21,6 @@
     "@discord-player/extractor": "^3.0.2",
     "@discordjs/builders": "^0.5.0",
     "@discordjs/rest": "^0.1.0-canary.0",
-    "@types/node": "^17.0.41",
     "algebra": "^1.0.1",
     "algebra.js": "^0.2.6",
     "axios": "^0.21.1",
@@ -28,7 +28,6 @@
     "discord-api-types": "^0.22.0",
     "discord-player": "^5.3.2",
     "discord.js": "^14.7.1",
-    "discord.js-games": "^1.1.8",
     "ffmpeg-static": "^4.4.0",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
@@ -45,7 +44,8 @@
     "@types/algebra.js": "^0.2.1",
     "@types/convert-units": "^2.3.4",
     "@types/md5": "^2.3.1",
-    "@types/mongoose": "^5.11.97"
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^18.11.14"
   },
   "repository": {
     "type": "git",

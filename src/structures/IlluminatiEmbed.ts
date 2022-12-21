@@ -1,8 +1,12 @@
-import { Message, Embed, EmbedBuilder, APIEmbed, RestOrArray, APIEmbedField } from "discord.js";
+import { Message, EmbedBuilder, APIEmbed, ActionRowBuilder, AnyComponentBuilder, MessagePayload, MessageCreateOptions, JSONEncodable, APIActionRowComponent, APIMessageActionRowComponent, ActionRowData, MessageActionRowComponentData,  } from "discord.js";
 import { IlluminatiClient, Errors } from ".";
 
+import { BaseMessageOptions } from "discord.js/typings/index.js";
+
+
+
 /**
- * A MessageEmbed with the default fields already filled
+ * A 
  * @constructor
  * @extends {MessageEmbed} Discord MessageEmbed class
  * @param {Message} [message] - The message that executed the command that resulted in this embed
@@ -13,20 +17,29 @@ import { IlluminatiClient, Errors } from ".";
 export default class IlluminatiEmbed extends EmbedBuilder {
     private message: Message;
     private client: IlluminatiClient;
-    private embed: EmbedBuilder;
+    private rows: ActionRowBuilder[] = [];
     
     constructor(message: Message, client: IlluminatiClient, data?: APIEmbed) {
         super(data);
+
+        !data?.footer && this.setFooter({
+            text: client.user.username,
+            iconURL: client.user.displayAvatarURL()
+        });
         
         this.message = message
         this.client = client
-        this.embed = new EmbedBuilder(data)
     }
 
-    get embedObject() {
-        return this.embed
+    setRows<T extends AnyComponentBuilder>(...rows: ActionRowBuilder<T>[]) {
+        this.rows = rows
+        return this
     }
 
+    addRows<T extends AnyComponentBuilder>(...rows: ActionRowBuilder<T>[]) {
+        this.rows.push(...rows)
+        return this
+    }
 
     //#region Send single
 
@@ -36,16 +49,16 @@ export default class IlluminatiEmbed extends EmbedBuilder {
      * @param {MessageOptions} options MessageOptions to send with the embed
      */
     
-    async send(options?: any) {
+    async send(addedOptions?: any) {
         try {
-            return await this.message.channel.send({ ...options, embeds: [this.embed] });
+            return await this.message.channel.send({ embeds: [this], components: this.rows, ...addedOptions });
         } catch (err) {
             throw new Errors.BotError(err);
         }
     }
 
     reply(options?: any) {
-        return this.message.reply({...options, embeds: [this.embed]})
+        return this.message.reply({...options, embeds: [this], components: this.rows})
     }
 
     //#endregion
@@ -59,12 +72,12 @@ export default class IlluminatiEmbed extends EmbedBuilder {
      * @param {MessageEmbed[] | IlluminatiEmbed[]} embeds Array of MessageEmbed or IlluminatiEmbed objects
      */
 
-    async sendMany(embeds?: (EmbedBuilder |IlluminatiEmbed)[], options?: any) {
-        await this.message.channel.send({embeds: [this.embed, ...embeds], ...options})
+    async sendMany(embeds?: (EmbedBuilder | IlluminatiEmbed)[], options?: any) {
+        await this.message.channel.send({embeds: [this, ...embeds], ...options})
     }
 
     async replyMany(embeds: (EmbedBuilder | IlluminatiEmbed)[], options?: any) {
-        await this.message.reply({embeds: [this.embed, ...embeds], ...options})
+        await this.message.reply({embeds: [this, ...embeds], ...options})
     }
 
     //#endregion
@@ -78,4 +91,6 @@ export default class IlluminatiEmbed extends EmbedBuilder {
     async save() {
         this.client.guildManager(this.message.guild).pushToArray("embeds", [this])
     }
+
+    
 }

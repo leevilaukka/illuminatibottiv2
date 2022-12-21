@@ -44,7 +44,7 @@ const command: Command = {
 
             //Lähetä DM
             try {
-                await message.author.send({ embeds: [embed.embedObject] });
+                await message.author.send({ embeds: [embed] });
                 if (message.channel.type === ChannelType.DM)
                     return;
                 return message.reply(`lähetin sinulle DM:n kaikista komennoista!`);

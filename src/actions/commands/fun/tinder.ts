@@ -103,7 +103,7 @@ const command: Command = {
                 fields,
             })
 
-            message.channel.send({ embeds: [embed.embedObject] }).then(async (tMessage) => {
+            message.channel.send({ embeds: [embed] }).then(async (tMessage) => {
                 await tMessage.react('👍');
                 await tMessage.react('👎');
 

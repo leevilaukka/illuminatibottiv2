@@ -1,6 +1,15 @@
 import { IlluminatiEmbed, Errors } from "../../../structures";
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-import {ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Formatters, Message, TextChannel} from "discord.js";
+import Command, { Categories } from "../../../types/IlluminatiCommand";
+import {
+    ActionRow,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ColorResolvable,
+    Formatters,
+    Message,
+    TextChannel,
+} from "discord.js";
 
 const command: Command = {
     name: "reddit",
@@ -10,8 +19,13 @@ const command: Command = {
     guildOnly: true,
     usage: "<subreddit>",
     args: true,
-    async run(message: Message & { channel: TextChannel }, args, settings, client) {
-        const sender = message
+    async run(
+        message: Message & { channel: TextChannel },
+        args,
+        settings,
+        client
+    ) {
+        const sender = message;
 
         // Command arguments
         let subreddit = args[0];
@@ -20,8 +34,7 @@ const command: Command = {
         // Subreddit argument given check
         if (!subreddit) {
             try {
-                return message.channel
-                    .send("Anna subreddit!");
+                return message.channel.send("Anna subreddit!");
             } catch (e) {
                 return await message.channel.send(e);
             }
@@ -32,17 +45,24 @@ const command: Command = {
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)
             .then((res) => {
                 // Subreddit found check
-                if (!res.data[0]) return sender.reply("Subreddittiä ei löytynyt!");
+                if (!res.data[0])
+                    return sender.reply("Subreddittiä ei löytynyt!");
 
                 const {
                     title,
-                    thumbnail: thumb, url: kuva, permalink, author: name,
-                    over_18: nsfw, author_flair_text: flair,
-                    link_flair_background_color: flaircolor, subreddit, created
-                } = res.data[0].data.children[0].data
-                const rURL = "https://www.reddit.com"
+                    thumbnail: thumb,
+                    url: kuva,
+                    permalink,
+                    author: name,
+                    over_18: nsfw,
+                    author_flair_text: flair,
+                    author_flair_background_color: flaircolor,
+                    subreddit,
+                    created,
+                } = res.data[0].data.children[0].data;
+                const rURL = "https://www.reddit.com";
                 const url = rURL + permalink;
-                const subURL = rURL + `/r/${subreddit}`
+                const subURL = rURL + `/r/${subreddit}`;
                 const postaajaurl = "https://www.reddit.com/u/" + name;
 
                 //Skip NSFW check
@@ -60,34 +80,41 @@ const command: Command = {
                     {
                         name: "Lähettäjä",
                         value: `${name}`,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Subreddit",
                         value: `${subreddit}`,
-                        inline: true
-
+                        inline: true,
                     },
                     {
                         name: "Luotu",
                         value: Formatters.time(Math.trunc(created), "F"),
-                    }
+                    },
                 ];
 
                 if (flair) {
                     fields.push({
                         name: "Flair",
                         value: flair,
-                        inline: false
+                        inline: false,
                     });
                 }
+                console.log(flaircolor)
 
-                const color = flaircolor ? `#${flaircolor}` as ColorResolvable : 0xff4500 as ColorResolvable
-                const embed = new IlluminatiEmbed(message, client, {
+                
+
+                const color: ColorResolvable = flaircolor
+                    ? flaircolor === "transparent"
+                        ? 0xff4500
+                        : flaircolor
+                    : 0xff4500;
+
+                    
+                new IlluminatiEmbed(message, client, {
                     title,
                     url,
                     description: nsfw ? "**NSFW**" : null,
-                    color: Number(color),
                     image: {
                         url: kuva,
                     },
@@ -96,26 +123,32 @@ const command: Command = {
                         url: postaajaurl,
                     },
                     fields,
-                });
-
-                const row = new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(url)
-                            .setLabel("Postaus"),
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(postaajaurl)
-                            .setLabel("Postaaja"),
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(subURL)
-                            .setLabel("Subreddit"),
+                })
+                    .setColor(color)
+                    .setRows(
+                        new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setURL(url)
+                                .setLabel("Postaus"),
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setURL(postaajaurl)
+                                .setLabel("Postaaja"),
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setURL(subURL)
+                                .setLabel("Subreddit")
+                        ),
+                        new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setURL(rURL)
+                                .setLabel("Upvote")
+                        )
                     )
+                    .reply();
 
-
-                sender.reply({ embeds: [embed.embedObject], components: [row] })
             })
             // Catch error with Axios GET
             .catch((e) => {
@@ -129,4 +162,4 @@ const command: Command = {
     },
 };
 
-export default command
+export default command;
