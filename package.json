@@ -1,6 +1,6 @@
 {
   "name": "illuminatibotti2.0",
-  "version": "5.0.6",
+  "version": "5.0.7",
   "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
   "main": "bot.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/leevilaukka"
   },
   "simple-git-hooks": {
-    "pre-commit": "npm version patch --no-git-tag-version"
+    "pre-push": "npm version patch --no-git-tag-version"
   },
   "displayName": "IlluminatiBotti",
   "homepage": "https://www.github.com/leevilaukka/illuminatibottiv2",
