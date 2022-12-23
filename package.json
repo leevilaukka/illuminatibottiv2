@@ -1,16 +1,21 @@
 {
   "name": "illuminatibotti2.0",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon bot.js",
-    "release": "npm version patch --no-git-tag-version && git add . && git commit && git push && git push --tags"
+    "patch": "npm version patch --no-git-tag-version && git add . && git commit && git push && git push --tags",
+    "release-major": "npm version major --no-git-tag-version && git add . && git commit && git push && git push --tags",
+    "release-minor": "npm version minor --no-git-tag-version && git add . && git commit && git push && git push --tags"
   },
   "author": {
     "name": "leevilaukka",
     "url": "https://github.com/leevilaukka"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm version patch --no-git-tag-version"
   },
   "displayName": "IlluminatiBotti",
   "homepage": "https://www.github.com/leevilaukka/illuminatibottiv2",
@@ -45,7 +50,8 @@
     "@types/convert-units": "^2.3.4",
     "@types/md5": "^2.3.1",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^18.11.14"
+    "@types/node": "^18.11.14",
+    "simple-git-hooks": "^2.8.1"
   },
   "repository": {
     "type": "git",
