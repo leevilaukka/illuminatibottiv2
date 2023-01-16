@@ -29,7 +29,7 @@ const command: Command = {
                     name: `${index + 1}. ${member.user.tag}`,
                     value: `Created: ${new Date(member.user.createdTimestamp).toLocaleDateString("fi-FI")}`,
                 }
-            }
+            })
         }).send();
     }
 }
