@@ -33,3 +33,5 @@ const command: Command = {
         }).send();
     }
 }
+
+export default command;
