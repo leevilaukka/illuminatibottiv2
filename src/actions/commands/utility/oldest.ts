@@ -9,7 +9,7 @@ const command: Command = {
     async run(message, args, settings, client) {
         const members = await message.guild.members.fetch();
 
-        const oldest = members.sort((a, b) => a.joinedTimestamp - b.joinedTimestamp).first();
+        const oldest = members.sort((a, b) => a.user.createdTimestamp - b.user.createdTimestamp).first();
 
         message.channel.send(`The oldest member in this server is ${oldest.user.tag}!`)
     }
