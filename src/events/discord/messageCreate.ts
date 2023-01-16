@@ -1,9 +1,10 @@
-import { ErrorWithStack, UserError } from '../../structures/Errors';
+import { CommandError, ErrorWithStack, UserError } from '../../structures/Errors';
 import Discord, { ChannelType, Collection, Message } from "discord.js";
 import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
+import { Guild } from '../../models';
 
 const cooldowns: Collection<string /*command name*/, Collection<string /*user*/, number /*time*/>> = new Discord.Collection();
 
@@ -77,16 +78,33 @@ export default async (client: IlluminatiClient, message: Message) => {
             //Execute command and catch errors
             try {
                 message.channel.sendTyping();
-                await command.run(message, args, settings, client, {guild, user});
+                await command.run(message, args, settings, client, {guild, user})
+                    .catch(async (error) => {
+                        throw error
+                    });
             } catch (error) {
                 console.error(error);
-                if (error instanceof ErrorWithStack) return client.sendError(error, message.channel, true);
+
+                /* if (error instanceof CommandError) {
+                    console.log(`Command ${error.command.name} errored!`)
+        
+                    const guildData = await Guild.findOne({id: message.guild.id});
+        
+                    if (guildData) {
+                        const errorCount: number = guildData.get(`commandErrors.${error.command.name}`) || 0;
+        
+                        guildData.set(`commandErrors.${error.command.name}`, errorCount + 1);
+                        guildData.save();
+                    }
+                } */
+
+                if (error instanceof ErrorWithStack) return client.sendError(error, message.channel, settings.stacksEnabled);
                 if (error instanceof UserError) return client.sendError(error, message);
+
                 return client.sendError(error, message);
             }
         }
-    }).catch(err => {
-        console.error(err);
+    }).catch(async err => {
         client.sendError(err, message.channel);
-    });
-};
+    })
+}

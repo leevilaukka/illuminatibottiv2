@@ -89,8 +89,6 @@ export default class IlluminatiEmbed extends EmbedBuilder {
      */
 
     async save() {
-        this.client.guildManager(this.message.guild).pushToArray("embeds", [this])
+        this.client.guildManager(this.message.guild).pushToArray("embeds", this)
     }
-
-    
 }

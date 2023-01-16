@@ -71,7 +71,7 @@ export function UserFunctions<T extends User>(user: T) {
             } else return await UserFunctions(user).getUser();
         },
 
-        updateUser: async (data: IlluminatiUserTypes): Promise<void | UserPromise> => {
+        updateUser: async (data: Partial<IlluminatiUserTypes>): Promise<void | UserPromise> => {
             const userData = await UserFunctions(user).getUser();
             if (typeof userData !== "object") throw new BotError(`User does not exist: ${user.id}`);
 

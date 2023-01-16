@@ -81,6 +81,13 @@ export class DatabaseError extends ErrorWithStack {
     }
 }
 
+export class NotFoundError extends DatabaseError {
+    constructor(message: string) {
+        super(message);
+        this.name = "NotFoundError";
+    }
+}
+
 
 /**
  * @class

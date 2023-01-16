@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { SchemaTypes } from "mongoose"
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
@@ -58,6 +58,10 @@ type GuildProperties = {
     mcdefaults: {
         action: string,
         host: string
+    },
+    stacksEnabled: boolean,
+    commandErrors: {
+        [key: string]: number
     }
 }
 
@@ -94,6 +98,10 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
         type: Boolean,
         default: true
     },
+    stacksEnabled: {
+        type: Boolean,
+        default: true
+    },
     throws: {
         type: [String],
         default: config.defaultSettings.throws,
@@ -107,6 +115,10 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
         default: config.defaultSettings.embeds
     },
     disabledCommands: [String],
+    commandErrors: {
+        type: SchemaTypes.Map,
+        of: Number,
+    }
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
 export default model

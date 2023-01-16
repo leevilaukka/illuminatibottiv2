@@ -1,4 +1,4 @@
-import { APIEmbed } from "discord.js"
+import { APIEmbed, Channel, Embed, Message, User } from "discord.js"
 import { IlluminatiEmbed } from "./structures"
 
 export type Config = {
@@ -6,6 +6,27 @@ export type Config = {
   devServerID: string,
   ownerID: string,
   defaultSettings: GuildSettings
+}
+
+export type DeletedMessage = {
+  message: String,
+  author:  {
+    name: string,
+    discriminator: string,
+    id: string
+  },
+  deletor: {
+    name: string,
+    discriminator: string,
+    id: string
+  },
+  timestamp: number,
+  messageID: string,
+  channel: {
+    name: string,
+    id: string
+  },
+  embeds: Embed[],
 }
 
 export type GuildSettings = {
@@ -28,6 +49,11 @@ export type GuildSettings = {
   }[],
   disabledCommands: string[],
   removedMemberChannel: string,
+  deletedMessages: DeletedMessage[],
+  commandErrors: {
+    [key: string]: number
+  },
+  stacksEnabled: boolean,
 }
 
 const config = {
@@ -69,6 +95,11 @@ const config = {
     }[],
     throws: [] as string[],
     disabledCommands: [] as string[],
+    deletedMessages: [] as DeletedMessage[],
+    commandErrors: {} as {
+      [key: string]: number
+    },
+    stacksEnabled: true,
   },
 } as const
 

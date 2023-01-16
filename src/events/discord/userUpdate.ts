@@ -7,7 +7,7 @@ export default async (client: IlluminatiClient, oldUser: User, newUser: User) =>
     const savedUser = await user.getUser();
 
     // Check if user is in database
-    if (!savedUser) throw new Errors.DatabaseError("User not found in database!");
+    if (!savedUser) return
 
     // Check if username changed
     if (oldUser.username !== newUser.username) {

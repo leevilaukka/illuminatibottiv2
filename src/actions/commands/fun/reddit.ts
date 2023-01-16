@@ -10,6 +10,7 @@ import {
     Message,
     TextChannel,
 } from "discord.js";
+import { CommandError } from "../../../structures/Errors";
 
 const command: Command = {
     name: "reddit",
@@ -39,6 +40,8 @@ const command: Command = {
                 return await message.channel.send(e);
             }
         }
+
+        throw new CommandError("Testi", this)
 
         // Dynamically get random reddit post from given subreddit
         client.axios

@@ -6,6 +6,8 @@ import { Errors } from '.';
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
+
 export function GuildFunctions<T extends Guild>(guild: T) {
     return {
         /**
@@ -38,12 +40,13 @@ export function GuildFunctions<T extends Guild>(guild: T) {
             }
         },
 
-        pushToArray: async <K extends keyof GuildSettings>(key: K, value: GuildSettings[K]): GuildPromise => {
+        pushToArray: async <K extends keyof GuildSettings>(key: K, value: ArrayElement<GuildSettings[K]>): GuildPromise => {
             const guildSettings = await GuildModel.findOne({ guildID: guild.id });
             if (guildSettings) {
                 return await guildSettings.updateOne({
                     $push: { [key]: value }
-                }).catch(err => {
+                })
+                .catch(err => {
                     throw new Errors.DatabaseError(err);
                 });
             } else {

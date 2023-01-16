@@ -2,6 +2,7 @@ import { DatabaseError, ErrorWithStack } from '../../structures/Errors';
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
 import { AuditLogEvent, Message, TextChannel } from 'discord.js';
+import { DeletedMessage } from '../../config';
 
 export default async (client: IlluminatiClient, deletedMessage: Message) => {
     try {
@@ -43,13 +44,15 @@ export default async (client: IlluminatiClient, deletedMessage: Message) => {
                 id: channel.id
             },
             embeds
-        }
+        } satisfies DeletedMessage
 
-        Guild.findOneAndUpdate({ guildID: deletedMessage.channel.guild.id }, {
-            $push: { deletedMessages: newDoc }
-        }).catch(e => {
-            throw new DatabaseError(e)
-        })
+        client.guildManager(deletedMessage.guild).pushToArray('deletedMessages', newDoc)
+            .then(() => {
+                console.log("Message deleted!")
+            })
+            .catch((e: DatabaseError) => {
+                    throw e
+            });
     } catch (e) {
         throw new ErrorWithStack(e)
     }
