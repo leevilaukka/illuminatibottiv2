@@ -114,11 +114,7 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
         type: [Object],
         default: config.defaultSettings.embeds
     },
-    disabledCommands: [String],
-    commandErrors: {
-        type: SchemaTypes.Map,
-        of: Number,
-    }
+    disabledCommands: [String]
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
 export default model
