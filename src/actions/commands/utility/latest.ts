@@ -1,11 +1,10 @@
-import { GuildMember, GuildMemberManager } from "discord.js";
 import Command from "IlluminatiCommand";
 import { IlluminatiEmbed } from "../../../structures";
 
 const command: Command = {
-    name: "oldest",
-    aliases: ["oldestuser", "oldestmember"],
-    description: "Shows the oldest member in the server",
+    name: "latest",
+    aliases: ["latestuser", "latestmember"],
+    description: "Shows the latest member in the server",
     category: "utility",
     async run(message, args, settings, client) {
         const members = await message.guild.members.fetch();
@@ -18,21 +17,19 @@ const command: Command = {
         }
 
         if (count > 25) {
-            return message.channel.send("You can only show 25 oldest members at a time");
+            return message.channel.send("You can only show 25 latest members at a time");
         }
 
-        const oldest = members.sort((a, b) => a.user.createdTimestamp - b.user.createdTimestamp).first(count)
+        const latest = members.sort((a, b) => b.user.createdTimestamp - a.user.createdTimestamp).first(count)
 
         new IlluminatiEmbed(message, client, {
-            title: "Oldest members",
-            fields: oldest.map((member, index) => {
+            title: "Latest members",
+            fields: latest.map((member, index) => {
                 return {
                     name: `${index + 1}. ${member.user.tag}`,
                     value: `Created: ${new Date(member.user.createdTimestamp).toLocaleDateString("fi-FI")}`,
                 }
-            })
+            }
         }).send();
     }
 }
-
-export default command;
