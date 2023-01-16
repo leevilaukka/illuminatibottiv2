@@ -1,8 +1,10 @@
-import Discord, { Message, User } from "discord.js"
+import Discord, { Formatters, Message, TimestampStyles, User } from "discord.js"
 import IUser from "../models/User"
 import { IlluminatiClient, IlluminatiEmbed } from ".";
 import { Document } from "mongoose";
 import { BotError, DatabaseError } from "./Errors";
+import { formatDate } from "../helpers";
+import { time } from "@discordjs/builders";
 
 type UserStats = {
     money: number;
@@ -306,6 +308,10 @@ export function UserFunctions<T extends User>(user: T) {
                         name: "XP",
                         value: `${userData.stats.xp} / ${userData.stats.nextLevelXP}`,
                         inline: true,
+                    },
+                    {
+                        name: "Liittyi Discordiin",
+                        value: `${time(user.createdAt)}`,
                     },
                 ] : [
                     {
