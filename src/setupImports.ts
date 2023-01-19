@@ -5,6 +5,7 @@ import registerInteractions from "./helpers/interactions/registerInteractions";
 import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import Command from "./types/IlluminatiCommand";
+import cors from "cors";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;
 
@@ -106,10 +107,10 @@ const setupExpress = async (client: IlluminatiClient) => {
         const injectClient: RequestHandler = (req, res, next) => {
             req.client = client;
             next();
-        };
-
+        }; 
+        
+        app.use(cors())
         app.use(injectClient);
-        app.use(cors());
         app.use(express.json());
         
         routes.forEach(async (route) => {
