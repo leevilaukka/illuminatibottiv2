@@ -52,7 +52,6 @@ const command: Command = {
         
         if(!track) throw new BotError("Kappaletta ei löytynyt")
         queue.play(track)
-        return true
     }
 }
 export default command

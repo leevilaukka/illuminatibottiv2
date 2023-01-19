@@ -1,12 +1,11 @@
 import { AuditLogEvent, GuildMember } from "discord.js";
-import { IlluminatiClient } from "../../structures";
 
-export default async (client: IlluminatiClient, member: GuildMember) => {
+export default async (_, member: GuildMember) => {
     console.log(`${member.user.tag} left the server.`);
 
     const fetchedLogs = await member.guild.fetchAuditLogs({
 		limit: 1,
-		type: AuditLogEvent.MemberKick ,
+		type: AuditLogEvent.MemberKick
 	});
 	// Since there's only 1 audit log entry in this collection, grab the first one
 	const kickLog = fetchedLogs.entries.first();

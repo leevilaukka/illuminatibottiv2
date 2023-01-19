@@ -1,6 +1,8 @@
 import { PlayerEvents } from "discord-player";
+import express, { RequestHandler } from "express";
 import fs from "fs"
 import registerInteractions from "./helpers/interactions/registerInteractions";
+import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import Command from "./types/IlluminatiCommand";
 
@@ -97,14 +99,46 @@ export const interactionImports = async (client: IlluminatiClient) => {
     }
 };
 
+const setupExpress = async (client: IlluminatiClient) => {
+    try {
+        const app = express();
+
+        const injectClient: RequestHandler = (req, res, next) => {
+            req.client = client;
+            next();
+        };
+
+        app.use(injectClient);
+        app.use(express.json());
+        
+        routes.forEach(async (route) => {
+            app.use(`/api${route.path}`, route.file);
+        });
+        
+        app.listen(process.env.EXPRESS_PORT || 3000, () => {
+            console.log("Express server started!");
+        });
+
+        return app;
+    }
+    catch (error) {
+        throw new Errors.ErrorWithStack(error);
+    }
+}
+
+
+
 export default async (client: IlluminatiClient) => {
     await Promise.all([
         eventImports(client),
         commandImports(client),
-        interactionImports(client)
-    ]).catch(err => {
+        interactionImports(client),
+        setupExpress(client)
+    ])
+    .catch(err => {
         throw new Errors.ErrorWithStack(err);
     });
 
     return
 };
+

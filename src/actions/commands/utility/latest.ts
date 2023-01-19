@@ -20,8 +20,10 @@ const command: Command = {
             return message.channel.send("You can only show 25 latest members at a time");
         }
 
-        const latest = members.sort((a, b) => b.user.createdTimestamp - a.user.createdTimestamp).first(count)
+        let latest = members.sort((a, b) => b.user.createdTimestamp - a.user.createdTimestamp).first(count)
 
+        if(args[1] === "nobot") latest = latest.filter(member => !member.user.bot)
+            
         new IlluminatiEmbed(message, client, {
             title: "Latest members",
             fields: latest.map((member, index) => {

@@ -19,6 +19,8 @@ type SlashOptions = {
 //** Metadata for a command, guild and user settings */ 
 type CommandMeta = { guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions> }
 
+type CommandResponse = string | { embed: any } | { content: string, embed: any } | Message<true | false> | void
+
 export default interface Command {
     name: string,
     aliases?: string[],
@@ -40,7 +42,7 @@ export default interface Command {
         update?: (interaction: any, client: IlluminatiClient) => Promise<any>
         reply?: (interaction: any, client: IlluminatiClient) => Promise<any>
     }
-    run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<any>
+    run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<CommandResponse>
     onInit?: (client: IlluminatiClient) => void
 }
 

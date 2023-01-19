@@ -1,16 +1,14 @@
 import { IlluminatiEmbed, Errors } from "../../../structures";
 import Command, { Categories } from "../../../types/IlluminatiCommand";
 import {
-    ActionRow,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     ColorResolvable,
-    Formatters,
     Message,
     TextChannel,
+    time,
 } from "discord.js";
-import { CommandError } from "../../../structures/Errors";
 
 const command: Command = {
     name: "reddit",
@@ -40,8 +38,6 @@ const command: Command = {
                 return await message.channel.send(e);
             }
         }
-
-        throw new CommandError("Testi", this)
 
         // Dynamically get random reddit post from given subreddit
         client.axios
@@ -92,7 +88,7 @@ const command: Command = {
                     },
                     {
                         name: "Luotu",
-                        value: Formatters.time(Math.trunc(created), "F"),
+                        value: time(Math.trunc(created), "F"),
                     },
                 ];
 
@@ -103,9 +99,6 @@ const command: Command = {
                         inline: false,
                     });
                 }
-                console.log(flaircolor)
-
-                
 
                 const color: ColorResolvable = flaircolor
                     ? flaircolor === "transparent"
@@ -142,12 +135,6 @@ const command: Command = {
                                 .setStyle(ButtonStyle.Link)
                                 .setURL(subURL)
                                 .setLabel("Subreddit")
-                        ),
-                        new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            new ButtonBuilder()
-                                .setStyle(ButtonStyle.Link)
-                                .setURL(rURL)
-                                .setLabel("Upvote")
                         )
                     )
                     .reply();
@@ -160,7 +147,7 @@ const command: Command = {
                     throw new Errors.BotError(
                         `Tapahtui virhe: ${e.response.status} - ${e.response.statusText}`
                     );
-                }
+                } else throw new Errors.BotError("Tapahtui odottamaton virhe!");
             });
     },
 };

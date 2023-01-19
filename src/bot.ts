@@ -4,6 +4,9 @@ import { Errors, IlluminatiClient } from "./structures";
 // Node modules
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
+import express, { RequestHandler, Express } from "express";
+import routes from "./routes";
+import { Queue } from "discord-player";
 
 // Setup client
 const client = new IlluminatiClient(
@@ -72,3 +75,12 @@ const client = new IlluminatiClient(
         }
     });
 })();
+
+declare global {
+    namespace Express {
+        export interface Request {
+            client?: IlluminatiClient;
+            queue?: Queue;
+        }
+    }
+}

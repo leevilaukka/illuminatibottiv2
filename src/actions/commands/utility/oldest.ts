@@ -1,4 +1,3 @@
-import { GuildMember, GuildMemberManager } from "discord.js";
 import Command from "IlluminatiCommand";
 import { IlluminatiEmbed } from "../../../structures";
 
@@ -21,7 +20,9 @@ const command: Command = {
             return message.channel.send("You can only show 25 oldest members at a time");
         }
 
-        const oldest = members.sort((a, b) => a.user.createdTimestamp - b.user.createdTimestamp).first(count)
+        let oldest = members.sort((a, b) => a.user.createdTimestamp - b.user.createdTimestamp).first(count)
+
+        if(args[1] === "nobot") oldest = oldest.filter(member => !member.user.bot)
 
         new IlluminatiEmbed(message, client, {
             title: "Oldest members",

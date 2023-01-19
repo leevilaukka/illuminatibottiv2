@@ -76,8 +76,6 @@ export default class IlluminatiClient extends Client {
         setPlayerUses(this.player)
     }
 
-
-    
     /**
      * Helper method to get the managers from the client
      * @param message Message to get the managers from
