@@ -1,10 +1,11 @@
-import { GuildVoiceChannelResolvable } from "discord.js";
+import { GuildVoiceChannelResolvable, TextBasedChannel, VoiceChannel } from "discord.js";
 import { RequestHandler, Router } from "express";
+import { PlayerMetadata } from "PlayerMetadata";
 import { IlluminatiClient } from "../structures";
 
 const router = Router();
 
-const checkQueue: RequestHandler = (req, res, next: any) => {
+const checkQueue: RequestHandler = (req, res, next) => {
     const guildID = req.params.id || req.body.guildID || req.body.id;
 
     const queue = req.client.player.getQueue(guildID);
@@ -16,18 +17,17 @@ const checkQueue: RequestHandler = (req, res, next: any) => {
     }
 
     req.queue = queue;
-
     next();
 };
 
-const createQueue = (guildID: string, client: IlluminatiClient, channel: GuildVoiceChannelResolvable) => {
+const createQueue = (guildID: string, client: IlluminatiClient, metadata: PlayerMetadata, voiceChannel: GuildVoiceChannelResolvable) => {
     const queue = client.player.createQueue(guildID, {
-        metadata: {
-            channel,
-        },
+        metadata
     });
 
-    queue.connect(channel);
+    if (!queue.connection) {
+        queue.connect(voiceChannel);
+    }
 
     return queue;
 }
@@ -39,15 +39,21 @@ router.post("/create", (req, res) => {
         error: "Not implemented",
     });
 
-    // const guildID = req.body.guildID;
+    const guildID = req.body.guildID;
 
-    // const channel = req.client.channels.cache.get(req.body.channel);
+    const channel = req.client.channels.cache.get(req.body.channel) as TextBasedChannel;
+    const v = req.client.channels.cache.get(req.body.voiceChannel) as VoiceChannel;
 
-    // const queue = createQueue(guildID, req.client, channel as GuildVoiceChannelResolvable);
+    const metadata: PlayerMetadata = {
+        channel: channel,
+        fromAPI: true
+    }
 
-    // res.json({
-    //     queue: queue,
-    // });
+    const queue = createQueue(guildID, req.client, metadata, v);
+
+    res.json({
+        queue: queue,
+    });
 });
 
 router.get("/now-playing/:id", checkQueue, ({queue}, res) => {
@@ -95,45 +101,31 @@ router.post("/play/", checkQueue, async ({client, body, queue}, res) => {
         });    
 });
 
-router.post("/pause/", checkQueue, (req, res) => {
-    const queue = req.queue
+router.post("/controls/", checkQueue, ({queue, body}, res) => {
+    const action = body.action;
 
-    queue.setPaused(true);
-
-    res.json({
-        paused: true,
-        track: queue.nowPlaying(),
-    });
-});
-
-router.post("/resume/", checkQueue, ({queue}, res) => {
-    queue.setPaused(false);
-
-    res.json({
-        paused: false,
-        track: queue.nowPlaying(),
-    });
-});
-
-router.post("/skip/", checkQueue, ({queue}, res) => {
-    if (!queue) {
-        return res.json({
-            error: "No queue found",
-        });
+    switch (action) {
+        case "pause":
+            queue.setPaused(true);
+            break;
+        case "resume":
+            queue.setPaused(false);
+            break;
+        case "skip":
+            queue.skip();
+            break;
+        case "stop":
+            queue.stop();
+            break;
+        default:
+            return res.status(400).json({
+                error: "Invalid action",
+            });
     }
 
-    const track = queue.skip();
-
     res.json({
-        track: track,
-    });
-});
-
-router.post("/stop/", checkQueue, ({queue}, res) => {
-    queue.stop();
-
-    res.json({
-        stopped: true,
+        action: action,
+        track: queue.nowPlaying(),
     });
 });
 
