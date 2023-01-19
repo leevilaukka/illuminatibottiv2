@@ -109,6 +109,7 @@ const setupExpress = async (client: IlluminatiClient) => {
         };
 
         app.use(injectClient);
+        app.use(cors());
         app.use(express.json());
         
         routes.forEach(async (route) => {
