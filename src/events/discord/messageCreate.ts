@@ -5,6 +5,8 @@ import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
 import { Guild } from '../../models';
+import { cp } from 'fs';
+import { commandCounter } from '../../metrics';
 
 const cooldowns: Collection<string /*command name*/, Collection<string /*user*/, number /*time*/>> = new Discord.Collection();
 
@@ -79,6 +81,10 @@ export default async (client: IlluminatiClient, message: Message) => {
             try {
                 message.channel.sendTyping();
                 await command.run(message, args, settings, client, {guild, user})
+                    .then(() => {
+                        if (client.isDevelopment) console.log(`Cmd ${command.name} executed!`);
+                        commandCounter.inc();
+                    })
                     .catch(async (error) => {
                         throw error
                     });

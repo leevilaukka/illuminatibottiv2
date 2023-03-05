@@ -4,6 +4,7 @@ import { Errors, IlluminatiClient } from "./structures";
 // Node modules
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
+import io from "@pm2/io"
 
 import { Queue } from "discord-player";
 
@@ -32,6 +33,8 @@ const client = new IlluminatiClient(
     }
 );
 
+
+
 // STARTUP
 (async () => {
     // Check if ownerID given
@@ -55,6 +58,17 @@ const client = new IlluminatiClient(
         }
     );
 
+    // Initiate pm2 metrics
+    io.init({
+        profiling: true,
+        metrics: {
+            network: true,
+            http: true,
+            runtime: true,
+        },
+        tracing: true
+    })
+
     // Bot client login
     await client.login(client.config.token).then(() => {
         if (client.isDevelopment) {
@@ -74,6 +88,7 @@ const client = new IlluminatiClient(
         }
     });
 })();
+
 
 // Exrpess types
 declare global {
