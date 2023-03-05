@@ -13,5 +13,30 @@ router.get("/status", ({client, queue}, res) => {
     });
 });
 
+router.get("/ping", ({client}, res) => {
+    res.json({
+        ping: client.ws.ping,
+    });
+});
+
+router.post("/activity", ({client, body}, res) => {
+    const activity = body.activity;
+
+    if (!activity) {
+        return res.status(400).json({
+            error: "No activity provided",
+        });
+    }
+
+    client.user.setActivity(activity);
+
+    res.json({
+        activity: activity,
+    });
+});
+
+
+
+
 
 export default router;

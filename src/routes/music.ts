@@ -34,7 +34,13 @@ const createQueue = (guildID: string, client: IlluminatiClient, metadata: Player
 
 
 // TODO: Implement this
-router.post("/create", (req, res) => {
+router.post<{
+    body: {
+        guildID: string;
+        channel: string;
+        voiceChannel: string;
+    }
+}>("/create", (req, res) => {
     res.json({
         error: "Not implemented",
     });
@@ -64,7 +70,7 @@ router.get("/now-playing/:id", checkQueue, ({queue}, res) => {
             playing: queue.playing,
             track: track,
             progress: queue.getPlayerTimestamp(),
-            queue: queue,
+            queue: queue.toJSON(),
 
         });
     } catch (e) {

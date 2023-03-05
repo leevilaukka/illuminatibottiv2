@@ -4,8 +4,7 @@ import { Errors, IlluminatiClient } from "./structures";
 // Node modules
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
-import express, { RequestHandler, Express } from "express";
-import routes from "./routes";
+
 import { Queue } from "discord-player";
 
 // Setup client
@@ -49,10 +48,10 @@ const client = new IlluminatiClient(
     // Connect to database
     mongoose.connect(
         process.env.MONGOURI,
-        (cb: any) => {
-            if (cb == true) {
-                throw new Errors.DatabaseError("Could not connect to database!");
-            } else console.log("DB Connected!");
+        (mongoErr) => {
+            if (mongoErr) {
+                throw new Errors.DatabaseError(mongoErr.message);
+            } else console.log("Connected to database! ✔");
         }
     );
 
@@ -76,6 +75,7 @@ const client = new IlluminatiClient(
     });
 })();
 
+// Exrpess types
 declare global {
     namespace Express {
         export interface Request {

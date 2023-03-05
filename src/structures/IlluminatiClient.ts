@@ -33,6 +33,7 @@ export default class IlluminatiClient extends Client {
     // Types
     static commands: Collection<string, Command>
     static interactions: Collection<string, IlluminatiInteraction>
+    jobs: Collection<string, any> = new Collection()
     player: Player
     config: typeof config
     userManager: typeof IlluminatiUser
@@ -199,7 +200,7 @@ export default class IlluminatiClient extends Client {
     private _replyError(error: Error, message: Message, showStack?: boolean): Promise<Message> {
         return message.reply(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
     }
-
+ 
     // Log this
     log() {
         console.log(this)

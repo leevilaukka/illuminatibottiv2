@@ -6,6 +6,7 @@ import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import Command from "./types/IlluminatiCommand";
 import cors from "cors";
+import importSchedules from "./schedules";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;
 
@@ -135,7 +136,8 @@ export default async (client: IlluminatiClient) => {
         eventImports(client),
         commandImports(client),
         interactionImports(client),
-        setupExpress(client)
+        setupExpress(client),
+        importSchedules.importSchedules(client)
     ])
     .catch(err => {
         throw new Errors.ErrorWithStack(err);

@@ -1,6 +1,6 @@
 import main from "./main"
 import music from "./music"
-
+import guilds from "./guilds"
 
 const routes = [ 
     {
@@ -10,6 +10,10 @@ const routes = [
     {
         file: music,
         path: "/music",
+    },
+    {
+        file: guilds,
+        path: "/guilds",
     }
 ]
 

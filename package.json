@@ -1,6 +1,6 @@
 {
   "name": "illuminatibotti2.0",
-  "version": "6.0.11",
+  "version": "6.0.12",
   "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
   "main": "bot.js",
   "scripts": {
@@ -46,6 +46,8 @@
     "moment": "^2.29.1",
     "mongodb": "^4.7.0",
     "mongoose": "^6.3.6",
+    "node-schedule": "^2.1.1",
+    "openai": "^3.2.1",
     "opusscript": "^0.0.8",
     "ytdl-core": "^4.11.2"
   },
@@ -56,6 +58,7 @@
     "@types/md5": "^2.3.1",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.14",
+    "@types/node-schedule": "^2.1.0",
     "simple-git-hooks": "^2.8.1"
   },
   "repository": {
