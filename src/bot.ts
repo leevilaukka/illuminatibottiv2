@@ -69,6 +69,8 @@ const client = new IlluminatiClient(
         tracing: true
     })
 
+    client.setMaxListeners(20)
+
     // Bot client login
     await client.login(client.config.token).then(() => {
         if (client.isDevelopment) {
