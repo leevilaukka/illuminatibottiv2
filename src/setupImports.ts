@@ -4,15 +4,13 @@ import fs from "fs"
 import registerInteractions from "./helpers/interactions/registerInteractions";
 import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
-import Command from "./types/IlluminatiCommand";
 import cors from "cors";
 import importSchedules from "./schedules";
+import { Command } from "./types";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;
 
 // Import events
-const eventFolders = fs.readdirSync(`${__dirname}/events/`)
-
 export const eventImports = async (client: IlluminatiClient) => {
     console.group("Loading events...");
     console.time("events");

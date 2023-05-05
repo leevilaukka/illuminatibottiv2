@@ -1,56 +1,9 @@
 import { time } from "discord.js";
 import { IlluminatiEmbed } from "../../../structures";
-import Command, { Categories } from "../../../types/IlluminatiCommand";
+import { Categories } from "../../../types/IlluminatiCommand";
 import Package from "../../../models/Package";
+import { Command, DHLResponse } from "../../../types";
 
-type DHLAddress = {
-    countryCode: string;
-    postalCode: string;
-    addressLocality: string;
-};
-
-type DHLDetails = {
-    product: {
-        productName: string;
-    };
-    weight: {
-        value: number;
-        unitText: string;
-    };
-    references: [
-        {
-            [key: string]: string;
-        }
-    ];
-};
-
-type DHLShipment = {
-    id: string;
-    service: string;
-    origin: {
-        address: DHLAddress;
-    };
-    destination: {
-        address: DHLAddress;
-    };
-    status: {
-        timestamp: string;
-        statusCode: string;
-        status: string;
-    };
-    details: DHLDetails;
-    events: [
-        {
-            timestamp: string;
-            statusCode: string;
-            status: string;
-        }
-    ];
-};
-
-export type DHLResponse = {
-    shipments: DHLShipment[];
-};
 const command: Command = {
     name: "dhl",
     description: "Get DHL tracking info",

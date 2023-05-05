@@ -34,7 +34,6 @@ const client = new IlluminatiClient(
 );
 
 
-
 // STARTUP
 (async () => {
     // Check if ownerID given

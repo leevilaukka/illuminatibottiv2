@@ -1,6 +1,7 @@
 import { IlluminatiJob } from ".";
-import { DHLResponse } from "../actions/commands/utility/dhl";
+
 import Package from "../models/Package";
+import { DHLResponse } from "../types";
 
 const job: IlluminatiJob = {
     name: "packages",

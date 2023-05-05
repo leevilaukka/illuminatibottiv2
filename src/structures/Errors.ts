@@ -1,7 +1,5 @@
 import { Player } from "discord-player";
-import Command from "IlluminatiCommand";
-
-
+import { Command } from "../types";
 
 /**
  * @class

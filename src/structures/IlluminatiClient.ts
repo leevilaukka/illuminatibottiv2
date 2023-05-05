@@ -10,13 +10,13 @@ import { Client as GeniusClient } from 'genius-lyrics';
 import axios, { AxiosInstance } from "axios"
 
 // Local imports
-import Command from "IlluminatiCommand"
 import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
-import { IlluminatiInteraction } from "IlluminatiInteraction"
+
 
 // Config imports
 import config from "../config.js"
 import info from "../../package.json"
+import Types, { Command, IlluminatiInteraction } from "../types";
 
 const setPlayerUses = (player: Player) => {
     player.use("YOUTUBE_DL", Downloader)
@@ -53,9 +53,11 @@ export default class IlluminatiClient extends Client {
     constructor(clientOptions: ClientOptions, playerInitOptions: PlayerInitOptions) {
         super(clientOptions)
 
+        this.setMaxListeners(50)
+
         // Set static members
         IlluminatiClient.commands = new Collection();
-        IlluminatiClient.interactions = new Collection<string, IlluminatiInteraction>();
+        IlluminatiClient.interactions = new Collection<string, Types.IlluminatiInteraction>();
         IlluminatiClient.packageInfo = info
 
         // Metadata
@@ -75,6 +77,7 @@ export default class IlluminatiClient extends Client {
         this.guildManager = IlluminatiGuild
         
         setPlayerUses(this.player)
+
     }
 
     /**
@@ -89,7 +92,7 @@ export default class IlluminatiClient extends Client {
      * Get command by name
      * @method getCommand
      */
-    static getCommand(name: string): Command {
+    static getCommand(name: string): Types.Command {
         return this.commands.get(name) ||
         this.commands.find(
             (cmd) => cmd.aliases && cmd.aliases.includes(name)
@@ -122,7 +125,7 @@ export default class IlluminatiClient extends Client {
      * })
      */
 
-    static get Commands(): Command[] {
+    static get Commands(): Types.Command[] {
         return [...this.commands.values()];
     }
 
@@ -160,7 +163,7 @@ export default class IlluminatiClient extends Client {
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
      */
-    static get Interactables(): {commands: Command[], interactions: IlluminatiInteraction[]} {
+    static get Interactables(): {commands: Types.Command[], interactions: IlluminatiInteraction[]} {
         return {commands: [...this.Commands], interactions: [...this.Interactions]};
     }
 

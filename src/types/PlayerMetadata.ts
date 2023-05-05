@@ -1,6 +1,6 @@
 import { Queue } from "discord-player";
 import { Message, TextBasedChannel, UserResolvable } from "discord.js";
-import Command from "./IlluminatiCommand";
+import { Command } from "../types";
 
 export type PlayerQueue = Queue & {metadata: PlayerMetadata}
 

@@ -1,5 +1,6 @@
 import { UserError } from "../../../structures/Errors";
-import Command, { Categories } from "../../../types/IlluminatiCommand";
+import { Command } from "../../../types";
+
 const command: Command = {
     name: 'debugeco',
     ownerOnly: true,
