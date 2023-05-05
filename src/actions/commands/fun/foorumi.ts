@@ -1,6 +1,6 @@
 import { IlluminatiEmbed } from "../../../structures";
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "foorumi",
     description: "DiscordFoorumi-linkki",
@@ -12,11 +12,12 @@ const command: Command = {
             description: "Käy chekkaa DiscordFoorumi",
             author: {
                 name: "IlluminatiBotti",
-                icon_url: client.user.displayAvatarURL() || "https://cdn.discordapp.com/embed/avatars/0.png"
-            }
-        })       
-        .send()
-    }
-}
+                icon_url:
+                    client.user.displayAvatarURL() ||
+                    "https://cdn.discordapp.com/embed/avatars/0.png",
+            },
+        }).send();
+    },
+};
 
-export default command
+export default command;

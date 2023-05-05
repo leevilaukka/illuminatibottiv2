@@ -1,6 +1,7 @@
 import { Formatters } from 'discord.js'
 import { IlluminatiEmbed, Errors } from '../../../structures'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
 
 type Field = {
     name: string,

@@ -1,5 +1,4 @@
 import { Message } from "discord.js";
-import { CommandArguments } from "../types/IlluminatiCommand";
 import { translateTable } from "../utils";
 
 /**
@@ -16,7 +15,7 @@ export function clean(text: string): string {
   
 }
 
-export function argsToString(args: CommandArguments): string {
+export function argsToString(args: string[]): string {
     const regExp = /,/gi;
     return args.toString().replace(regExp, " ")
 };

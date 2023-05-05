@@ -1,4 +1,5 @@
-import Command, { Categories } from '../../../types/IlluminatiCommand';
+import { Command } from "../../../types"
+import { Categories } from "../../../types/IlluminatiCommand"
 import { IlluminatiClient, IlluminatiEmbed } from '../../../structures';
 import { ChannelType } from 'discord.js';
 

@@ -1,5 +1,7 @@
 import { UserError } from '../../../structures/Errors'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'seek',
     run(message, args, settings, client, meta) {

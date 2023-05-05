@@ -1,5 +1,5 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from "IlluminatiCommand"
+import { Command } from "../../../types"
 
 interface TempData {
     comment: string

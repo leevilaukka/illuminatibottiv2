@@ -1,6 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { BotError } from "../../../structures/Errors";
-import Command, { Categories } from "../../../types/IlluminatiCommand" 
+import { Command } from "../../../types"
+import { Categories } from "../../../types/IlluminatiCommand";
 import wait from "../../../utils/wait";
 
 export default {

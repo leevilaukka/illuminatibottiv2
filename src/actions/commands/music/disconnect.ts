@@ -1,22 +1,22 @@
-import { UserError } from '../../../structures/Errors'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { UserError } from "../../../structures/Errors";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 
 const command: Command = {
-    name: 'disconnect',
+    name: "disconnect",
     category: Categories.music,
-    description: 'Disconnect from the voice channel',
-    aliases: ['dc', 'leave'],
+    description: "Disconnect from the voice channel",
+    aliases: ["dc", "leave"],
     guildOnly: true,
     run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild)
+        const queue = client.player.getQueue(message.guild);
 
         if (queue) {
-            queue.destroy(true)
-            return message.reply("Heippa!")
+            queue.destroy(true);
+            return message.reply("Heippa!");
         } else {
-            throw new UserError("Mikään ei soi!")
+            throw new UserError("Mikään ei soi!");
         }
-    }
-}
-export default command
+    },
+};
+export default command;

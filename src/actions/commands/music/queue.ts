@@ -1,34 +1,34 @@
-import { EmbedBuilder } from 'discord.js'
-import { IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { EmbedBuilder } from "discord.js";
+import { IlluminatiEmbed } from "../../../structures";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
-    name: 'queue',
-    aliases: ['q'],
-    description: 'Näytä nykyinen jono',
+    name: "queue",
+    aliases: ["q"],
+    description: "Näytä nykyinen jono",
     category: Categories.music,
     guildOnly: true,
     async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild.id)
+        const queue = client.player.getQueue(message.guild.id);
 
-        const comingUp = queue.tracks.map(track => {
+        const comingUp = queue.tracks.map((track) => {
             return {
                 name: track.title,
                 value: `${track.author} | Requested by ${track.requestedBy.username}`,
-            }
-        })
-        
+            };
+        });
+
         const embed = new IlluminatiEmbed(message, client)
-            .setTitle('Jono')
+            .setTitle("Jono")
             .setDescription(`Nyt soi: ${queue.nowPlaying().title}`)
             .addFields(comingUp)
             .setThumbnail(queue.nowPlaying().thumbnail)
             .setFooter({
-                text: `Kappaleita jonossa: ${queue.tracks.length}`
+                text: `Kappaleita jonossa: ${queue.tracks.length}`,
             })
-            .setTimestamp()
+            .setTimestamp();
 
-        return message.channel.send({ embeds: [embed] })
-    }
-}
-export default command
+        return message.channel.send({ embeds: [embed] });
+    },
+};
+export default command;

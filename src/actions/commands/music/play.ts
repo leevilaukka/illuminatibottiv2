@@ -1,7 +1,8 @@
 import { BotError, UserError } from '../../../structures/Errors';
 import { QueryType } from 'discord-player'
 import { argsToString } from '../../../helpers'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
 // TODO optimize

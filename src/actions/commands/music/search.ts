@@ -2,7 +2,8 @@ import { Message, MessageCollector } from 'discord.js'
 import { argsToString } from '../../../helpers'
 import { IlluminatiEmbed } from '../../../structures'
 import { PlayerError, UserError } from '../../../structures/Errors'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
 

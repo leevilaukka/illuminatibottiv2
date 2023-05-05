@@ -2,49 +2,47 @@ import { gql, request } from "graphql-request";
 
 import { formatDate, valueParser } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 type RequestResultData = {
     plan: {
         itineraries: Itinerany[];
-    }
-}
+    };
+};
 
 type Itinerany = {
-    startTime: number
-    endTime: number
-    duration: number
-    legs: Leg[]
-    waitingTime: number
-    walkTime: number
-    walkDistance: number,
+    startTime: number;
+    endTime: number;
+    duration: number;
+    legs: Leg[];
+    waitingTime: number;
+    walkTime: number;
+    walkDistance: number;
     fares: {
-        type: string,
-        currency: string,
-        cents: number,
-        components: any
-    }[],
-    elevationGained: number,
-    elevationLost: number,
-}
+        type: string;
+        currency: string;
+        cents: number;
+        components: any;
+    }[];
+    elevationGained: number;
+    elevationLost: number;
+};
 
-
-type Leg = { 
-    startTime: number 
-    endTime: number 
-    distance: number; 
+type Leg = {
+    startTime: number;
+    endTime: number;
+    distance: number;
     departureDelay: number;
     legGeometry: {
         length: number;
         points: string;
-    }
-    duration: number; 
-    from: { name: string; }; 
-    to: { name: string; }; 
-    mode: string; 
-    trip: { tripHeadsign: string; routeShortName: string; }; 
+    };
+    duration: number;
+    from: { name: string };
+    to: { name: string };
+    mode: string;
+    trip: { tripHeadsign: string; routeShortName: string };
 };
-
 
 const command: Command = {
     name: "reitti",
@@ -139,11 +137,13 @@ const command: Command = {
                     ],
                 });
                 if (leg.trip) {
-                    embed.setFields([{
-                        name: "Trip",
-                        value: `${leg.trip.tripHeadsign} / ${leg.trip.routeShortName}`,
-                        inline: true,
-                    }]);
+                    embed.setFields([
+                        {
+                            name: "Trip",
+                            value: `${leg.trip.tripHeadsign} / ${leg.trip.routeShortName}`,
+                            inline: true,
+                        },
+                    ]);
                 }
                 message.channel.send({ embeds: [embed] });
             });
@@ -151,4 +151,4 @@ const command: Command = {
     },
 };
 
-export default command
+export default command;

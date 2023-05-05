@@ -1,4 +1,4 @@
-import { CommandArguments } from "../types/IlluminatiCommand";
+import { CommandArguments } from "../types";
 
 const argsToString = (args: CommandArguments): string => {
     const regExp = /,/gi;

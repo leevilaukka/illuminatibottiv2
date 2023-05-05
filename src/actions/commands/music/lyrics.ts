@@ -1,26 +1,27 @@
-import { IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from "../../../types/IlluminatiCommand";
-import { BotError, UserError } from '../../../structures/Errors'
+import { IlluminatiEmbed } from "../../../structures";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
+import { BotError, UserError } from "../../../structures/Errors";
 
 const command: Command = {
-    name: 'lyrics',
-    aliases: ['lyric'],
-    description: 'Searches for lyrics.',
+    name: "lyrics",
+    aliases: ["lyric"],
+    description: "Searches for lyrics.",
     guildOnly: true,
     category: Categories.music,
     async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild)
+        const queue = client.player.getQueue(message.guild);
 
-        const { title } = queue.nowPlaying() 
+        const { title } = queue.nowPlaying();
 
-        if(!title) {
-            throw new UserError('No song playing.')
+        if (!title) {
+            throw new UserError("No song playing.");
         }
-        const lyrics = await client.lyrics.search(title)
-        console.log(lyrics)
-        
-        if(!lyrics) {
-            throw new BotError('No lyrics found.')
+        const lyrics = await client.lyrics.search(title);
+        console.log(lyrics);
+
+        if (!lyrics) {
+            throw new BotError("No lyrics found.");
         }
 
         return new IlluminatiEmbed(message, client, {
@@ -31,10 +32,10 @@ const command: Command = {
             fields: [
                 {
                     name: "Artisti",
-                    value: lyrics.artist.name
-                }
-            ]
-        }).reply()
-    }
-}
-export default command
+                    value: lyrics.artist.name,
+                },
+            ],
+        }).reply();
+    },
+};
+export default command;

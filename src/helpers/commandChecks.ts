@@ -2,7 +2,7 @@ import { CommandNotFoundError } from '../structures/Errors';
 import { ChannelType, Message } from "discord.js";
 
 import { IlluminatiClient } from "../structures";
-import Command, { CommandArguments } from "../types/IlluminatiCommand";
+import { CommandArguments, Command } from "../types";
 import { Config } from '../config';
 
 // Check if command can be run

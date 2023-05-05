@@ -1,4 +1,4 @@
-import Command from 'IlluminatiCommand'
+import { Command } from "../../../types"
 
 import { argsToString } from '../../../helpers';
 import { PlayerMetadata } from 'PlayerMetadata';

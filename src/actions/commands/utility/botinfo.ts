@@ -1,69 +1,73 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentBuilder} from 'discord.js'
-import { Button } from '../../../helpers/interactions'
-import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentBuilder,
+} from "discord.js";
+import { Button } from "../../../helpers/interactions";
+import { IlluminatiClient, IlluminatiEmbed } from "../../../structures";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
-    name: 'botinfo',
-    aliases: ['bi', 'bot', 'info'],
-    description: 'Shows bot info',
+    name: "botinfo",
+    aliases: ["bi", "bot", "info"],
+    description: "Shows bot info",
     category: Categories.utility,
     async run(message, args, settings, client) {
-        const owner = await client.owner
+        const owner = await client.owner;
         const embed = new IlluminatiEmbed(message, client, {
-            title: 'Bot Information',
+            title: "Bot Information",
             thumbnail: {
                 url: client.user.displayAvatarURL(),
             },
             fields: [
                 {
-                    name: 'Bot Name',
+                    name: "Bot Name",
                     value: client.user.username,
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Tag',
+                    name: "Bot Tag",
                     value: client.user.tag,
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Owner',
+                    name: "Bot Owner",
                     value: owner.tag,
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Prefix',
+                    name: "Bot Prefix",
                     value: settings.prefix,
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Version',
-                    value: `v${IlluminatiClient.packageInfo.version}${client.isDevelopment ? '-dev' : ''}`,
-                    inline: true
+                    name: "Bot Version",
+                    value: `v${IlluminatiClient.packageInfo.version}${
+                        client.isDevelopment ? "-dev" : ""
+                    }`,
+                    inline: true,
                 },
                 {
-                    name: 'Bot Servers',
+                    name: "Bot Servers",
                     value: client.guilds.cache.size.toString(),
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Channels',
+                    name: "Bot Channels",
                     value: client.channels.cache.size.toString(),
-                    inline: true
+                    inline: true,
                 },
                 {
-                    name: 'Bot Users',
+                    name: "Bot Users",
                     value: client.users.cache.size.toString(),
-                    inline: true
+                    inline: true,
                 },
-            ]
-        })
+            ],
+        });
 
-        
+        message.reply({ embeds: [embed] });
+    },
+};
 
-
-        message.reply({embeds: [embed]})
-    }
-}
-
-export default command
+export default command;

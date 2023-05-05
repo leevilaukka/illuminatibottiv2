@@ -1,6 +1,7 @@
 import { argsToString } from '../../../helpers'
 import { PlayerError } from '../../../structures/Errors'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
 import { PlayerMetadata } from '../../../types/PlayerMetadata'
 
 const command: Command = {

@@ -1,5 +1,6 @@
 import { IlluminatiEmbed, Errors } from "../../../structures";
-import Command, { Categories } from "../../../types/IlluminatiCommand";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -106,7 +107,6 @@ const command: Command = {
                         : flaircolor
                     : 0xff4500;
 
-                    
                 new IlluminatiEmbed(message, client, {
                     title,
                     url,
@@ -138,7 +138,6 @@ const command: Command = {
                         )
                     )
                     .reply();
-
             })
             // Catch error with Axios GET
             .catch((e) => {

@@ -2,8 +2,8 @@ import moment from "moment";
 
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "name",
     aliases: ["nimi", "nimipäivä"],
@@ -11,8 +11,11 @@ const command: Command = {
     category: Categories.date,
     async run(message, _args, _settings, client) {
         const date = moment().format("YYYY-MM-DD");
-        client.axios.get("http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki")
-            .then(res => {
+        client.axios
+            .get(
+                "http://www.webcal.fi/cal.php?id=4&format=json&start_year=current_year&end_year=current_year&tz=Europe%2FHelsinki"
+            )
+            .then((res) => {
                 const names = res.data;
                 for (let i = 0; i < names.length; i++) {
                     if (names[i].date === date) {
@@ -24,14 +27,16 @@ const command: Command = {
                             fields: [
                                 {
                                     name: "Päivämäärä",
-                                    value: moment(results[0].date).format("DD.MM.YYYY")
-                                }
-                            ]
+                                    value: moment(results[0].date).format(
+                                        "DD.MM.YYYY"
+                                    ),
+                                },
+                            ],
                         }).send();
                     }
                 }
-        })
-    }
+            });
+    },
 };
 
-export default command
+export default command;

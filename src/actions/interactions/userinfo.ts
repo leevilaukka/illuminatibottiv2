@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { IlluminatiInteraction } from "../../types/IlluminatiInteraction";
+import { IlluminatiInteraction } from "../../types";
 
 const data = new SlashCommandBuilder()
     .setName("userinfo")

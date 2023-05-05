@@ -1,5 +1,5 @@
 import { CommandError, CommandNotFoundError, DatabaseError, ErrorWithStack, PlayerError } from '../../../structures/Errors';
-import Command from "IlluminatiCommand";
+import { Command } from "../../../types"
 import { BotError, UserError } from "../../../structures/Errors";
 
 const command: Command = {
