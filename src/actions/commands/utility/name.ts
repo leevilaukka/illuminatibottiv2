@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { IlluminatiEmbed } from "../../../structures";
 
-import { Command } from "../../../types";
+import type { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "name",

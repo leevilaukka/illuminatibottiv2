@@ -5,7 +5,7 @@ import { IlluminatiClient } from "../structures";
 
 const router = Router();
 
-const checkQueue: RequestHandler = (req, res, next) => {
+const checkQueue: RequestHandler = async (req, res, next) => {
     const guildID = req.params.id || req.body.guildID || req.body.id;
 
     const queue = req.client.player.getQueue(guildID);
@@ -41,7 +41,7 @@ router.post<{
         voiceChannel: string;
     }
 }>("/create", (req, res) => {
-    res.json({
+    return res.json({
         error: "Not implemented",
     });
 

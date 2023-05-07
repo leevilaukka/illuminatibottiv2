@@ -120,13 +120,6 @@ export default class IlluminatiClient extends Client {
     }
 
     /**
-     * Get WebSocket ping
-     */
-    get wsPing(): number {
-        return this.ws.ping
-    }
-
-    /**
      * Get all commands as array
      * @method Commands
      * @return {Command[]} Commands
@@ -236,7 +229,6 @@ export default class IlluminatiClient extends Client {
             interactions: ${IlluminatiClient.interactions.size}
             readyAt: ${this.readyAt}
             shard: ${this.shard}
-            ping: ${this.wsPing}
         }`
     }
 }

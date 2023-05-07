@@ -30,7 +30,7 @@ const command: Command = {
                 },
                 {
                     name: "Satunnaiset viestit",
-                    value: settings.randomMessages ? "Käytössä" : "Ei käytössä",
+                    value: settings.randomMessages ? "✅" : "❌",
                     inline: true,
                 },
                 {
@@ -42,7 +42,7 @@ const command: Command = {
                 },
                 {
                     name: "Leave on empty",
-                    value: settings.leaveOnEmpty ? "Käytössä" : "Ei käytössä",
+                    value: settings.leaveOnEmpty ? "✅" : "❌",
                 },
             ],
         });

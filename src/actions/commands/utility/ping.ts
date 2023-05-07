@@ -1,5 +1,6 @@
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: "ping",
     description: "Ping!",
@@ -8,7 +9,7 @@ const command: Command = {
     cooldown: 5,
     async run(message, args, _settings, client) {
         message.reply({
-            content: `Pong! Viive on ${Math.ceil(client.wsPing)}ms.`,
+            content: `Pong! Viive on ${Math.ceil(client.ws.ping)}ms.`,
         });
     },
 };
