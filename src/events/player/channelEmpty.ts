@@ -5,6 +5,8 @@ const evt: PlayerEvent = async (client, queue) => {
 
     if (leaveOnEmpty) queue.destroy(true);
 
+    client.metrics.playerCount.dec();
+
     return;
 }
 

@@ -17,6 +17,8 @@ import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
 import config from "../config.js"
 import info from "../../package.json"
 import Types, { Command, IlluminatiInteraction } from "../types";
+import io from "@pm2/io";
+import Counter from "@pm2/io/build/main/utils/metrics/counter";
 
 const setPlayerUses = (player: Player) => {
     player.use("YOUTUBE_DL", Downloader)
@@ -34,6 +36,9 @@ export default class IlluminatiClient extends Client {
     static commands: Collection<string, Command>
     static interactions: Collection<string, IlluminatiInteraction>
     jobs: Collection<string, any> = new Collection()
+    metrics: {
+        playerCount: Counter
+    }
     player: Player
     config: typeof config
     userManager: typeof IlluminatiUser
@@ -77,6 +82,13 @@ export default class IlluminatiClient extends Client {
         this.guildManager = IlluminatiGuild
         
         setPlayerUses(this.player)
+
+        // Metrics
+        this.metrics = {
+            playerCount: io.counter({
+                name: "Player count"
+            })
+        }
 
     }
 
