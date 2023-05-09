@@ -7,8 +7,8 @@ const command: Command = {
     description: "Clear the music queue",
     guildOnly: true,
     run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild);
-        if (queue && queue.tracks.length > 0) {
+        const queue = client.player.nodes.get(message.guild);
+        if (queue && queue.tracks.data.length > 0) {
             queue.clear();
             return message.reply("Jono tyhjennetty!");
         } else {

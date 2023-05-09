@@ -24,7 +24,7 @@ const command: Command = {
                 error = new CommandNotFoundError(errorMessage)
                 break
             case 'player':
-                error = new PlayerError(errorMessage, client.player.getQueue(message.guild).player)
+                error = new PlayerError(errorMessage, client.player.nodes.get(message.guild).player)
                 break
             case 'database':
                 error = new DatabaseError(errorMessage)

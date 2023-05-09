@@ -7,10 +7,10 @@ const command: Command = {
     guildOnly: true,
     category: Categories.music,
     run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild);
+        const queue = client.player.nodes.get(message.guild);
 
         if (queue) {
-            queue.stop();
+            queue.node.stop();
             return message.reply("Musiikki pysäytetty!");
         }
     },

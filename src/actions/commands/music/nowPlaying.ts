@@ -16,8 +16,8 @@ const command: Command = {
     category: Categories.music,
     guildOnly: true,
     async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild);
-        const nowPlaying = queue.nowPlaying();
+        const queue = client.player.nodes.get(message.guild);
+        const nowPlaying = queue.currentTrack;
 
         if (!nowPlaying) throw new UserError("No song playing.");
 
@@ -47,7 +47,7 @@ const command: Command = {
                 },
                 {
                     name: "Aikajana",
-                    value: queue.createProgressBar(),
+                    value: queue.node.createProgressBar(),
                 },
             ],
         }).send();

@@ -9,7 +9,7 @@ const command: Command = {
     category: Categories.music,
     guildOnly: true,
     async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild.id);
+        const queue = client.player.nodes.get(message.guild.id);
 
         const comingUp = queue.tracks.map((track) => {
             return {
@@ -20,11 +20,11 @@ const command: Command = {
 
         const embed = new IlluminatiEmbed(message, client)
             .setTitle("Jono")
-            .setDescription(`Nyt soi: ${queue.nowPlaying().title}`)
+            .setDescription(`Nyt soi: ${queue.currentTrack.title}`)
             .addFields(comingUp)
-            .setThumbnail(queue.nowPlaying().thumbnail)
+            .setThumbnail(queue.currentTrack.thumbnail)
             .setFooter({
-                text: `Kappaleita jonossa: ${queue.tracks.length}`,
+                text: `Kappaleita jonossa: ${queue.tracks.data.length}`,
             })
             .setTimestamp();
 

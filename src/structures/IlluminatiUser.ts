@@ -22,6 +22,7 @@ type UserStats = {
     premium: boolean,
     dailyStreak: number,
     lastCommand: Date | null,
+    birthday: Date | null,
 }
 
 export type IlluminatiUserTypes = {
@@ -121,7 +122,7 @@ export function UserFunctions<T extends User>(user: T) {
          * @param data Stats to update
          */
 
-        updateUserStats: async (data: UserStats): Promise<void | UserPromise> => {
+        updateUserStats: async (data: Partial<UserStats>): Promise<void | UserPromise> => {
             const userData = await UserFunctions(user).getUser();
             if (userData) {
                 userData.stats = { ...userData.stats, ...data };
@@ -210,6 +211,7 @@ export function UserFunctions<T extends User>(user: T) {
             const userData = await UserFunctions(user).getUser();
             if (typeof user !== "object") return;
             userData.stats.messageCount++;
+
             return userData.save().catch((e: any) => {
                 throw new DatabaseError(e)
             });
@@ -219,6 +221,7 @@ export function UserFunctions<T extends User>(user: T) {
             const userData = await UserFunctions(user).getUser();
             if (typeof user !== "object") return;
             userData.stats.lastMessageAt = message.createdAt;
+            
             return userData.save().catch((e: any) => {
                 throw new DatabaseError(e)
             });

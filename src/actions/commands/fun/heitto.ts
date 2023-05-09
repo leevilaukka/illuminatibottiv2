@@ -1,3 +1,4 @@
+import { randomArray } from "../../../structures/IlluminatiHelpers";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 
@@ -17,16 +18,11 @@ const command: Command = {
         if (isNaN(num)) return message.reply("anna numero, saatana.");
         if (num > 5) return message.reply("viis heittoo maks :D");
 
-        const rand = function (arr) {
-            if (arr.length == 0) return null;
-            const random = randomInteger(0, arr.length - 1);
-            return arr[random];
-        };
-
         const randoms = function (x: number, imgs: string[]): Array<string> {
-            let newArr = [];
+            let newArr: string[] = [];
             for (let i = 0; i < x; i++) {
-                newArr.push(rand(imgs));
+                const randomImage = randomArray(imgs);
+                newArr.push(randomImage);
             }
             return newArr;
         };

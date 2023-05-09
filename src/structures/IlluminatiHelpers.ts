@@ -20,8 +20,10 @@ export function argsToString(args: string[]): string {
     return args.toString().replace(regExp, " ")
 };
 
-export const randomArray = (array: any[]) => {
-    return array[Math.floor(Math.random() * array.length)]
+// Get random item from array
+export const randomArray = <T extends unknown[]>(arr: T): T[number] => {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
 };
 
 export const formatDate = (date: number) => {

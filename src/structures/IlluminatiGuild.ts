@@ -1,4 +1,4 @@
-import { ColorResolvable, Guild, GuildMemberManager } from "discord.js";
+import { Guild } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
 import GuildModel  from "../models/Guild";
@@ -6,6 +6,12 @@ import { Errors } from '.';
 
 type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
 
+// Filter out non-array types from T
+type ArrayTypes<T> = {
+    [K in keyof T as T[K] extends unknown[] ? K : never]: T[K] extends (infer U)[] ? U : never;
+};
+
+// Get array element type
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
 
 export function GuildFunctions<T extends Guild>(guild: T) {
@@ -40,7 +46,7 @@ export function GuildFunctions<T extends Guild>(guild: T) {
             }
         },
 
-        pushToArray: async <K extends keyof GuildSettings>(key: K, value: ArrayElement<GuildSettings[K]>): GuildPromise => {
+        pushToArray: async <K extends keyof ArrayTypes<GuildSettings>>(key: K, value: ArrayElement<GuildSettings[K]>): GuildPromise => {
             const guildSettings = await GuildModel.findOne({ guildID: guild.id });
             if (guildSettings) {
                 return await guildSettings.updateOne({

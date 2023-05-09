@@ -16,6 +16,7 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, Model<IlluminatiUse
         money: { type: Number, default: 0 },
         premium: { type: Boolean, default: false },
         dailyStreak: { type: Number, default: 0 },
+        birthday: { type: Date, default: null },
     }
 })
 

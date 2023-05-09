@@ -24,35 +24,17 @@ const command: Command = {
             command: this
         }
 
-        // Create or get queue
-        const queue = client.player.getQueue(message.guild) || client.player.createQueue(message.guild, {
-            metadata
-        });
+        const query = argsToString(args)
 
-        // Connect Queue to voice channel
-        if(!queue.connection) {
-            try {
-                await queue.connect(message.member.voice.channel)
-            } catch (e) {
-                queue.destroy()
-                throw new Error("Ei voitu yhdistää puhekanavaan")
-            }
+        if(!query) {
+            throw new UserError("Anna kappaleen nimi tai URL")
         }
 
-
-        // Get track
-        const track = await client.player.search(argsToString(args), {
-            requestedBy: message.author,
-            searchEngine: QueryType.AUTO
+        client.player.play(message.member.voice.channel, query, {
+            nodeOptions: {
+                metadata
+            },
         })
-            .then(x => x.tracks[0])
-            .catch(e => {
-                console.error(e)
-                return
-            });
-        
-        if(!track) throw new BotError("Kappaletta ei löytynyt")
-        queue.play(track)
     }
 }
 export default command

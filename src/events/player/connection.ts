@@ -9,7 +9,7 @@ const evt: PlayerEvent = (client, queue, connection) => {
     client.metrics.playerCount.inc();
 
     // Fix for voice connection not being destroyed
-    queue.connection.voiceConnection.on('stateChange', (oldState, newState) => {
+   /*  queue.connection.voiceConnection.on('stateChange', (oldState, newState) => {
         const oldNetworking = Reflect.get(oldState, 'networking');
         const newNetworking = Reflect.get(newState, 'networking');
 
@@ -20,7 +20,7 @@ const evt: PlayerEvent = (client, queue, connection) => {
 
         oldNetworking?.off('stateChange', networkStateChangeHandler);
         newNetworking?.on('stateChange', networkStateChangeHandler);
-    });
+    }); */
 }
 
 

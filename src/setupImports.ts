@@ -1,11 +1,11 @@
-import { PlayerEvents } from "discord-player";
+import { Player, PlayerEvents } from "discord-player";
 import express, { RequestHandler } from "express";
 import fs from "fs"
 import registerInteractions from "./helpers/interactions/registerInteractions";
 import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import cors from "cors";
-import importSchedules from "./schedules";
+import importSchedules from "./schedules" ;
 import { Command } from "./types";
 
 type EventType = (client: IlluminatiClient, ...args: any[]) => void;
@@ -65,7 +65,7 @@ export const commandImports = async (client: IlluminatiClient) => {
                 import(`${__dirname}/actions/commands/${folder}/${file}`).then(async ({ default: command }: { default: Command }) => {
                     IlluminatiClient.commands.set(command.name, command);
                     console.log(`Loaded cmd: ${folder}/${file}`);
-                    await command.onInit?.(client);
+                    command.onInit?.(client);
                 }).catch(err => {
                     throw new Errors.ErrorWithStack(`Command ${file} failed to load.\n${err}`)
                 })
@@ -81,7 +81,7 @@ export const commandImports = async (client: IlluminatiClient) => {
 };
 
 
-const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
+/* const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
 
 export const interactionImports = async (client: IlluminatiClient) => {
     try {
@@ -98,7 +98,7 @@ export const interactionImports = async (client: IlluminatiClient) => {
         throw new Errors.ErrorWithStack(error);
     }
 };
-
+ */
 const setupExpress = async (client: IlluminatiClient) => {
     try {
         const app = express();
@@ -127,15 +127,21 @@ const setupExpress = async (client: IlluminatiClient) => {
     }
 }
 
+const initPlayer = async (client: IlluminatiClient) => {
+    client.player = new Player(client);
+    await client.player.extractors.loadDefault();
+    console.log("Player initialized!")
+}
+
 
 
 export default async (client: IlluminatiClient) => {
     await Promise.all([
         eventImports(client),
         commandImports(client),
-        interactionImports(client),
         setupExpress(client),
-        importSchedules.importSchedules(client)
+        importSchedules.importSchedules(client),
+        initPlayer(client)
     ])
     .catch(err => {
         throw new Errors.ErrorWithStack(err);

@@ -22,7 +22,7 @@ interface TempData {
 const command: Command = {
     name: 'watertemp',
     aliases: ["vesi"],
-    async run(message, args, settings, client) {
+    async run(message, args, settings, client, {guild}) {
         client.axios.request<TempData>({ url: `https://iot.fvh.fi/opendata/uiras/uiras2_v1.json` })
             .then(res => {
                 const { data } = res

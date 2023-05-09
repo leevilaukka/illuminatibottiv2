@@ -3,7 +3,6 @@ import { Client, ClientOptions, Formatters, MessageMentions, Collection, User, M
 
 // DiscordPlayer
 import { Player,  PlayerInitOptions } from "discord-player"
-import { Lyrics } from "@discord-player/extractor"
 import { Downloader } from "@discord-player/downloader"
 import { Client as GeniusClient } from 'genius-lyrics';
 
@@ -20,10 +19,6 @@ import Types, { Command, IlluminatiInteraction } from "../types";
 import io from "@pm2/io";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 
-const setPlayerUses = (player: Player) => {
-    player.use("YOUTUBE_DL", Downloader)
-    console.log("Player uses set")
-}
 
 
 /**
@@ -48,10 +43,7 @@ export default class IlluminatiClient extends Client {
     env: string
     axios: AxiosInstance
     logger: IlluminatiLogger
-    lyrics: {
-        search: (query: string) => Promise<Lyrics.LyricsData>
-        client: GeniusClient
-    }
+  
     static packageInfo: typeof info
 
 
@@ -73,16 +65,13 @@ export default class IlluminatiClient extends Client {
 
         // Helpers
         this.logger = new IlluminatiLogger(this)
-        this.player = new Player(this, playerInitOptions)
-        this.lyrics = Lyrics.init(process.env.GENIUSAPI)
-        this.axios = axios.create()
 
+        this.axios = axios.create()
+        
         // Manager instances
         this.userManager = IlluminatiUser
         this.guildManager = IlluminatiGuild
         
-        setPlayerUses(this.player)
-
         // Metrics
         this.metrics = {
             playerCount: io.counter({

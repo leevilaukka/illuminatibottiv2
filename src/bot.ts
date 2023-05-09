@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import setupImports from "./setupImports";
 import io from "@pm2/io"
 
-import { Queue } from "discord-player";
+import { GuildQueue } from "discord-player";
 
 // Setup client
 const client = new IlluminatiClient(
@@ -96,7 +96,7 @@ declare global {
     namespace Express {
         export interface Request {
             client?: IlluminatiClient;
-            queue?: Queue;
+            queue?: GuildQueue;
         }
     }
 }

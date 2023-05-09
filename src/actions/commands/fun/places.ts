@@ -5,8 +5,9 @@ import {
     argsToString,
     umlautRemover,
     valueParser,
-    randomArray,
 } from "../../../helpers";
+
+import { randomArray } from "../../../structures/IlluminatiHelpers";
 import { IlluminatiEmbed, Errors } from "../../../structures";
 
 import { Command } from "../../../types";

@@ -8,7 +8,6 @@ const command: Command = {
     name: "dhl",
     description: "Get DHL tracking info",
     category: Categories.other,
-
     run: async (message, args, settings, client) => {
         const baseURL = "https://api-eu.dhl.com/track/shipments";
 

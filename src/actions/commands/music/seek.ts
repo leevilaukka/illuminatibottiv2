@@ -8,10 +8,10 @@ const command: Command = {
         const [time] = args 
         if (!time) throw new UserError('Please provide a time to seek to.')
 
-        const queue = client.player.getQueue(message.guild)
+        const queue = client.player.nodes.get(message.guild)
         if (!queue) throw new UserError('There is no music playing.')
 
-        queue.seek(parseInt(time))
+        queue.node.seek(parseInt(time))
 
         return message.reply(`Seeked to ${time} seconds.`)
     }

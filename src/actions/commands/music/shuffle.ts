@@ -8,9 +8,9 @@ const command: Command = {
     guildOnly: true,
     category: Categories.music,
     run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild);
-        if (queue.tracks.length > 1) {
-            queue.shuffle();
+        const queue = client.player.nodes.get(message.guild);
+        if (queue.tracks.data.length > 1) {
+            queue.tracks.shuffle();
             return message.reply(
                 "Sekoitetaan jono :twisted_rightwards_arrows:"
             );
