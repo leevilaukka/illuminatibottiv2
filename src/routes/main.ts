@@ -10,6 +10,7 @@ router.get("/status", ({client, queue}, res) => {
         uptime: client.uptime,
         isDevelopment: client.isDevelopment,
         queue: queue,
+        activity: client.user.presence.activities[0],
     });
 });
 

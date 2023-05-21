@@ -1,61 +1,37 @@
 import express from "express";
+import { checkChannel, checkGuild } from "./middlewares";
+import { ChannelType } from "discord.js";
 
 const router = express.Router();
 
-router.get("/", ({client}, res) => {
+router.get("/", ({ client }, res) => {
     res.json({
-        guilds: client.guilds.cache.map(g => g.toJSON()),
+        guilds: client.guilds.cache.map((g) => g.toJSON()),
     });
 });
 
-router.get("/:id", ({client, params}, res) => {
-    const guild = client.guilds.cache.get(params.id);
-    
-    if (!guild) {
-        return res.status(404).json({
-            error: "Guild not found",
-        });
-    }
-
+router.get("/:id", checkGuild, ({ client, params, guild }, res) => {
     res.json({
         guild: guild.toJSON(),
     });
 });
 
-router.get("/:id/channels", ({client, params}, res) => {
-    const guild = client.guilds.cache.get(params.id);
-
-    if (!guild) {
-        return res.status(404).json({
-            error: "Guild not found",
-        });
-    }
-
+router.get("/:id/channels", checkGuild, ({ client, params, guild }, res) => {
     res.json({
-        channels: guild.channels.cache.map(c => c.toJSON()),
+        text: guild.channels.cache.filter((c) => c.type === ChannelType.GuildText).map((c) => c.toJSON()),
+        voice: guild.channels.cache.filter((c) => c.type === ChannelType.GuildVoice).map((c) => c.toJSON()),
     });
 });
 
-router.get("/:id/channels/:channelID", ({client, params}, res) => {
-    const guild = client.guilds.cache.get(params.id);
-    
-    if (!guild) {
-        return res.status(404).json({
-            error: "Guild not found",
+router.get(
+    "/:id/channels/:channelID",
+    checkGuild,
+    checkChannel,
+    ({ client, params, guild, channel }, res) => {
+        res.json({
+            channel: channel.toJSON(),
         });
     }
-
-    const channel = guild.channels.cache.get(params.channelID);
-
-    if (!channel) {
-        return res.status(404).json({
-            error: "Channel not found",
-        });
-    }
-
-    res.json({
-        channel: channel.toJSON(),
-    });
-});
+);
 
 export default router;

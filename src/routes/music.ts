@@ -1,39 +1,33 @@
-import { GuildVoiceChannelResolvable, TextBasedChannel, VoiceChannel } from "discord.js";
 import { RequestHandler, Router } from "express";
-import { PlayerMetadata } from "PlayerMetadata";
-import { IlluminatiClient } from "../structures";
-
+import { checkChannel, checkGuild, checkQueue } from "./middlewares";
+import {
+    useHistory,
+    useMasterPlayer,
+    Playlist as List,
+    Track,
+} from "discord-player";
+import Playlist from "../models/Playlist";
 const router = Router();
 
-const checkQueue: RequestHandler = async (req, res, next) => {
-    const guildID = req.params.id || req.body.guildID || req.body.id;
-
-    const queue = req.client.player.nodes.get(guildID);
-
-    if (!queue) {
-        return res.status(404).json({
-            error: "No queue found",
-        });
+const getTrackFromIndex = (index: number, tracks: Track[]) => {
+    if (index < 0 || index > tracks.length) {
+        return null;
     }
 
-    req.queue = queue;
-    next();
+    return tracks[index];
 };
 
-
-// TODO: Implement this
-
-
-router.get("/now-playing/:id", checkQueue, ({queue}, res) => {
+// Returns the current track and the progress of the track
+router.get("/now-playing/:id", checkQueue, ({ queue, client }, res) => {
     try {
         const track = queue.currentTrack;
-    
-        res.json({
-            playing: queue.node.isPlaying,
+        client.logger.log(`[API] Now playing for ${queue.guild} is ${track}`);
+        return res.json({
+            playing: queue.node.isPlaying(),
             track: track,
+            queue: queue.tracks,
             progress: queue.node.getTimestamp(),
-            queue: queue
-
+            channel: queue.channel.toJSON(),
         });
     } catch (e) {
         res.status(500).json({
@@ -42,39 +36,203 @@ router.get("/now-playing/:id", checkQueue, ({queue}, res) => {
     }
 });
 
+const burger: RequestHandler = async (req, res, next) => {
+    const guildID = String(req.params.id || req.body.guildID);
 
-router.post("/controls/", checkQueue, ({queue, body}, res) => {
-    const action = body.action;
+    const queue = req.client.player.nodes.get(guildID);
 
-    switch (action) {
-        case "pause":
-            queue.node.setPaused(true);
-            break;
-        case "resume":
-            queue.node.setPaused(false);
-            break;
-        case "skip":
-            queue.node.skip();
-            break;
-        case "stop":
-            queue.node.stop();
-            break;
-        default:
-            return res.status(400).json({
-                error: "Invalid action",
+    req.client.logger.log(`[API] Queue for ${guildID} is ${queue}`);
+
+    req.queue = queue;
+    next();
+};
+
+// Optimize this later
+router.get("/events/:id", burger, ({ client, params }, res) => {
+    res.set({
+        "Cache-Control": "no-cache",
+        "Content-Type": "text/event-stream",
+        Connection: "keep-alive",
+    });
+
+    res.flushHeaders();
+    res.write("retry: 10000\n\n");
+
+    setInterval(() => {
+        const node = client.player?.nodes?.get(params.id);
+        const player = useMasterPlayer();
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "ping",
+                time: node?.node.getTimestamp(),
+                track: node?.currentTrack,
+                queue: node?.tracks,
+                channel: node?.channel?.toJSON(),
+                stats: player?.generateStatistics(),
+            })}\n\n`
+        );
+    }, 2000);
+
+    client.player.events.on("playerTrigger", (queue, track) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "start",
+                track,
+                queue: queue.tracks,
+                channel: queue.channel.toJSON(),
+            })}\n\n`
+        );
+    });
+
+    client.player.events.on("audioTrackAdd", (queue, track) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "add",
+                track,
+                queue: queue.tracks,
+            })}\n\n`
+        );
+    });
+
+    client.player.events.on("audioTrackRemove", (queue) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "remove",
+                queue: queue.tracks,
+            })}\n\n`
+        );
+    });
+
+    client.player.events.on("playerResume", (queue) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "resume",
+                time: queue.node.getTimestamp(),
+                queue: queue.tracks,
+                track: queue.currentTrack,
+            })}\n\n`
+        );
+    });
+
+    client.player.events.on("playerPause", (queue) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({
+                state: "pause",
+                time: queue.node.getTimestamp(),
+                queue: queue.tracks,
+                track: queue.currentTrack,
+            })}\n\n`
+        );
+        console.log("pause");
+    });
+
+    client.player.events.on("playerFinish", (queue, track) => {
+        res.write(
+            `event: message\ndata: ${JSON.stringify({ state: "finish" })}\n\n`
+        );
+    });
+});
+
+// Returns the queue and the current track
+router.get("/queue/:id", checkQueue, ({ queue }, res) => {
+    res.json({
+        queue: queue.tracks,
+        current: queue.currentTrack,
+        history: useHistory(queue.guild.id).tracks,
+    });
+});
+
+// Add a track to the queue
+router.post("/add/", checkQueue, async ({ queue, body: { query } }, res) => {
+    try {
+        queue.addTrack(query);
+        res.json({
+            message: "Added track to queue",
+            track: queue.currentTrack,
+        });
+    } catch (e) {
+        res.status(500).json({
+            error: e,
+        });
+    }
+});
+
+router.post(
+    "/play/",
+    checkGuild,
+    checkChannel,
+    async ({ client, channel, body }, res) => {
+        try {
+            client.player.play(channel.id, body.query, {
+                requestedBy: client.user,
+                nodeOptions: {
+                    metadata: {
+                        fromAPI: true,
+                        channel: client.channels.cache.get(channel.id),
+                    },
+                },
             });
+
+            res.json({
+                message: "Playing track",
+            });
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({
+                error: e,
+            });
+        }
+    }
+);
+
+router.post("/controls/:id", checkQueue, ({ queue, body }, res) => {
+    console.log(body);
+    const action = body.action.toLowerCase();
+
+    if (!action) return res.status(400).json({ error: "No action provided" });
+
+    try {
+        queue.node[action]();
+    } catch (e) {
+        return res.status(400).json({
+            error: "Invalid action",
+            message: e,
+        });
     }
 
     res.json({
-        action: action,
+        action: body.action,
         track: queue.currentTrack,
     });
 });
 
-router.post("/volume/", checkQueue, ({queue, body}, res) => {
-    const volume = body.volume;
+router.get("/history/:id", checkQueue, ({ queue }, res) => {
+    res.json({
+        history: queue.history.tracks,
+    });
+});
 
-    queue.node.setVolume(volume);
+router.post("/previous/", checkQueue, async ({ queue, body }, res) => {
+    const history = useHistory(queue.guild.id);
+    await history.previous(body.preserveCurrent);
+
+    res.json({
+        track: queue.currentTrack,
+    });
+});
+
+router.post("/shuffle/", checkQueue, ({ queue }, res) => {
+    queue.tracks.shuffle();
+
+    res.json({
+        track: queue.currentTrack,
+        queue: queue.tracks,
+    });
+});
+
+router.post("/volume/:id", checkQueue, ({ queue, body: { volume } }, res) => {
+    const vol = parseInt(volume);
+    queue.node.setVolume(vol);
 
     res.json({
         volume: volume,
@@ -82,15 +240,110 @@ router.post("/volume/", checkQueue, ({queue, body}, res) => {
     });
 });
 
-router.post("/seek/", checkQueue, (req, res) => {
-    const position = req.body.position;
-    const queue = req.queue
+router.post("/repeat/", checkQueue, ({ queue, body: { repeat } }, res) => {
+    queue.setRepeatMode(repeat);
 
+    res.json({
+        repeat: repeat,
+        track: queue.currentTrack,
+        queue: queue.tracks,
+    });
+});
+
+router.post("/seek/", checkQueue, ({ body: { position }, queue }, res) => {
     queue.node.seek(position);
 
     res.json({
-        position: position,
+        position,
         track: queue.currentTrack,
+    });
+});
+
+router.post("/jump/", checkQueue, ({ body: { index }, queue }, res) => {
+    queue.node.jump(index);
+
+    res.json({
+        index,
+        track: queue.currentTrack,
+    });
+});
+
+router.patch("/move/", checkQueue, ({ body: { from, to }, queue }, res) => {
+    queue.moveTrack(from, to);
+
+    res.status(200).json({
+        from,
+        to,
+        current: queue.currentTrack,
+    });
+});
+
+router.post("/top/", checkQueue, ({ body: { track }, queue }, res) => {
+    queue.moveTrack(track, 0);
+
+    res.status(200).json({
+        track,
+        index: 0,
+        current: queue.currentTrack,
+    });
+});
+
+router.delete("/remove/", checkQueue, ({ body: { track }, queue }, res) => {
+    queue.removeTrack(track);
+});
+
+router.delete("/clear/", checkQueue, ({ queue }, res) => {
+    queue.clear();
+});
+
+router.post(
+    "/playlists/save/",
+    checkQueue,
+    ({ client, queue, body: { name } }, res) => {
+        const list = {
+            tracks: queue.tracks.toJSON(),
+            author: {
+                name: client.user.username,
+                url: client.user.displayAvatarURL(),
+            },
+            description: `Created from queue in ${queue.channel.name}`,
+            id: name.toLowerCase().replace(/ /g, "-"),
+            source: "arbitrary",
+            thumbnail: queue.currentTrack.thumbnail,
+            title: name,
+            type: "playlist",
+            url: "",
+            guild: queue.guild.id,
+        };
+
+        Playlist.create(list);
+
+        res.status(201).json({
+            message: "Saved playlist",
+        });
+    }
+);
+
+router.delete(
+    "/playlists/delete/",
+    checkQueue,
+    ({ body: { name }, queue }, res) => {
+        Playlist.deleteOne({ id: name.toLowerCase().replace(/ /g, "-") });
+
+        res.status(200).json({
+            message: "Deleted playlist",
+        });
+    }
+);
+
+router.get("/playlists/", async (req, res) => {
+    const playlists = await Playlist.find({ guild: req.guild.id });
+    res.json(playlists);
+});
+
+router.get("/stats/", ({ client }, res) => {
+    res.json({
+        stats: client.player.generateStatistics(),
     });
 });
 

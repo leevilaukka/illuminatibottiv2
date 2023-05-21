@@ -26,7 +26,9 @@ const job: IlluminatiJob = {
                     owner.send(`Your package ${pkg.code} has been updated to ${shipment.status.status}!`);
                 }
             }).catch((err) => {
-                console.log(err);
+                if (err.response.status === 404) {
+                    Package.deleteOne({ code: pkg.code });
+                }
             });            
         }
     }

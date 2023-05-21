@@ -14,7 +14,7 @@ const command: Command = {
         const comingUp = queue.tracks.map((track) => {
             return {
                 name: track.title,
-                value: `${track.author} | Requested by ${track.requestedBy.username}`,
+                value: track.author,
             };
         });
 

@@ -1,5 +1,4 @@
-import { BotError, UserError } from '../../../structures/Errors';
-import { QueryType } from 'discord-player'
+import { BotError, UserError } from '../../../structures/Errors'
 import { argsToString } from '../../../helpers'
 import { Command } from '../../../types'
 import { Categories } from '../../../types/IlluminatiCommand'
@@ -30,7 +29,12 @@ const command: Command = {
             throw new UserError("Anna kappaleen nimi tai URL")
         }
 
+        console.log(`[Player] Playing ${query} on ${message.guildId}`)
+
+
         client.player.play(message.member.voice.channel, query, {
+            searchEngine: "youtube",
+            requestedBy: message.author,
             nodeOptions: {
                 metadata
             },

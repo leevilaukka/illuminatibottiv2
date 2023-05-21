@@ -5,12 +5,14 @@ import { argsToString, umlautRemover } from "../../../helpers";
 import { IlluminatiEmbed, Errors } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: "maps",
     description: "Google Maps- integraatio",
     aliases: ["kartta"],
     usage: "<paikka>",
     category: Categories.maps,
+    outOfOrder: true,
     async run(message, args, settings, client) {
         // Init variables
         const location = umlautRemover(argsToString(args));

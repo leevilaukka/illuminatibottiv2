@@ -1,10 +1,11 @@
-import { ButtonInteraction, CommandInteraction, Message, MessageComponentInteraction, MessageInteraction, PermissionResolvable, SelectMenuInteraction } from "discord.js";
+import { ButtonInteraction, Channel, CommandInteraction, Guild, Message, MessageComponentInteraction, MessageInteraction, PermissionResolvable, SelectMenuInteraction } from "discord.js";
 import { RawInteractionData } from "discord.js/typings/rawDataTypes";
 import { Categories } from "IlluminatiCommand";
 import { GuildSettings } from "./config";
 import { IlluminatiClient } from "./structures";
 import GuildFunctions from "./structures/IlluminatiGuild";
 import UserFunctions from "./structures/IlluminatiUser";
+import { GuildQueue } from "discord-player";
 
 type BotError = {
     error: Error,
@@ -118,3 +119,14 @@ type IlluminatiInteraction = {
 }
 
 type Interactions = CommandInteraction | MessageInteraction | ButtonInteraction  | SelectMenuInteraction | MessageComponentInteraction
+// Express types
+declare global {
+    namespace Express {
+        export interface Request {
+            client?: IlluminatiClient;
+            queue?: GuildQueue;
+            guild?: Guild;
+            channel?: Channel;
+        }
+    }
+}

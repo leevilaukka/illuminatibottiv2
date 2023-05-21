@@ -1,84 +1,91 @@
 // discord.js
-import { Client, ClientOptions, Formatters, MessageMentions, Collection, User, Message, TextBasedChannel } from "discord.js"
+import {
+    Client,
+    ClientOptions,
+    Formatters,
+    MessageMentions,
+    Collection,
+    User,
+    Message,
+    TextBasedChannel,
+} from "discord.js";
 
 // DiscordPlayer
-import { Player,  PlayerInitOptions } from "discord-player"
-import { Downloader } from "@discord-player/downloader"
-import { Client as GeniusClient } from 'genius-lyrics';
+import { Player, PlayerInitOptions } from "discord-player";
+import { Downloader } from "@discord-player/downloader";
+import { Client as GeniusClient } from "genius-lyrics";
 
-import axios, { AxiosInstance } from "axios"
+import axios, { AxiosInstance } from "axios";
 
 // Local imports
-import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from "."
-
+import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from ".";
 
 // Config imports
-import config from "../config.js"
-import info from "../../package.json"
+import config from "../config.js";
+import info from "../../package.json";
 import Types, { Command, IlluminatiInteraction } from "../types";
 import io from "@pm2/io";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
+import IP from "../models/Ip";
 
-
+type PlayerLink<T extends string> = `http://${string}:${string}/?guild=${T}`;
 
 /**
  * @name IlluminatiClient
  * @description Custom class for the bot client.
- * @extends Discord.Client 
+ * @extends Discord.Client
  */
 export default class IlluminatiClient extends Client {
     // Types
-    static commands: Collection<string, Command>
-    static interactions: Collection<string, IlluminatiInteraction>
-    jobs: Collection<string, any> = new Collection()
+    static commands: Collection<string, Command>;
+    static interactions: Collection<string, IlluminatiInteraction>;
+    jobs: Collection<string, any> = new Collection();
     metrics: {
-        playerCount: Counter
-    }
-    player: Player
-    config: typeof config
-    userManager: typeof IlluminatiUser
-    guildManager: typeof IlluminatiGuild
-    isDevelopment: boolean
-    isProduction: boolean
-    env: string
-    axios: AxiosInstance
-    logger: IlluminatiLogger
-  
-    static packageInfo: typeof info
+        playerCount: Counter;
+    };
+    player: Player;
+    config: typeof config;
+    userManager: typeof IlluminatiUser;
+    guildManager: typeof IlluminatiGuild;
+    isDevelopment: boolean;
+    isProduction: boolean;
+    env: string;
+    axios: AxiosInstance;
+    logger: IlluminatiLogger;
+    hostIP: string;
 
+    static packageInfo: typeof info;
 
-    constructor(clientOptions: ClientOptions, playerInitOptions: PlayerInitOptions) {
-        super(clientOptions)
+    constructor(clientOptions: ClientOptions) {
+        super(clientOptions);
 
-        this.setMaxListeners(50)
+        this.setMaxListeners(0);
 
         // Set static members
         IlluminatiClient.commands = new Collection();
-        IlluminatiClient.interactions = new Collection<string, Types.IlluminatiInteraction>();
-        IlluminatiClient.packageInfo = info
+        IlluminatiClient.interactions = new Collection<
+            string,
+            Types.IlluminatiInteraction
+        >();
+        IlluminatiClient.packageInfo = info;
 
         // Metadata
-        this.config = config
-        this.isDevelopment = (this.env === "development");
+        this.config = config;
+        this.env = process.env.NODE_ENV;
+
+        this.isDevelopment = this.env === "development";
         this.isProduction = !this.isDevelopment;
-        this.env = process.env.NODE_ENV
 
         // Helpers
-        this.logger = new IlluminatiLogger(this)
+        this.logger = new IlluminatiLogger(this);
 
-        this.axios = axios.create()
-        
+        this.axios = axios.create();
+
+        this.checkIP();
+
         // Manager instances
-        this.userManager = IlluminatiUser
-        this.guildManager = IlluminatiGuild
-        
-        // Metrics
-        this.metrics = {
-            playerCount: io.counter({
-                name: "Player count"
-            })
-        }
-
+        this.userManager = IlluminatiUser;
+        this.guildManager = IlluminatiGuild;
     }
 
     /**
@@ -86,7 +93,10 @@ export default class IlluminatiClient extends Client {
      * @param message Message to get the managers from
      */
     getManagersFromMessage(message: Message) {
-        return {user: this.userManager(message.author), guild: this.guildManager(message.guild)}
+        return {
+            user: this.userManager(message.author),
+            guild: this.guildManager(message.guild),
+        };
     }
 
     /**
@@ -94,9 +104,11 @@ export default class IlluminatiClient extends Client {
      * @method getCommand
      */
     static getCommand(name: string): Types.Command {
-        return this.commands.get(name) ||
-        this.commands.find(
-            (cmd) => cmd.aliases && cmd.aliases.includes(name)
+        return (
+            this.commands.get(name) ||
+            this.commands.find(
+                (cmd) => cmd.aliases && cmd.aliases.includes(name)
+            )
         );
     }
 
@@ -136,7 +148,7 @@ export default class IlluminatiClient extends Client {
      */
 
     static getInteraction(name: string): IlluminatiInteraction {
-        return this.interactions.get(name)
+        return this.interactions.get(name);
     }
 
     /**
@@ -157,8 +169,14 @@ export default class IlluminatiClient extends Client {
      * @see getInteractions Method for interactions
      * @returns Object with all the commands and interactions
      */
-    static get Interactables(): {commands: Types.Command[], interactions: IlluminatiInteraction[]} {
-        return {commands: [...this.Commands], interactions: [...this.Interactions]};
+    static get Interactables(): {
+        commands: Types.Command[];
+        interactions: IlluminatiInteraction[];
+    } {
+        return {
+            commands: [...this.Commands],
+            interactions: [...this.Interactions],
+        };
     }
 
     /**
@@ -167,8 +185,10 @@ export default class IlluminatiClient extends Client {
      */
 
     static getUserFromMention(mention: string): User {
-            // The id is the first and only match found by the RegEx.
-        const matches = mention.matchAll(MessageMentions.UsersPattern).next().value;
+        // The id is the first and only match found by the RegEx.
+        const matches = mention
+            .matchAll(MessageMentions.UsersPattern)
+            .next().value;
 
         // If supplied variable was not a mention, matches will be null instead of an array.
         if (!matches) return;
@@ -180,8 +200,16 @@ export default class IlluminatiClient extends Client {
         return this.prototype.users.cache.get(id);
     }
 
-    sendError(error: Error, target: Message | TextBasedChannel, showStack?: boolean): Promise<Message> {
-        console.error(error)
+    get ip(): string {
+        return this.hostIP;
+    }
+
+    sendError(
+        error: Error,
+        target: Message | TextBasedChannel,
+        showStack?: boolean
+    ): Promise<Message> {
+        console.error(error);
 
         if (target instanceof Message) {
             return this._replyError(error, target, showStack);
@@ -190,35 +218,84 @@ export default class IlluminatiClient extends Client {
         }
     }
 
-    private _sendErrorToChannel(error: Error, channel: TextBasedChannel, showStack?: boolean): Promise<Message> {
-        return channel.send(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
+    private _sendErrorToChannel(
+        error: Error,
+        channel: TextBasedChannel,
+        showStack?: boolean
+    ): Promise<Message> {
+        return channel.send(
+            `:x: **${this.user.username}**: ${error.message} ${
+                showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""
+            }`
+        );
     }
 
-    private _replyError(error: Error, message: Message, showStack?: boolean): Promise<Message> {
-        return message.reply(`:x: **${this.user.username}**: ${error.message} ${showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""}`)
+    private _replyError(
+        error: Error,
+        message: Message,
+        showStack?: boolean
+    ): Promise<Message> {
+        return message.reply(
+            `:x: **${this.user.username}**: ${error.message} ${
+                showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""
+            }`
+        );
     }
- 
+
     // Log this
     log() {
-        console.log(this)
+        console.log(this);
     }
-    
+
+    checkIP() {
+        this.axios.get("https://api.ipify.org?format=json").then((res) => {
+            this.hostIP = res.data.ip;
+
+            IP.findOne({ botID: this.user.id })
+                .then((res) => {
+                    if (!res) {
+                        IP.create({
+                            botID: this.user.id,
+                            ip: this.hostIP,
+                        });
+                    } else {
+                        if (res.ip !== this.hostIP) {
+                            IP.updateOne(
+                                { botID: this.user.id },
+                                {
+                                    ip: this.hostIP,
+                                }
+                            );
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        });
+    }
+
+    getPlayerLink<T extends string>(guildID: T): PlayerLink<T> {
+        return `http://${this.ip}:${process.env.EXPRESS_PORT}/?guild=${guildID}`;
+    }
+
     toString(): string {
         return `[IlluminatiClient] {
             version: ${IlluminatiClient.packageInfo.version},
             isDevelopment: ${this.isDevelopment},
             ${
-                this.user ? `user: {
+                this.user
+                    ? `user: {
                     tag: ${this.user.tag},
                     id: ${this.user.id}
-                },` : ""
+                },`
+                    : ""
             }
             guilds: ${this.guilds.cache.size},
             commands: ${IlluminatiClient.commands.size},
             interactions: ${IlluminatiClient.interactions.size}
             readyAt: ${this.readyAt}
             shard: ${this.shard}
-        }`
+        }`;
     }
 }
-
