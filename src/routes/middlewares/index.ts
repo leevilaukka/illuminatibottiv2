@@ -14,6 +14,7 @@ const checkQueue: RequestHandler = async (req, res, next) => {
     }
 
     req.queue = queue;
+
     next();
 };
 
@@ -28,7 +29,6 @@ const checkGuild: RequestHandler = (req, res, next) => {
         });
     }
 
-    console.log("Check guild: ", guild);
     req.guild = guild;
 
     next();
@@ -44,7 +44,7 @@ const checkChannel: RequestHandler = (req, res, next) => {
             error: "Channel not found",
         });
     }
-    console.log("Check channel: ", channel);
+
     req.channel = channel;
 
     next();

@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-router.get("/status", ({client, queue}, res) => {
+router.get("/status", ({ client, queue }, res) => {
     res.json({
         status: "online",
         guilds: client.guilds.cache.size,
@@ -14,13 +14,13 @@ router.get("/status", ({client, queue}, res) => {
     });
 });
 
-router.get("/ping", ({client}, res) => {
+router.get("/ping", ({ client }, res) => {
     res.json({
         ping: client.ws.ping,
     });
 });
 
-router.post("/activity", ({client, body}, res) => {
+router.post("/activity", ({ client, body }, res) => {
     const activity = body.activity;
 
     if (!activity) {
@@ -29,15 +29,11 @@ router.post("/activity", ({client, body}, res) => {
         });
     }
 
-    client.user.setActivity(activity);
+    const activityRes = client.user.setActivity(activity);
 
     res.json({
-        activity: activity,
+        activity: activityRes,
     });
 });
-
-
-
-
 
 export default router;

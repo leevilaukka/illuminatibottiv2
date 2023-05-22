@@ -217,6 +217,7 @@ router.post("/shuffle/", checkQueue, ({ queue }, res) => {
     });
 });
 
+// TODO: Move to /controls, remember to remove toLowerCase()
 router.post("/volume/:id", checkQueue, ({ queue, body: { volume } }, res) => {
     const vol = parseInt(volume);
     queue.node.setVolume(vol);
@@ -237,6 +238,7 @@ router.post("/repeat/", checkQueue, ({ queue, body: { repeat } }, res) => {
     });
 });
 
+// TODO: Move to /controls
 router.post("/seek/", checkQueue, ({ body: { position }, queue }, res) => {
     queue.node.seek(position);
 
@@ -246,6 +248,7 @@ router.post("/seek/", checkQueue, ({ body: { position }, queue }, res) => {
     });
 });
 
+// TODO: Move to /controls
 router.post("/jump/", checkQueue, ({ body: { index }, queue }, res) => {
     queue.node.jump(index);
 
