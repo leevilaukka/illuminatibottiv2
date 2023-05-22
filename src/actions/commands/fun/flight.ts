@@ -19,8 +19,6 @@ const command: Command = {
         client.axios.get(`http://api.aviationstack.com/v1/flights?access_key=${process.env.AS_APIKEY}&flight_icao=${icao}`)
         .then(res => {
             const data = res.data.data[1] || res.data.data[0]
-            console.log(res)
-
             if(!data) {
                 return message.reply("lentoa ei löytynyt!");
             }

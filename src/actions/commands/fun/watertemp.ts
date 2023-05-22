@@ -36,8 +36,6 @@ const command: Command = {
                     sensors.push({meta, data: sData[sData.length - 1]})
                 }
 
-                console.log(sensors)
-
                 sensors.sort((a, b) => {
                     if(a.data.temp_water > b.data.temp_water) return -1
                     if(a.data.temp_water < b.data.temp_water) return 1

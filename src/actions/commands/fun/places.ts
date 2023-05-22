@@ -46,7 +46,6 @@ const command: Command = {
                             `https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.GOOGLE_API}&place_id=${place_id}&language=fi`
                         )
                         .then((res) => {
-                            console.log(res.data);
                             // Variables for embed fields
                             const data = res.data.result;
                             const opening = data.opening_hours;

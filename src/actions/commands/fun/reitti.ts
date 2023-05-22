@@ -55,12 +55,8 @@ const command: Command = {
         const [origin, destination] = args;
 
         const places = (await guild.getGuild()).places;
-        console.log(guild);
         const originResult = places.find(({ name }) => name === origin);
         const destResult = places.find(({ name }) => name === destination);
-
-        console.log(originResult);
-        console.log(destResult);
 
         const query = gql`
               {

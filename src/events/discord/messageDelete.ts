@@ -1,8 +1,8 @@
-import { DatabaseError, ErrorWithStack } from '../../structures/Errors';
+import { DatabaseError, ErrorWithStack } from "../../structures/Errors";
 import { Guild } from "../../models";
 import { IlluminatiClient } from "../../structures";
-import { AuditLogEvent, Message, TextChannel } from 'discord.js';
-import { DeletedMessage } from '../../config';
+import { AuditLogEvent, Message, TextChannel } from "discord.js";
+import { DeletedMessage } from "../../config";
 
 export default async (client: IlluminatiClient, deletedMessage: Message) => {
     try {
@@ -23,38 +23,46 @@ export default async (client: IlluminatiClient, deletedMessage: Message) => {
         // If executor is a bot account, return
         if (executor.bot) return;
 
-        console.log(deletedMessage)
-        const { author, content: message, id: messageID, channel, embeds } = deletedMessage;
+        const {
+            author,
+            content: message,
+            id: messageID,
+            channel,
+            embeds,
+        } = deletedMessage;
         const newDoc = {
             author: {
                 name: author.username,
                 discriminator: author.discriminator,
-                id: author.id
+                id: author.id,
             },
-            deletor: executor ? {
-                name: executor.username,
-                discriminator: executor.discriminator,
-                id: executor.id
-            } : null,
+            deletor: executor
+                ? {
+                      name: executor.username,
+                      discriminator: executor.discriminator,
+                      id: executor.id,
+                  }
+                : null,
             message,
             timestamp: Date.now(),
             messageID,
             channel: {
                 name: channel.name,
-                id: channel.id
+                id: channel.id,
             },
-            embeds
-        } satisfies DeletedMessage
+            embeds,
+        } satisfies DeletedMessage;
 
-        client.guildManager(deletedMessage.guild).pushToArray('deletedMessages', newDoc)
+        client
+            .guildManager(deletedMessage.guild)
+            .pushToArray("deletedMessages", newDoc)
             .then(() => {
-                console.log("Message deleted!")
+                console.log("Message deleted!");
             })
             .catch((e: DatabaseError) => {
-                    throw e
+                throw e;
             });
     } catch (e) {
-        throw new ErrorWithStack(e)
+        throw new ErrorWithStack(e);
     }
 };
-

@@ -1,21 +1,9 @@
 import { RequestHandler, Router } from "express";
 import { checkChannel, checkGuild, checkQueue } from "./middlewares";
-import {
-    useHistory,
-    useMasterPlayer,
-    Playlist as List,
-    Track,
-} from "discord-player";
+import { useHistory, useMasterPlayer } from "discord-player";
 import Playlist from "../models/Playlist";
+
 const router = Router();
-
-const getTrackFromIndex = (index: number, tracks: Track[]) => {
-    if (index < 0 || index > tracks.length) {
-        return null;
-    }
-
-    return tracks[index];
-};
 
 // Returns the current track and the progress of the track
 router.get("/now-playing/:id", checkQueue, ({ queue, client }, res) => {
@@ -123,7 +111,6 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
                 track: queue.currentTrack,
             })}\n\n`
         );
-        console.log("pause");
     });
 
     client.player.events.on("playerFinish", (queue, track) => {
@@ -165,6 +152,7 @@ router.post(
         try {
             client.player.play(channel.id, body.query, {
                 requestedBy: client.user,
+                searchEngine: body.searchEngine || "auto",
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
@@ -177,7 +165,6 @@ router.post(
                 message: "Playing track",
             });
         } catch (e) {
-            console.log(e);
             res.status(500).json({
                 error: e,
             });
@@ -185,25 +172,25 @@ router.post(
     }
 );
 
-router.post("/controls/:id", checkQueue, ({ queue, body }, res) => {
-    console.log(body);
+router.post("/controls/:id", checkQueue, async ({ queue, body }, res) => {
     const action = body.action.toLowerCase();
 
     if (!action) return res.status(400).json({ error: "No action provided" });
 
     try {
-        queue.node[action]();
+        const actionResult = await queue.node[action](body.data || undefined);
+
+        res.json({
+            action: body.action,
+            result: actionResult,
+            track: queue.currentTrack,
+        });
     } catch (e) {
         return res.status(400).json({
             error: "Invalid action",
             message: e,
         });
     }
-
-    res.json({
-        action: body.action,
-        track: queue.currentTrack,
-    });
 });
 
 router.get("/history/:id", checkQueue, ({ queue }, res) => {
@@ -290,10 +277,21 @@ router.post("/top/", checkQueue, ({ body: { track }, queue }, res) => {
 
 router.delete("/remove/", checkQueue, ({ body: { track }, queue }, res) => {
     queue.removeTrack(track);
+
+    res.status(200).json({
+        track,
+        current: queue.currentTrack,
+        queue: queue.tracks,
+    });
 });
 
 router.delete("/clear/", checkQueue, ({ queue }, res) => {
     queue.clear();
+
+    res.status(200).json({
+        current: queue.currentTrack,
+        queue: queue.tracks,
+    });
 });
 
 router.post(

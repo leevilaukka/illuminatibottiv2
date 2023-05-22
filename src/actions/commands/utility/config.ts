@@ -12,7 +12,6 @@ const command: Command = {
     category: Categories.config,
     async run(message, args: string[], settings, client, { guild }) {
         const setting = args[0] as keyof GuildSettings;
-        console.log(settings);
 
         const embed = new IlluminatiEmbed(message, client, {
             title: "Asetukset",

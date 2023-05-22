@@ -11,6 +11,25 @@ const command: Command = {
     async run(message, args, settings, client) {
         const queue = client.player.nodes.get(message.guild.id);
 
+        if (queue.tracks.data.length > 25) {
+            const embed = new IlluminatiEmbed(message, client)
+                .setTitle("Jono")
+                .setDescription(
+                    `Nyt soi: ${
+                        queue.currentTrack.title
+                    } \n\n Näe koko jono [täältä](${client.getPlayerLink(
+                        message.guildId
+                    )})`
+                )
+                .setThumbnail(queue.currentTrack.thumbnail)
+                .setFooter({
+                    text: `Kappaleita jonossa: ${queue.tracks.data.length}`,
+                })
+                .setTimestamp();
+
+            return message.channel.send({ embeds: [embed] });
+        }
+
         const comingUp = queue.tracks.map((track) => {
             return {
                 name: track.title,

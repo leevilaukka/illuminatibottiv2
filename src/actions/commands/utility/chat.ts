@@ -19,7 +19,6 @@ const command: Command = {
             apiKey: process.env.OPENAI_KEY,
         });
 
-        console.log(args[0]);
         const openai = new OpenAIApi(config);
 
         const response = await openai

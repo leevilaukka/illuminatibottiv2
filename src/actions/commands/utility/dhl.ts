@@ -21,11 +21,7 @@ const command: Command = {
                 },
             })
             .then(async (res) => {
-                console.log(res.data);
                 const data = res.data.shipments[0];
-
-                console.log(data);
-
                 const lastEventTime = new Date(data.events[0].timestamp);
 
                 const sent = await new IlluminatiEmbed(message, client, {
