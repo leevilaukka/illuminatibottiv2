@@ -152,7 +152,6 @@ router.post(
         try {
             client.player.play(channel.id, body.query, {
                 requestedBy: client.user,
-                searchEngine: body.searchEngine || "auto",
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
@@ -173,7 +172,7 @@ router.post(
 );
 
 router.post("/controls/:id", checkQueue, async ({ queue, body }, res) => {
-    const action = body.action.toLowerCase();
+    const action = body.action;
 
     if (!action) return res.status(400).json({ error: "No action provided" });
 
@@ -214,17 +213,6 @@ router.post("/shuffle/", checkQueue, ({ queue }, res) => {
     res.json({
         track: queue.currentTrack,
         queue: queue.tracks,
-    });
-});
-
-// TODO: Move to /controls, remember to remove toLowerCase()
-router.post("/volume/:id", checkQueue, ({ queue, body: { volume } }, res) => {
-    const vol = parseInt(volume);
-    queue.node.setVolume(vol);
-
-    res.json({
-        volume: volume,
-        track: queue.currentTrack,
     });
 });
 

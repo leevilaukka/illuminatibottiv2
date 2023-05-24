@@ -33,7 +33,6 @@ const command: Command = {
             console.log(`[Player] Playing ${query} on ${message.guildId}`);
 
         client.player.play(message.member.voice.channel, query, {
-            searchEngine: "auto",
             requestedBy: message.author,
             nodeOptions: {
                 metadata,

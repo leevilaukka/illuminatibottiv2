@@ -19,7 +19,7 @@ const job: IlluminatiJob = {
 
         digitalOcean.domains.updateRecord("leevila.fi", "1684829917", {
             data: ip,
-            name: "server.leevila.fi",
+            name: "server",
             ttl: 3000,
             type: "A",
             tag: "",
