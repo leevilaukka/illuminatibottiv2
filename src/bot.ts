@@ -34,6 +34,7 @@ const client = new IlluminatiClient({
     await setupImports(client).then(() => console.log("Imports setup done!"));
 
     client.isDevelopment && console.log(client.eventNames());
+    client.logger.log(client.jobs);
 
     client.on("trackAdd", (queue, track) => {
         console.log(queue, track);
