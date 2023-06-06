@@ -1,7 +1,8 @@
 import { RequestHandler, Router } from "express";
 import { checkChannel, checkGuild, checkQueue } from "./middlewares";
-import { useHistory, useMasterPlayer } from "discord-player";
+import { Track, useHistory, useMasterPlayer } from "discord-player";
 import Playlist from "../models/Playlist";
+import { Guild } from "../models";
 
 const router = Router();
 
@@ -286,29 +287,50 @@ router.delete("/clear/", checkQueue, ({ queue }, res) => {
 });
 
 router.post(
+    "/playlists/play/",
+    checkQueue,
+    ({ body: { name }, queue, client }, res) => {
+        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
+            const playlist = guild.playlists.find(
+                (playlist) => playlist.name === name
+            );
+
+            if (!playlist)
+                return res.status(404).json({ error: "Playlist not found" });
+
+            queue.addTrack(playlist.tracks);
+
+            res.json({
+                message: "Added playlist to queue",
+                playlist: playlist,
+                track: queue.currentTrack,
+            });
+        });
+    }
+);
+
+router.post(
     "/playlists/save/",
     checkQueue,
     ({ client, queue, body: { name } }, res) => {
-        const list = {
-            tracks: queue.tracks.toJSON(),
-            author: {
-                name: client.user.username,
-                url: client.user.displayAvatarURL(),
-            },
-            description: `Created from queue in ${queue.channel.name}`,
-            id: name.toLowerCase().replace(/ /g, "-"),
-            source: "arbitrary",
-            thumbnail: queue.currentTrack.thumbnail,
-            title: name,
-            type: "playlist",
-            url: "",
-            guild: queue.guild.id,
-        };
+        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
+            const tracks = queue.tracks.map((track) => track);
 
-        Playlist.create(list);
+            console.log(tracks);
+            guild.playlists.push({
+                name: name,
+                tracks: tracks,
+            });
 
-        res.status(201).json({
+            guild.save();
+        });
+
+        res.json({
             message: "Saved playlist",
+            playlist: {
+                name: name,
+                tracks: queue.tracks.toJSON(),
+            },
         });
     }
 );
@@ -317,16 +339,21 @@ router.delete(
     "/playlists/delete/",
     checkQueue,
     ({ body: { name }, queue }, res) => {
-        Playlist.deleteOne({ id: name.toLowerCase().replace(/ /g, "-") });
+        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
+            guild.playlists = guild.playlists.filter(
+                (playlist) => playlist.name !== name
+            );
 
-        res.status(200).json({
-            message: "Deleted playlist",
+            guild.save();
         });
     }
 );
 
 router.get("/playlists/", async (req, res) => {
-    const playlists = await Playlist.find({ guild: req.guild.id });
+    const playlists = await Guild.findOne({
+        guildID: req.query.guild,
+    }).then((guild) => guild.playlists);
+
     res.json(playlists);
 });
 

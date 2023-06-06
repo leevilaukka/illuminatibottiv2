@@ -1,5 +1,6 @@
 import { IlluminatiJob } from ".";
 import DigitalOcean from "do-wrapper";
+import IP from "../models/Ip";
 
 const job: IlluminatiJob = {
     name: "digitalocean",
@@ -9,25 +10,35 @@ const job: IlluminatiJob = {
         if (!ip) {
             return;
         }
+
+        if (!process.env.DO_TOKEN) {
+            client.logger.error("No DigitalOcean token given!");
+            return;
+        }
+
+        if (!client.isProduction) {
+            return;
+        }
+
         const digitalOcean = new DigitalOcean(process.env.DO_TOKEN);
 
-        const subdomains = [
-            { name: "server", id: "1684932521" },
-            { name: "mineservu", id: "268566946" },
-        ];
+        const { domains } = await client.ipData;
 
-        const updates = subdomains.map(async (subdomain) => {
-            console.log("Updating " + subdomain.name + ".leevila.fi to " + ip);
-            digitalOcean.domains.updateRecord("leevila.fi", subdomain.id, {
-                data: ip,
-                name: subdomain.name,
-                ttl: 3000,
-                type: "A",
-                tag: "",
-            });
+        const updates = domains.map(async (subdomain) => {
+            return digitalOcean.domains.updateRecord(
+                "leevila.fi",
+                subdomain.id,
+                {
+                    data: ip,
+                    name: subdomain.name,
+                    ttl: 3000,
+                    type: "A",
+                    tag: "",
+                }
+            );
         });
 
-        await Promise.all(updates)
+        await Promise.allSettled(updates)
             .then((res) => {
                 return res;
             })

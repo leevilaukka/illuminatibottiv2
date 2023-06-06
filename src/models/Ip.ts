@@ -9,6 +9,18 @@ const IPSchema = new Schema({
         type: String,
         required: true
     },
+    domains: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            id: {
+                type: String,
+                required: true
+            }
+        }
+    ]
 });
 
 const IP = model("IP", IPSchema);

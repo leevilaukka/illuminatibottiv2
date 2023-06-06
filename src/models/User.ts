@@ -1,7 +1,7 @@
-import { Model, model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IlluminatiUserTypes } from "../structures/IlluminatiUser";
 
-const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, Model<IlluminatiUserTypes>, IlluminatiUserTypes>({
+const IlluminatiUserSchema = new Schema<IlluminatiUserTypes>({
     discordID: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     stats: {

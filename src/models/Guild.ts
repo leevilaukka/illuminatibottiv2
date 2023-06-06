@@ -1,39 +1,40 @@
-import mongoose, { SchemaTypes } from "mongoose"
+import mongoose, { SchemaTypes } from "mongoose";
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
+import { Track } from "discord-player";
 
 const pointSchema = new Schema({
     type: {
         type: String,
         enum: ["Point"],
-        required: true     
+        required: true,
     },
     coordinates: {
         type: [Number],
-        required: true
-    }
+        required: true,
+    },
 });
 
 const PlaceSchema = new Schema({
     name: String,
     location: {
         type: pointSchema,
-        required: true
+        required: true,
     },
-    description: String
+    description: String,
 });
 
 const MemberSchema = new Schema({
     name: String,
     id: String,
-    discriminator: String
+    discriminator: String,
 });
 
 const TextChannelSchema = new Schema({
     name: String,
-    id: String
-})
+    id: String,
+});
 
 const DeletedMessageSchema = new Schema({
     message: String,
@@ -46,24 +47,24 @@ const DeletedMessageSchema = new Schema({
 });
 
 type GuildProperties = {
-    guildName: string,
-    guildID: string,
-    joinedAt: Date,
-    removedMembers: typeof MemberSchema[],
-    removedMemberChannel: string,
-    deletedMessages: typeof DeletedMessageSchema[],
-    places: typeof PlaceSchema[],
-    embeds: IlluminatiEmbed[],
-    disabledCommands: string[],
+    guildName: string;
+    guildID: string;
+    joinedAt: Date;
+    removedMembers: (typeof MemberSchema)[];
+    removedMemberChannel: string;
+    deletedMessages: (typeof DeletedMessageSchema)[];
+    places: (typeof PlaceSchema)[];
+    embeds: IlluminatiEmbed[];
+    disabledCommands: string[];
     mcdefaults: {
-        action: string,
-        host: string
-    },
-    stacksEnabled: boolean,
+        action: string;
+        host: string;
+    };
+    stacksEnabled: boolean;
     commandErrors: {
-        [key: string]: number
-    }
-}
+        [key: string]: number;
+    };
+};
 
 const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     guildName: {
@@ -96,11 +97,11 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     deletedMessages: [DeletedMessageSchema],
     randomMessages: {
         type: Boolean,
-        default: true
+        default: true,
     },
     stacksEnabled: {
         type: Boolean,
-        default: true
+        default: true,
     },
     throws: {
         type: [String],
@@ -108,13 +109,19 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     },
     mcdefaults: {
         action: String,
-        host: String
+        host: String,
     },
     embeds: {
         type: [Object],
-        default: config.defaultSettings.embeds
+        default: config.defaultSettings.embeds,
     },
-    disabledCommands: [String]
+    disabledCommands: [String],
+    playlists: [
+        {
+            name: String,
+            tracks: [Object],
+        },
+    ],
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
-export default model
+export default model;

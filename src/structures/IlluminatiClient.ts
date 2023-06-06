@@ -27,6 +27,7 @@ import Types, { Command, IlluminatiInteraction } from "../types";
 import io from "@pm2/io";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
+import { codeBlock } from "@discordjs/builders";
 
 type PlayerLink<T extends string> = `http://${string}:${string}/?guild=${T}`;
 
@@ -81,8 +82,6 @@ export default class IlluminatiClient extends Client {
 
         this.axios = axios.create();
 
-        this.checkIP();
-
         // Manager instances
         this.userManager = IlluminatiUser;
         this.guildManager = IlluminatiGuild;
@@ -92,7 +91,7 @@ export default class IlluminatiClient extends Client {
      * Helper method to get the managers from the client
      * @param message Message to get the managers from
      */
-    getManagersFromMessage(message: Message) {
+    async getManagersFromMessage(message: Message) {
         return {
             user: this.userManager(message.author),
             guild: this.guildManager(message.guild),
@@ -212,34 +211,18 @@ export default class IlluminatiClient extends Client {
         console.error(error);
 
         if (target instanceof Message) {
-            return this._replyError(error, target, showStack);
+            return target.reply(
+                `:x: **${this.user.username}**: ${error.message} ${
+                    showStack ? `\n ${codeBlock("js", error.stack)}` : ""
+                }`
+            );
         } else {
-            return this._sendErrorToChannel(error, target, showStack);
+            return target.send(
+                `:x: **${this.user.username}**: ${error.message} ${
+                    showStack ? `\n ${codeBlock("js", error.stack)}` : ""
+                }`
+            );
         }
-    }
-
-    private _sendErrorToChannel(
-        error: Error,
-        channel: TextBasedChannel,
-        showStack?: boolean
-    ): Promise<Message> {
-        return channel.send(
-            `:x: **${this.user.username}**: ${error.message} ${
-                showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""
-            }`
-        );
-    }
-
-    private _replyError(
-        error: Error,
-        message: Message,
-        showStack?: boolean
-    ): Promise<Message> {
-        return message.reply(
-            `:x: **${this.user.username}**: ${error.message} ${
-                showStack ? `\n ${Formatters.codeBlock("js", error.stack)}` : ""
-            }`
-        );
     }
 
     // Log this
@@ -248,6 +231,7 @@ export default class IlluminatiClient extends Client {
     }
 
     checkIP() {
+        console.log("Checking IP");
         this.axios.get("https://api.ipify.org?format=json").then((res) => {
             this.hostIP = res.data.ip;
 
@@ -274,6 +258,11 @@ export default class IlluminatiClient extends Client {
                 });
         });
     }
+
+    get ipData() {
+        return IP.findOne({ botID: this.user.id });
+    }
+
 
     getPlayerLink<T extends string>(guildID: T): PlayerLink<T> {
         return `http://${this.ip}:${process.env.EXPRESS_PORT}/?guild=${guildID}`;

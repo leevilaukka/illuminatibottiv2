@@ -1,5 +1,6 @@
 import { APIEmbed, Channel, Embed, Message, User } from "discord.js"
 import { IlluminatiEmbed } from "./structures"
+import { Track } from "discord-player"
 
 export type Config = {
   token: string,
@@ -54,6 +55,10 @@ export type GuildSettings = {
     [key: string]: number
   },
   stacksEnabled: boolean,
+  playlists: {
+    name: string,
+    tracks: Track[]
+  }[]
 }
 
 const config = {
@@ -100,6 +105,10 @@ const config = {
       [key: string]: number
     },
     stacksEnabled: true,
+    playlists: [] as {
+      name: string,
+      tracks: Track[]
+    }[]
   },
 } as const
 

@@ -5,6 +5,7 @@ import { Document } from "mongoose";
 import { BotError, DatabaseError } from "./Errors";
 import { formatDate } from "../helpers";
 import { time } from "@discordjs/builders";
+import Meter from "./UserAlcometer";
 
 type UserStats = {
     money: number;
@@ -56,6 +57,12 @@ export function UserFunctions<T extends User>(user: T) {
                 .catch((e) => {
                     throw new DatabaseError(e);
                 });
+        },
+
+        alcometer: async (): Promise<typeof alcometer> => {
+            const alcometer = await Meter(user);
+            if (typeof alcometer !== "object") throw new BotError(`Alcometer does not exist: ${user.id}`);
+            return alcometer;
         },
 
         /**
