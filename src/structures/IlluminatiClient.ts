@@ -29,7 +29,7 @@ import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
 
-type PlayerLink<T extends string> = `http://${string}:${string}/?guild=${T}`;
+
 
 /**
  * @name IlluminatiClient
@@ -264,8 +264,8 @@ export default class IlluminatiClient extends Client {
     }
 
 
-    getPlayerLink<T extends string>(guildID: T): PlayerLink<T> {
-        return `http://${this.ip}:${process.env.EXPRESS_PORT}/?guild=${guildID}`;
+    getPlayerLink(guildID: string) {
+        return `https://player.leevila.fi/guild=${guildID}`;
     }
 
     toString(): string {

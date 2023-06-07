@@ -50,19 +50,22 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     setInterval(() => {
         const node = client.player?.nodes?.get(params.id);
         const player = useMasterPlayer();
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "ping",
-                time: node?.node.getTimestamp(),
-                track: node?.currentTrack,
-                queue: node?.tracks,
-                channel: node?.channel?.toJSON(),
-                stats: player?.generateStatistics(),
-            })}\n\n`
-        );
+        if (params.id == node?.guild.id) {
+            return res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "ping",
+                    time: node?.node.getTimestamp(),
+                    track: node?.currentTrack,
+                    queue: node?.tracks,
+                    channel: node?.channel?.toJSON(),
+                    stats: player?.generateStatistics(),
+                })}\n\n`
+            );
+        } 
     }, 2000);
 
     client.player.events.on("playerTrigger", (queue, track) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({
                 state: "start",
@@ -74,6 +77,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     });
 
     client.player.events.on("audioTrackAdd", (queue, track) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({
                 state: "add",
@@ -84,6 +88,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     });
 
     client.player.events.on("audioTrackRemove", (queue) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({
                 state: "remove",
@@ -93,6 +98,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     });
 
     client.player.events.on("playerResume", (queue) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({
                 state: "resume",
@@ -104,6 +110,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     });
 
     client.player.events.on("playerPause", (queue) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({
                 state: "pause",
@@ -115,6 +122,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
     });
 
     client.player.events.on("playerFinish", (queue, track) => {
+        params.id == queue.guild.id &&
         res.write(
             `event: message\ndata: ${JSON.stringify({ state: "finish" })}\n\n`
         );
