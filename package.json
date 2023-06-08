@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.10",
+    "version": "6.1.11",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {

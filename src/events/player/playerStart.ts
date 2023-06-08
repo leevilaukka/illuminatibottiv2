@@ -32,7 +32,7 @@ const evt: PlayerEvent = async (client, queue, track: Track) => {
         .setFields([
             {
                 name: "Web GUI",
-                value: `[Link](${client.getPlayerLink(
+                value: `[Link](${await client.getPlayerLink(
                     queue.metadata.message.guild.id
                 )})`,
             },

@@ -14,12 +14,7 @@ type UserStats = {
     nextLevelXP: number;
     messageCount: number;
     lastMessageAt: Date;
-    commandsUsed: [
-        {
-            command: string;
-            count: number;
-        }
-    ]
+    commandsUsed: Map<string, number>;
     premium: boolean,
     dailyStreak: number,
     lastCommand: Date | null,
@@ -246,6 +241,25 @@ export function UserFunctions<T extends User>(user: T) {
                 throw new DatabaseError(e)
             });
         },
+
+        addCommandUse: async (command: string): Promise<void | UserPromise> => {
+            const userData = await UserFunctions(user).getUser();
+
+            if (typeof user !== "object") return;
+
+            const count = userData.stats.commandsUsed.get(command);
+
+            if (count) {
+                userData.stats.commandsUsed.set(command, count + 1);
+            } else {
+                userData.stats.commandsUsed.set(command, 1);
+            }
+
+            return userData.save().catch((e: string) => {
+                throw new DatabaseError(e)
+            });
+        },
+
 
         /** 
          * Trade money with other users

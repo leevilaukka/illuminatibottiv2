@@ -106,9 +106,9 @@ export default async (client: IlluminatiClient, message: Message) => {
                     await command
                         .run(message, args, settings, client, { guild, user })
                         .then(() => {
+                            user.addCommandUse(command.name);
                             if (client.isDevelopment)
                                 console.log(`Cmd ${command.name} executed!`);
-                            commandCounter.inc();
                         })
                         .catch(async (error) => {
                             throw error;

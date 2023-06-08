@@ -3,6 +3,7 @@ import { checkChannel, checkGuild, checkQueue } from "./middlewares";
 import { Track, useHistory, useMasterPlayer } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
+import GuildFunctions from "../structures/IlluminatiGuild";
 
 const router = Router();
 
@@ -61,71 +62,73 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
                     stats: player?.generateStatistics(),
                 })}\n\n`
             );
-        } 
+        }
     }, 2000);
 
     client.player.events.on("playerTrigger", (queue, track) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "start",
-                track,
-                queue: queue.tracks,
-                channel: queue.channel.toJSON(),
-            })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "start",
+                    track,
+                    queue: queue.tracks,
+                    channel: queue.channel.toJSON(),
+                })}\n\n`
+            );
     });
 
     client.player.events.on("audioTrackAdd", (queue, track) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "add",
-                track,
-                queue: queue.tracks,
-            })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "add",
+                    track,
+                    queue: queue.tracks,
+                })}\n\n`
+            );
     });
 
     client.player.events.on("audioTrackRemove", (queue) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "remove",
-                queue: queue.tracks,
-            })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "remove",
+                    queue: queue.tracks,
+                })}\n\n`
+            );
     });
 
     client.player.events.on("playerResume", (queue) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "resume",
-                time: queue.node.getTimestamp(),
-                queue: queue.tracks,
-                track: queue.currentTrack,
-            })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "resume",
+                    time: queue.node.getTimestamp(),
+                    queue: queue.tracks,
+                    track: queue.currentTrack,
+                })}\n\n`
+            );
     });
 
     client.player.events.on("playerPause", (queue) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({
-                state: "pause",
-                time: queue.node.getTimestamp(),
-                queue: queue.tracks,
-                track: queue.currentTrack,
-            })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "pause",
+                    time: queue.node.getTimestamp(),
+                    queue: queue.tracks,
+                    track: queue.currentTrack,
+                })}\n\n`
+            );
     });
 
     client.player.events.on("playerFinish", (queue, track) => {
         params.id == queue.guild.id &&
-        res.write(
-            `event: message\ndata: ${JSON.stringify({ state: "finish" })}\n\n`
-        );
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "finish",
+                })}\n\n`
+            );
     });
 });
 
@@ -297,14 +300,12 @@ router.delete("/clear/", checkQueue, ({ queue }, res) => {
 router.post(
     "/playlists/play/",
     checkQueue,
-    ({ body: { name }, queue, client }, res) => {
-        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
-            const playlist = guild.playlists.find(
-                (playlist) => playlist.name === name
-            );
-
+    ({ body: { id }, queue, client }, res) => {
+        Playlist.findOne({ _id: id }).then((playlist) => {
             if (!playlist)
                 return res.status(404).json({ error: "Playlist not found" });
+
+            console.log(playlist.tracks);
 
             queue.addTrack(playlist.tracks);
 
@@ -321,24 +322,29 @@ router.post(
     "/playlists/save/",
     checkQueue,
     ({ client, queue, body: { name } }, res) => {
-        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
-            const tracks = queue.tracks.map((track) => track);
+        const tracks = queue.tracks.map((track) => track.toJSON());
 
-            console.log(tracks);
-            guild.playlists.push({
-                name: name,
-                tracks: tracks,
+        Playlist.findOne({ name: name }).then((playlist) => {
+            if (playlist) {
+                playlist.tracks = tracks;
+                playlist.save();
+            } else {
+                const newPlaylist = new Playlist({
+                    name: name,
+                    tracks: tracks,
+                });
+                newPlaylist.save();
+            }
+
+            Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
+                guild.playlists.push(playlist._id);
+                guild.save();
+
+                res.json({
+                    message: "Saved playlist",
+                    playlist: playlist,
+                });
             });
-
-            guild.save();
-        });
-
-        res.json({
-            message: "Saved playlist",
-            playlist: {
-                name: name,
-                tracks: queue.tracks.toJSON(),
-            },
         });
     }
 );
@@ -347,12 +353,12 @@ router.delete(
     "/playlists/delete/",
     checkQueue,
     ({ body: { name }, queue }, res) => {
-        Guild.findOne({ guildID: queue.guild.id }).then((guild) => {
-            guild.playlists = guild.playlists.filter(
-                (playlist) => playlist.name !== name
-            );
-
-            guild.save();
+        return res.status(400).json({ error: "Not implemented" });
+        res.json({
+            message: "Deleted playlist",
+            playlist: {
+                name: name,
+            },
         });
     }
 );

@@ -1,18 +1,22 @@
 import { Guild } from "discord.js";
 import { Document } from "mongoose";
 import config, { GuildSettings } from "../config";
-import GuildModel  from "../models/Guild";
-import { Errors } from '.';
+import GuildModel from "../models/Guild";
+import { Errors } from ".";
 
-type GuildPromise = Promise<GuildSettings & Document<any, any, GuildSettings> | GuildSettings>
+type GuildPromise = Promise<
+    (GuildSettings & Document<any, any, GuildSettings>) | GuildSettings
+>;
 
 // Filter out non-array types from T
 type ArrayTypes<T> = {
-    [K in keyof T as T[K] extends unknown[] ? K : never]: T[K] extends (infer U)[] ? U : never;
+    [K in keyof T as T[K] extends unknown[]
+        ? K
+        : never]: T[K] extends (infer U)[] ? U : never;
 };
 
 // Get array element type
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 export function GuildFunctions<T extends Guild>(guild: T) {
     return {
@@ -30,45 +34,83 @@ export function GuildFunctions<T extends Guild>(guild: T) {
          */
 
         getGuild: async (): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
+            const guildSettings = await GuildModel.findOne({
+                guildID: guild.id,
+            });
             if (guildSettings) return guildSettings;
             else return config.defaultSettings;
         },
 
-        updateGuildInfo: async <K extends keyof GuildSettings>(key: K, value: GuildSettings[K]): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
+        updateGuildInfo: async <K extends keyof GuildSettings>(
+            key: K,
+            value: GuildSettings[K]
+        ): GuildPromise => {
+            const guildSettings = await GuildModel.findOne({
+                guildID: guild.id,
+            });
             if (guildSettings) {
-                return await guildSettings.updateOne({ [key]: value }).catch(err => {
-                    throw new Errors.DatabaseError(err);
-                });
+                return await guildSettings
+                    .updateOne({ [key]: value })
+                    .catch((err) => {
+                        throw new Errors.DatabaseError(err);
+                    });
             } else {
                 throw new Errors.DatabaseError("Guild settings not found");
             }
         },
 
-        pushToArray: async <K extends keyof ArrayTypes<GuildSettings>>(key: K, value: ArrayElement<GuildSettings[K]>): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({ guildID: guild.id });
+        pushToArray: async <K extends keyof ArrayTypes<GuildSettings>>(
+            key: K,
+            value: ArrayElement<GuildSettings[K]>
+        ): GuildPromise => {
+            const guildSettings = await GuildModel.findOne({
+                guildID: guild.id,
+            });
             if (guildSettings) {
-                return await guildSettings.updateOne({
-                    $push: { [key]: value }
-                })
-                .catch(err => {
-                    throw new Errors.DatabaseError(err);
-                });
+                return await guildSettings
+                    .update({
+                        $push: { [key]: value },
+                    })
+                    .catch((err) => {
+                        throw new Errors.DatabaseError(err);
+                    });
             } else {
                 throw new Errors.DatabaseError("Guild settings not found");
             }
         },
 
+        // Delete element from array
+        pullFromArray: async <K extends keyof ArrayTypes<GuildSettings>>(
+            key: K,
+            value: ArrayElement<GuildSettings[K]>
+        ): GuildPromise => {
+            const guildSettings = await GuildModel.findOne({
+                guildID: guild.id,
+            });
+
+            if (guildSettings) {
+                return await guildSettings
+                    .update({
+                        $pull: { [key]: value },
+                    })
+                    .catch((err) => {
+                        throw new Errors.DatabaseError(err);
+                    });
+            } else {
+                throw new Errors.DatabaseError("Guild settings not found");
+            }
+        },
 
         /**
-         * Update Guild settings to database 
+         * Update Guild settings to database
          * @method
          * @param {object} settings New settings
          * @returns Updated guild settings
          */
 
-        batchUpdateGuild: async (settings: Partial<GuildSettings & { guildName: string }>): Promise<object> => {
+        batchUpdateGuild: async (
+            settings: Partial<GuildSettings & { guildName: string }>
+        ): Promise<object> => {
             let data: any = await GuildFunctions(guild).getGuild();
 
             if (typeof data !== "object") data = {};
@@ -82,15 +124,19 @@ export function GuildFunctions<T extends Guild>(guild: T) {
             });
         },
 
-        changeSetting: async <S extends keyof GuildSettings>(setting: S, newSetting: GuildSettings[S]) => {
+        changeSetting: async <S extends keyof GuildSettings>(
+            setting: S,
+            newSetting: GuildSettings[S]
+        ) => {
             try {
-                await GuildFunctions(guild).batchUpdateGuild({ [setting]: newSetting });
+                await GuildFunctions(guild).batchUpdateGuild({
+                    [setting]: newSetting,
+                });
                 return `${setting} päivitetty`;
             } catch (e) {
-                throw new Errors.DatabaseError(e)
+                throw new Errors.DatabaseError(e);
             }
         },
-
 
         /**
          * Create a new Guild to database
@@ -139,8 +185,8 @@ export function GuildFunctions<T extends Guild>(guild: T) {
 
         equals: (compareToGuild: Guild): boolean => {
             return compareToGuild.id === guild.id;
-        }
-    }
+        },
+    };
 }
 
 export default GuildFunctions;

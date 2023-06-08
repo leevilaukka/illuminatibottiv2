@@ -5,9 +5,11 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes>({
     discordID: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     stats: {
-        commandsUsed: [
-            {command: String, count: Number}
-        ],
+        commandsUsed: {
+            type: Map,
+            of: Number,
+            default: {},
+        },
         messageCount: { type: Number, default: 0 },
         lastMessageAt: { type : Date, default: Date.now()},
         level: { type: Number, default: 0 },

@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 
 const checkQueue: RequestHandler = async (req, res, next) => {
-    const guildID = String(req.params.id || req.body.guildID);
+    const guildID = String(req.body.guildID || req.params.id);
 
     const queue = req.client.player.nodes.get(guildID);
 

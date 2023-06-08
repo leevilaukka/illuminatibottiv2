@@ -28,7 +28,7 @@ import io from "@pm2/io";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
-
+import { Errors } from ".";
 
 
 /**
@@ -263,9 +263,18 @@ export default class IlluminatiClient extends Client {
         return IP.findOne({ botID: this.user.id });
     }
 
+    get apiStatus() {
+        return this.axios.get("https://player.leevila.fi/api/status");
+    }
 
-    getPlayerLink(guildID: string) {
-        return `https://player.leevila.fi/guild=${guildID}`;
+    async getPlayerLink(guildID: string) {
+        const status = await this.apiStatus;
+
+        if (status.data.status !== "online") {
+            throw new Errors.BotError("Player is not online");
+        }
+
+        return `https://player.leevila.fi/?guild=${guildID}`;
     }
 
     toString(): string {

@@ -1,4 +1,4 @@
-import mongoose, { SchemaTypes } from "mongoose";
+import mongoose, { SchemaTypes, mongo } from "mongoose";
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
@@ -116,12 +116,10 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
         default: config.defaultSettings.embeds,
     },
     disabledCommands: [String],
-    playlists: [
-        {
-            name: String,
-            tracks: [Object],
-        },
-    ],
+    playlists: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Playlist",
+    }],
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
 export default model;
