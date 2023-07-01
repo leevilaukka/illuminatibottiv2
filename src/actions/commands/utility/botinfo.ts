@@ -1,13 +1,7 @@
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ComponentBuilder,
-} from "discord.js";
-import { Button } from "../../../helpers/interactions";
 import { IlluminatiClient, IlluminatiEmbed } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: "botinfo",
     aliases: ["bi", "bot", "info"],
@@ -15,6 +9,7 @@ const command: Command = {
     category: Categories.utility,
     async run(message, args, settings, client) {
         const owner = await client.owner;
+        
         const embed = new IlluminatiEmbed(message, client, {
             title: "Bot Information",
             thumbnail: {

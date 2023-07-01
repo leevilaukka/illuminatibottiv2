@@ -1,6 +1,8 @@
-import { AuditLogEvent, GuildMember } from "discord.js";
+import { AuditLogEvent, GuildMember, UserManager } from "discord.js";
+import { IlluminatiClient, IlluminatiUser } from "../../structures";
+import UserFunctions from "../../structures/IlluminatiUser";
 
-export default async (_, member: GuildMember) => {
+export default async (client: IlluminatiClient, member: GuildMember) => {
     console.log(`${member.user.tag} left the server.`);
 
     const fetchedLogs = await member.guild.fetchAuditLogs({
@@ -23,5 +25,5 @@ export default async (_, member: GuildMember) => {
 		console.log(`${member.user.tag} left the guild; kicked by ${executor.tag}?`);
 	} else {
 		console.log(`${member.user.tag} left the guild, audit log fetch was inconclusive.`);
-	}
+	}	
 }

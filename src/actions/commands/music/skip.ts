@@ -8,9 +8,7 @@ const command: Command = {
     aliases: ["s"],
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
-
+    async run(message, args, settings, client, { queue }) {
         if (queue.repeatMode === QueueRepeatMode.TRACK) {
             queue.setRepeatMode(QueueRepeatMode.OFF);
             queue.node.skip();

@@ -1,8 +1,7 @@
-import mongoose, { SchemaTypes, mongo } from "mongoose";
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
-import { Track } from "discord-player";
 
 const pointSchema = new Schema({
     type: {

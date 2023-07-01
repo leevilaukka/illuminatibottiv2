@@ -14,8 +14,7 @@ const command: Command = {
     aliases: ["l"],
     category: Categories.music,
     guildOnly: true,
-    run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
+    run(message, args, settings, client, { queue }) {
         const loopMode = queue.repeatMode;
 
         if (queue && loopMode < 3) {

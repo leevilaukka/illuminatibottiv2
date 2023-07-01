@@ -4,12 +4,14 @@ import fs from "fs";
 import { IlluminatiEmbed } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+import AttachmentWriterWrapper from "../../../structures/PipedImage";
 const command: Command = {
     name: "tinder",
     description: "Tinder-äänestys",
     args: true,
     usage: "<määrä> <token> <aika>",
     cooldown: 10,
+    category: Categories.fun,
     async run(message, args: any, settings, client) {
         message.delete();
 
@@ -34,25 +36,18 @@ const command: Command = {
             })
             .then((res) => {
                 // Fs writestream path and writer
-                const path = "./pipes/tinder.png";
-                const writer = fs.createWriteStream(path);
-
+                const { writer, attachment, onFinish } = new AttachmentWriterWrapper("./pipes/tinder.png", "fast-match.png");
+                
                 // Pipe photo to writer
                 res.data.pipe(writer);
-                writer.on("finish", async () => {
+                onFinish(async () => {
                     // Additional variables for new embed
-                    const file = new Discord.AttachmentBuilder(
-                        "./pipes/tinder.png"
-                    );
                     !easyMode
                         ? (easyMode = await message.channel.send({
                               content: "Tästä helppo match, jos tulee vastaan.",
-                              files: [file],
+                              files: [attachment],
                           }))
                         : (easyMode = null);
-                    fs.unlink(path, () => {
-                        return;
-                    });
                 });
             });
 
@@ -67,6 +62,8 @@ const command: Command = {
 
         const createNewVote = (count = 0) => {
             const current = results[count];
+
+            console.log(current);
 
             const currentAge =
                 new Date().getFullYear() -
@@ -95,12 +92,12 @@ const command: Command = {
             ];
 
             if (
-                current.experiment_info?.user_interests.selected_interests
-                    .length > 0
+                interests &&
+                    interests.length > 0
             ) {
                 fields.push({
                     name: "Kiinnostukset",
-                    value: interests,
+                    value: interests.join(", "),
                     inline: false,
                 });
             }

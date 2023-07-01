@@ -8,6 +8,7 @@ const command: Command = {
     aliases: ['give'],
     description: 'Trade with a user',
     usage: "<user> <amount>",
+    category: "economy",
     async run(message, args, settings, client, {user}) {
         const giveTo = message.mentions.users.first()
         const amount = parseInt(args[1])

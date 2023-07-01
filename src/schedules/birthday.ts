@@ -8,13 +8,12 @@ const job: IlluminatiJob = {
         const users = await User.find({birthday: {$ne: null}});
 
         users.forEach(user => {
-            if (user.stats.birthday.getDate() === new Date().getDate() && user.stats.birthday.getMonth() === new Date().getMonth()) {
-                client.users.fetch(user.discordID).then(dUser => {
-                    dUser.send(`Hyvää syntymäpäivää, ${dUser.username}!`);
+            if (user.isBirthday()) {
+                user.getDiscordUser(client).then(user => {
+                    user.send("Happy birthday!");
                 })
             }
-        }
-        )
+        })
     }
 }
 

@@ -1,36 +1,36 @@
-import mongoose, { ObjectId, PopulatedDoc, Document } from "mongoose";
-import { IlluminatiUserTypes } from "../structures/IlluminatiUser";
-import User from "./User";
-import { Guild } from "discord.js";
+import mongoose, { InferSchemaType } from "mongoose";
 
-interface IAlcometer {
+export type Alcometer = {
     user: string;
-    info: {
-        weight: number;
-        gender: string;
-        lineColor: string;
-        guild: string;
-    };
-    drinks: [
-        {
-            name: string;
-            volume: number;
-            percentage: number;
-            alcInGrams: number;
-            time: Date;
-        }
-    ];
+    info: AlcometerInfo;
+    drinks: AlcometerDrink[];
     bac: number;
-    bacHistory: [
-        {
-            bac: number;
-            time: Date;
-        }
-    ];
+    bacHistory: BacHistory[];
     lastDrink: Date;
-}
+};
 
-const alcometerSchema = new mongoose.Schema<IAlcometer>({
+
+type AlcometerInfo = {
+    weight: number;
+    gender: "m" | "n";
+    lineColor: string;
+    guild: string;
+};
+
+type AlcometerDrink = {
+    name: string;
+    volume: number;
+    percentage: number;
+    alcInGrams: number;
+    time: Date;
+};
+
+type BacHistory = {
+    bac: number;
+    time: Date;
+};
+
+const alcometerSchema = new mongoose.Schema({
     user: {
         type: String,
         required: true,
@@ -60,4 +60,5 @@ const alcometerSchema = new mongoose.Schema<IAlcometer>({
     lastDrink: Date,
 });
 
-export default mongoose.model<IAlcometer>("Alcometer", alcometerSchema);
+
+export default mongoose.model<Alcometer>("Alcometer", alcometerSchema);

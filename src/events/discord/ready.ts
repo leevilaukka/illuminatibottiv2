@@ -5,5 +5,5 @@ export default (client: IlluminatiClient) => {
 
     client.checkIP();
 
-    client.jobs.get("digitalocean")?.run(client)();
+    client.jobs.get("digitalocean")?.run(client)(new Date());
 };

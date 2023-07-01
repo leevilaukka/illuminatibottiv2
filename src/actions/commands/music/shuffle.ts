@@ -7,8 +7,7 @@ const command: Command = {
     description: "Shuffles the queue.",
     guildOnly: true,
     category: Categories.music,
-    run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
+    run(message, args, settings, client, { queue }) {
         if (queue.tracks.data.length > 1) {
             queue.tracks.shuffle();
             return message.reply(

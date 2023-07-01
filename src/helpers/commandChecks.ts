@@ -34,7 +34,7 @@ export const commandChecks = async (
     }
 
     if (
-        await client.guildManager(message.guild).isCommandDisabled(command.name)
+        await new client.guildManager(message.guild).isCommandDisabled(command.name)
     ) {
         throw new UserError(`tämä komento on estetty tällä palvelimella.`);
     }

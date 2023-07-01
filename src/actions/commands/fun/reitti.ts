@@ -51,6 +51,7 @@ const command: Command = {
     cooldown: 5,
     aliases: ["hsl"],
     args: true,
+    outOfOrder: true,
     async run(message, args, settings, client, { guild }) {
         const [origin, destination] = args;
 
@@ -88,12 +89,18 @@ const command: Command = {
                   }
               }
           `;
+
         request(
             "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql",
             query
         ).then((data: RequestResultData) => {
             const route = data.plan.itineraries[0];
             message.channel.send("Reittisi!");
+
+            const mainEmbed = new IlluminatiEmbed(message, client, {
+                title: "Reittisi",
+                description: "Katso vaiheet vaihtamalla sivua",
+            });
 
             route.legs.map((leg, index) => {
                 const startTime = new Date(leg.startTime);
@@ -141,8 +148,10 @@ const command: Command = {
                         },
                     ]);
                 }
-                message.channel.send({ embeds: [embed] });
+                mainEmbed.addPage(embed);
             });
+
+            mainEmbed.send();
         });
     },
 };

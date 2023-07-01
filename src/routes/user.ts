@@ -1,23 +1,12 @@
 import express from "express";
 import { User } from "../models";
+import { checkUser } from "./middlewares";
 
 const router = express.Router();
 
-router.get("/:userID", async (req, res) => {
-    const user = await User.findOne({
-        where: {
-            id: req.params.userID,
-        },
-    });
-
-    if (!user) {
-        return res.status(206).json({
-            error: "User not found",
-        });
-    }
-
+router.get("/:userID", checkUser, async (req, res) => {
     res.json({
-        user,
+        user: req.user,
     });
 });
 

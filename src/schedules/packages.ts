@@ -7,7 +7,6 @@ const job: IlluminatiJob = {
     name: "packages",
     schedule: "*/15 * * * *",
     run: (client) => async () => {
-        console.info("Checking packages...");
         const packages = await Package.find({});
 
         for (const pkg of packages) {

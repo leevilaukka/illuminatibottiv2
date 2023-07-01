@@ -105,15 +105,15 @@ export default [
     },
     {
         original: "metric",
-        parsed: "Metrinen"
+        parsed: "Metrijärjestelmä"
     },
     {
         original: "imperial",
-        parsed: "Brittiläinen"
+        parsed: "Imperial"
     },
     {
         original: "WALK",
-        parsed: "Jalat"
+        parsed: "Kävely"
     },
     {
         original: "BUS",
@@ -122,5 +122,17 @@ export default [
     {
         original: "RAIL",
         parsed: "Juna"
+    },
+    {
+        original: "SUBWAY",
+        parsed: "Metro"
+    },
+    {
+        original: "TRAM",
+        parsed: "Raitiovaunu"
+    },
+    {
+        original: "FERRY",
+        parsed: "Lautta"
     },
 ];

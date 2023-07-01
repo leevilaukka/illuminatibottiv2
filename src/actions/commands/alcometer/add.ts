@@ -6,8 +6,10 @@ const command: Command = {
     aliases: ["ad"],
     description: "Add a drink to your alcometer",
     usage: "<volume in cents> <percentage>",
-
+    category: "other",
+    outOfOrder: true,
     async run(message, args, settings, client, { user, guild }) {
+        /*
         const [volume, percentage, name] = args;
         const alcometer = await user.alcometer();
 
@@ -48,6 +50,8 @@ const command: Command = {
             `Added ${vol}ml of ${perc}% ${name || ""} to your alcometer`
         );
     },
+    */
+    }
 };
 
 export default command;

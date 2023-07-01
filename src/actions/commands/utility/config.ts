@@ -3,6 +3,7 @@ import { IlluminatiEmbed } from "../../../structures";
 
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: "config",
     description: "Tarkastele ja vaihda botin asetuksia palvelimellasi",
@@ -42,6 +43,10 @@ const command: Command = {
                 {
                     name: "Leave on empty",
                     value: settings.leaveOnEmpty ? "✅" : "❌",
+                },
+                {
+                    name: "Error Call Stacks",
+                    value: settings.stacksEnabled ? "✅" : "❌",
                 },
             ],
         });

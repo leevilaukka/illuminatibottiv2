@@ -6,6 +6,7 @@ const command: Command = {
     ownerOnly: true,
     description: 'Debugging economy',
     aliases: ["de"],
+    category: "economy",
     run(message, args, settings, client, { user }) {
         const amount = args[0]
         

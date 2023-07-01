@@ -10,7 +10,7 @@ const command: Command = {
     name: "graph",
     aliases: ["g"],
     description: "Get a graph of your BAC",
-
+    category: "other",
     async run(message, args, settings, client, { user, guild }) {
         const alcometers = await Alcometer.find({});
 

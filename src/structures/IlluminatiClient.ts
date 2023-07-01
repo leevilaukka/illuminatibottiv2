@@ -29,6 +29,7 @@ import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
 import { Errors } from ".";
+import { IlluminatiJob } from "../schedules";
 
 
 /**
@@ -40,7 +41,7 @@ export default class IlluminatiClient extends Client {
     // Types
     static commands: Collection<string, Command>;
     static interactions: Collection<string, IlluminatiInteraction>;
-    jobs: Collection<string, any> = new Collection();
+    jobs: Collection<string, IlluminatiJob> = new Collection();
     metrics: {
         playerCount: Counter;
     };
@@ -92,9 +93,12 @@ export default class IlluminatiClient extends Client {
      * @param message Message to get the managers from
      */
     async getManagersFromMessage(message: Message) {
+        const user = new this.userManager(message.author);
+        const guild = new this.guildManager(message.guild);
+
         return {
-            user: this.userManager(message.author),
-            guild: this.guildManager(message.guild),
+            user,
+            guild
         };
     }
 
@@ -231,7 +235,6 @@ export default class IlluminatiClient extends Client {
     }
 
     checkIP() {
-        console.log("Checking IP");
         this.axios.get("https://api.ipify.org?format=json").then((res) => {
             this.hostIP = res.data.ip;
 
@@ -268,12 +271,6 @@ export default class IlluminatiClient extends Client {
     }
 
     async getPlayerLink(guildID: string) {
-        const status = await this.apiStatus;
-
-        if (status.data.status !== "online") {
-            throw new Errors.BotError("Player is not online");
-        }
-
         return `https://player.leevila.fi/?guild=${guildID}`;
     }
 

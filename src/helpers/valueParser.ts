@@ -1,11 +1,14 @@
-import {translateTable} from "../utils";
+import { translateTable } from "../utils";
 
 const valueParser = (value: any) => {
-    for (let i = 0; i < translateTable.length; i++) {
-        if (translateTable[i].original === value) {
-            return translateTable[i].parsed;
-        }
-    }
+    // Get value from translate table array of objects
+    const translatedValue = translateTable.find((v) => v.original === value);
+
+    // If value is found, return the translated value
+    if (translatedValue) return translatedValue.parsed;
+
+    // If value is not found, return the original value
+    return value;
 };
 
 export default valueParser;

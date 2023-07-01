@@ -1,10 +1,10 @@
-import { ButtonInteraction, Channel, CommandInteraction, Guild, Message, MessageComponentInteraction, MessageInteraction, PermissionResolvable, SelectMenuInteraction } from "discord.js";
+import { ButtonInteraction, Channel, CommandInteraction, Guild, Message, MessageComponentInteraction, MessageInteraction, PermissionResolvable, SelectMenuInteraction, User } from "discord.js";
 import { RawInteractionData } from "discord.js/typings/rawDataTypes";
 import { Categories } from "IlluminatiCommand";
 import { GuildSettings } from "./config";
-import { IlluminatiClient } from "./structures";
+import { IlluminatiClient, IlluminatiGuild, IlluminatiUser } from "./structures";
 import GuildFunctions from "./structures/IlluminatiGuild";
-import UserFunctions from "./structures/IlluminatiUser";
+import UserFunctions, { IlluminatiUserTypes } from "./structures/IlluminatiUser";
 import { GuildQueue } from "discord-player";
 
 type BotError = {
@@ -77,7 +77,7 @@ type SlashOptions = {
 }
 
 //** Metadata for a command, guild and user settings */ 
-type CommandMeta = { guild: ReturnType<typeof GuildFunctions>, user: ReturnType<typeof UserFunctions> }
+type CommandMeta = { guild: IlluminatiGuild<Guild>, user: IlluminatiUser<User>, queue: GuildQueue}
 
 type CommandResponse = string | { embed: any } | { content: string, embed: any } | Message<true | false> | void
 
@@ -88,7 +88,7 @@ interface Command {
     guildOnly?: boolean,
     args?: boolean,
     usage?: string,
-    category?: Categories | keyof typeof Categories,
+    category: Categories | keyof typeof Categories,
     cooldown?: number,
     enableSlash?: boolean,
     outOfOrder?: boolean,
@@ -104,6 +104,7 @@ interface Command {
     }
     run: (message: Message, args: CommandArguments, settings: GuildSettings , client: IlluminatiClient, meta: CommandMeta) => Promise<CommandResponse>
     onInit?: (client: IlluminatiClient) => void
+    cleanUp?: (client: IlluminatiClient) => void
 }
 
 // Interaction types
@@ -127,6 +128,15 @@ declare global {
             queue?: GuildQueue;
             guild?: Guild;
             channel?: Channel;
+            user: {
+                discordUser: User,
+                dbUser: IlluminatiUserTypes
+            }
         }
     }
+
+    export interface Number {
+        times: (callback: (i: number) => void) => void
+    }
+    
 }

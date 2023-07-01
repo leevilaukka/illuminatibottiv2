@@ -2,9 +2,11 @@ import { IlluminatiEmbed } from "../../../structures";
 import { Command } from "../../../types";
 
 const command: Command = {
-    name: "player",
-    async run(message, args, settings, client, meta) {
-        const link = await client.getPlayerLink(message.guildId)
+    name: "player", 
+    description: "Player web GUI",
+    category: "music",
+    async run(message, args, settings, client, {guild}) {
+        const link = guild.playerLink;
 
         return new IlluminatiEmbed(message, client, {
             title: "Player Web GUI",

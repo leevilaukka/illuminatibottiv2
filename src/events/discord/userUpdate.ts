@@ -3,7 +3,7 @@ import { IlluminatiClient, Errors } from "../../structures";
 
 export default async (client: IlluminatiClient, oldUser: User, newUser: User) => {
     // Check if user is in database
-    const user = client.userManager(newUser)
+    const user = new client.userManager(newUser)
     const savedUser = await user.getUser();
 
     // Check if user is in database

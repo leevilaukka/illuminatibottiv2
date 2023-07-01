@@ -3,7 +3,8 @@ import { IlluminatiEmbed } from "../../structures";
 import { PlayerEvent } from "../../types/PlayerEvent";
 
 const evt: PlayerEvent = (client, queue, track: Track) => {
-    if(!queue.metadata?.message) return;
+    if(!queue.metadata?.message || queue.metadata?.fromAPI) return;
+    
     new IlluminatiEmbed(queue.metadata.message, client, {
         title: "Kappale lisätty jonoon",
         description: `**${track.title}**`,

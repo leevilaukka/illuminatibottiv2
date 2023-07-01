@@ -9,8 +9,6 @@ import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
 
-import { commandCounter } from "../../metrics";
-
 const cooldowns: Collection<
     string /*command name*/,
     Collection<string /*user*/, number /*time*/>
@@ -100,35 +98,25 @@ export default async (client: IlluminatiClient, message: Message) => {
                 if (client.isDevelopment)
                     console.log(`Cmd ${command.name} called!`);
 
+                const queue = client.player.nodes.get(message.guild);
+
                 //Execute command and catch errors
                 try {
                     message.channel.sendTyping();
                     await command
-                        .run(message, args, settings, client, { guild, user })
+                        .run(message, args, settings, client, { guild, user, queue })
                         .then(() => {
                             user.addCommandUse(command.name);
                             if (client.isDevelopment)
                                 console.log(`Cmd ${command.name} executed!`);
+                            
+                            if (command.cleanUp) command.cleanUp(client);
                         })
                         .catch(async (error) => {
                             throw error;
                         });
                 } catch (error) {
                     console.error(error);
-
-                    /* if (error instanceof CommandError) {
-                    console.log(`Command ${error.command.name} errored!`)
-        
-                    const guildData = await Guild.findOne({id: message.guild.id});
-        
-                    if (guildData) {
-                        const errorCount: number = guildData.get(`commandErrors.${error.command.name}`) || 0;
-        
-                        guildData.set(`commandErrors.${error.command.name}`, errorCount + 1);
-                        guildData.save();
-                    }
-                } */
-
                     if (error instanceof ErrorWithStack)
                         return client.sendError(
                             error,

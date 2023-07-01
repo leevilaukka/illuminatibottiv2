@@ -9,7 +9,7 @@ const command: Command = {
     async run(message, args, settings, client, {user}) {
         const mentionedUser = message.mentions.users.first()
         if (mentionedUser) {
-            const embed = await client.userManager(mentionedUser).infoAsEmbed(message, client)
+            const embed = await new client.userManager(mentionedUser).infoAsEmbed(message, client)
             return embed.send()
         } else {
             const embed = await user.infoAsEmbed(message, client);

@@ -45,6 +45,20 @@ export const eventImports = async (client: IlluminatiClient) => {
             );
         }
 
+        const processEventFiles = fs
+            .readdirSync(`${__dirname}/events/process/`)
+            .filter((file: string) => file.endsWith(".js"));
+        for await (const file of processEventFiles) {
+            import(`${__dirname}/events/process/${file}`).then(
+                ({ default: evt }: { default: EventType }) => {
+                    let evtName = file.split(".")[0];
+                    process.on(evtName, evt.bind(null, client));
+                    if (client.isDevelopment)
+                        console.log(`Loaded processEvt: ${evtName}`);
+                }
+            );
+        }
+
         console.groupEnd();
     } catch (error) {
         throw new Errors.ErrorWithStack(error);

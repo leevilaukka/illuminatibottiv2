@@ -18,175 +18,183 @@ type ArrayTypes<T> = {
 // Get array element type
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
-export function GuildFunctions<T extends Guild>(guild: T) {
-    return {
-        /**
+class IlluminatiGuild<T extends Guild> {
+    guild: T;
+    constructor(guild: T) {
+        this.guild = guild;
+    }
+
+    /**
          * Log Guild to console
          */
-        log: (): void => {
-            console.log("Guild:", guild);
-        },
+    log(): void {
+        console.log("Guild:", this.guild);
+    }
 
-        /**
-         * Get Guild settings from database
-         * @method
-         * @returns Guild settings *or* Default settings
-         */
+    /**
+     * Get Guild settings from database
+     * @method
+     * @returns Guild settings *or* Default settings
+     */
 
-        getGuild: async (): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({
-                guildID: guild.id,
-            });
-            if (guildSettings) return guildSettings;
-            else return config.defaultSettings;
-        },
+    async getGuild(): GuildPromise {
+        const guildSettings = await GuildModel.findOne({
+            guildID: this.guild.id,
+        });
+        if (guildSettings) return guildSettings;
+        else return config.defaultSettings;
+    }
 
-        updateGuildInfo: async <K extends keyof GuildSettings>(
-            key: K,
-            value: GuildSettings[K]
-        ): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({
-                guildID: guild.id,
-            });
-            if (guildSettings) {
-                return await guildSettings
-                    .updateOne({ [key]: value })
-                    .catch((err) => {
-                        throw new Errors.DatabaseError(err);
-                    });
-            } else {
-                throw new Errors.DatabaseError("Guild settings not found");
-            }
-        },
-
-        pushToArray: async <K extends keyof ArrayTypes<GuildSettings>>(
-            key: K,
-            value: ArrayElement<GuildSettings[K]>
-        ): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({
-                guildID: guild.id,
-            });
-            if (guildSettings) {
-                return await guildSettings
-                    .update({
-                        $push: { [key]: value },
-                    })
-                    .catch((err) => {
-                        throw new Errors.DatabaseError(err);
-                    });
-            } else {
-                throw new Errors.DatabaseError("Guild settings not found");
-            }
-        },
-
-        // Delete element from array
-        pullFromArray: async <K extends keyof ArrayTypes<GuildSettings>>(
-            key: K,
-            value: ArrayElement<GuildSettings[K]>
-        ): GuildPromise => {
-            const guildSettings = await GuildModel.findOne({
-                guildID: guild.id,
-            });
-
-            if (guildSettings) {
-                return await guildSettings
-                    .update({
-                        $pull: { [key]: value },
-                    })
-                    .catch((err) => {
-                        throw new Errors.DatabaseError(err);
-                    });
-            } else {
-                throw new Errors.DatabaseError("Guild settings not found");
-            }
-        },
-
-        /**
-         * Update Guild settings to database
-         * @method
-         * @param {object} settings New settings
-         * @returns Updated guild settings
-         */
-
-        batchUpdateGuild: async (
-            settings: Partial<GuildSettings & { guildName: string }>
-        ): Promise<object> => {
-            let data: any = await GuildFunctions(guild).getGuild();
-
-            if (typeof data !== "object") data = {};
-            for (const key in settings) {
-                if (data[key] !== settings[key]) data[key] = settings[key];
-                else return;
-            }
-
-            return await data.updateOne(settings).catch((e) => {
-                throw new Errors.DatabaseError(e);
-            });
-        },
-
-        changeSetting: async <S extends keyof GuildSettings>(
-            setting: S,
-            newSetting: GuildSettings[S]
-        ) => {
-            try {
-                await GuildFunctions(guild).batchUpdateGuild({
-                    [setting]: newSetting,
+    async updateGuildInfo<K extends keyof GuildSettings> (
+        key: K,
+        value: GuildSettings[K]
+    ): GuildPromise {
+        const guildSettings = await GuildModel.findOne({
+            guildID: this.guild.id,
+        });
+        if (guildSettings) {
+            return await guildSettings
+                .updateOne({ [key]: value })
+                .catch((err) => {
+                    throw new Errors.DatabaseError(err);
                 });
-                return `${setting} päivitetty`;
-            } catch (e) {
-                throw new Errors.DatabaseError(e);
-            }
-        },
+        } else {
+            throw new Errors.DatabaseError("Guild settings not found");
+        }
+    }
 
-        /**
-         * Create a new Guild to database
-         * @method
-         * @param {object} settings Guild settings
-         * @returns New database guild settings
-         */
-
-        createGuild: async (settings: object): Promise<void | GuildPromise> => {
-            const newGuild = new GuildModel(settings);
-            return newGuild
-                .save()
-                .then((res) => {
-                    return res;
+    async pushToArray<K extends keyof ArrayTypes<GuildSettings>>(
+        key: K,
+        value: ArrayElement<GuildSettings[K]>
+    ): GuildPromise {
+        const guildSettings = await GuildModel.findOne({
+            guildID: this.guild.id,
+        });
+        if (guildSettings) {
+            return await guildSettings
+                .update({
+                    $push: { [key]: value },
                 })
-                .catch((error) => {
-                    throw new Errors.DatabaseError(error);
+                .catch((err) => {
+                    throw new Errors.DatabaseError(err);
                 });
-        },
+        } else {
+            throw new Errors.DatabaseError("Guild settings not found");
+        }
+    }
 
-        /**
-         * Delete guild from database
-         * @method
-         */
+    // Delete element from array
+    async pullFromArray<K extends keyof ArrayTypes<GuildSettings>>(
+        key: K,
+        value: ArrayElement<GuildSettings[K]>
+    ): GuildPromise {
+        const guildSettings = await GuildModel.findOne({
+            guildID: this.guild.id,
+        });
 
-        deleteGuild: async (): Promise<void> => {
-            await GuildModel.deleteOne({ guildID: guild.id });
-            console.log(`Palvelin ${guild.name}(${guild.id}) poistettu :(`);
-        },
+        if (guildSettings) {
+            return await guildSettings
+                .update({
+                    $pull: { [key]: value },
+                })
+                .catch((err) => {
+                    throw new Errors.DatabaseError(err);
+                });
+        } else {
+            throw new Errors.DatabaseError("Guild settings not found");
+        }
+    }
 
-        /**
-         * Check if a command is disabled on this guild
-         * @method
-         * @param {string} command Command name
-         * @returns {boolean}
-         * @example
-         * if (GuildFunctions(guild).isCommandDisabled("ping")) {
-         *    console.log("Pinging is disabled on this guild");
-         * }
-         */
+    /**
+     * Update Guild settings to database
+     * @method
+     * @param {object} settings New settings
+     * @returns Updated guild settings
+     */
 
-        isCommandDisabled: async (command: string): Promise<boolean> => {
-            const guildSettings = await GuildFunctions(guild).getGuild();
-            return guildSettings.disabledCommands.includes(command);
-        },
+    async batchUpdateGuild(
+        settings: Partial<GuildSettings & { guildName: string }>
+    ): Promise<object> {
+        let data: any = await this.getGuild();
 
-        equals: (compareToGuild: Guild): boolean => {
-            return compareToGuild.id === guild.id;
-        },
-    };
+        if (typeof data !== "object") data = {};
+        for (const key in settings) {
+            if (data[key] !== settings[key]) data[key] = settings[key];
+            else return;
+        }
+
+        return await data.updateOne(settings).catch((e) => {
+            throw new Errors.DatabaseError(e);
+        });
+    }
+
+    async changeSetting<S extends keyof GuildSettings>(
+        setting: S,
+        newSetting: GuildSettings[S]
+    ) {
+        try {
+            await this.batchUpdateGuild({
+                [setting]: newSetting,
+            });
+            return `${setting} päivitetty`;
+        } catch (e) {
+            throw new Errors.DatabaseError(e);
+        }
+    }
+
+    /**
+     * Create a new Guild to database
+     * @method
+     * @param {object} settings Guild settings
+     * @returns New database guild settings
+     */
+
+    async createGuild(settings: object): Promise<void | GuildPromise> {
+        const newGuild = new GuildModel(settings);
+        return newGuild
+            .save()
+            .then((res) => {
+                return res;
+            })
+            .catch((error) => {
+                throw new Errors.DatabaseError(error);
+            });
+    }
+
+    /**
+     * Delete guild from database
+     * @method
+     */
+
+    async deleteGuild(): Promise<void>{
+        await GuildModel.deleteOne({ guildID: this.guild.id });
+        console.log(`Palvelin ${this.guild.name}(${this.guild.id}) poistettu :(`);
+    }
+
+    /**
+     * Check if a command is disabled on this guild
+     * @method
+     * @param {string} command Command name
+     * @returns {boolean}
+     * @example
+     * if (isCommandDisabled("ping")) {
+     *    console.log("Pinging is disabled on this guild");
+     * }
+     */
+
+    async isCommandDisabled(command: string): Promise<boolean> {
+        const guildSettings = await this.getGuild();
+        return guildSettings.disabledCommands.includes(command);
+    }
+
+    get playerLink(): string {
+        return `https://player.leevila.fi/?guild=${this.guild.id}`;
+    }
+
+    equals(compareToGuild: Guild): boolean {
+        return compareToGuild.id === this.guild.id;
+    }
 }
 
-export default GuildFunctions;
+
+export default IlluminatiGuild;

@@ -28,9 +28,7 @@ const command: Command = {
         const sender = message;
 
         // Command arguments
-        let subreddit = args[0];
-        let skipnsfw = args[1];
-
+        const [subreddit, skipnsfw] = args;
         // Subreddit argument given check
         if (!subreddit) {
             try {
@@ -50,7 +48,6 @@ const command: Command = {
 
                 const {
                     title,
-                    thumbnail: thumb,
                     url: kuva,
                     permalink,
                     author: name,
@@ -76,7 +73,7 @@ const command: Command = {
                 }
 
                 // Embed data init
-                let fields = [
+                const fields = [
                     {
                         name: "Lähettäjä",
                         value: `${name}`,

@@ -53,7 +53,7 @@ export default async (client: IlluminatiClient, deletedMessage: Message) => {
             embeds,
         } satisfies DeletedMessage;
 
-        client
+        new client
             .guildManager(deletedMessage.guild)
             .pushToArray("deletedMessages", newDoc)
             .then(() => {

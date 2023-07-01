@@ -5,8 +5,11 @@ const command: Command = {
     name: "start",
     aliases: ["sd"],
     description: "Start the alcometer",
+    category: "other",
+    outOfOrder: true,
 
     async run(message, args, settings, client, { user, guild }) {
+        /*
         const alcometer = await user.alcometer();
 
         const [w, gender] = args as [string, "m" | "n"];
@@ -20,6 +23,8 @@ const command: Command = {
         const weight = parseInt(w);
         alcometer.start({ weight, gender, user: message.author });
     },
+    */
+    }
 };
 
 export default command;

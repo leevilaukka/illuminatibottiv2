@@ -11,7 +11,7 @@ const command: Command = {
     description: "Plays a song",
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, _settings, client, _meta) {
+    async run(message, args, _settings, client) {
         if (!message.member.voice.channelId) {
             throw new UserError("Et ole puhekanavalla!");
         }

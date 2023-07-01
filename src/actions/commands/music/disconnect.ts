@@ -2,21 +2,19 @@ import { UserError } from "../../../structures/Errors";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 
-const command: Command = {
+export default {
     name: "disconnect",
     category: Categories.music,
     description: "Disconnect from the voice channel",
     aliases: ["dc", "leave"],
     guildOnly: true,
-    run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
-
+    run({reply}, args, settings, client, {queue}) {
         if (queue) {
             queue.delete();
-            return message.reply("Heippa!");
+            return reply("Heippa!");
         } else {
             throw new UserError("Mikään ei soi!");
         }
     },
-};
-export default command;
+} as Command;
+

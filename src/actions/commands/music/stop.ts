@@ -6,9 +6,7 @@ const command: Command = {
     description: "Stop the music",
     guildOnly: true,
     category: Categories.music,
-    run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
-
+    run(message, args, settings, client, { queue }) {
         if (queue) {
             queue.node.stop();
             return message.reply("Musiikki pysäytetty!");

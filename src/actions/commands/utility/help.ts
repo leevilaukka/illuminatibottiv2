@@ -10,14 +10,9 @@ const command: Command = {
     usage: `[komento]`,
     cooldown: 5,
     category: Categories.general,
-    async run(message, args: any, settings, client) {
-        const { commands } = IlluminatiClient;
-        const prefix = settings.prefix;
-
-        const author = {
-            name: "IlluminatiBotti",
-            icon_url: client.user.avatarURL() || undefined,
-        };
+    async run(message, args, settings, client) {
+        const { commands, getCommand } = IlluminatiClient;
+        const { prefix } = settings;
 
         if (!args.length) {
             let fields = [];
@@ -41,9 +36,8 @@ const command: Command = {
 
             const embed = new IlluminatiEmbed(message, client, {
                 title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
-                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
-                fields,
-                author,
+                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta! \n\n Komentoja on yhteensä ${commands.size}.`,
+                fields
             });
 
             //Lähetä DM
@@ -64,10 +58,8 @@ const command: Command = {
             }
         }
         const name = args[0]?.toLowerCase();
-        const command =
-            commands.get(name) ||
-            commands.find((c) => c.aliases && c.aliases.includes(name));
-        let fields = [];
+        const command = getCommand(name);
+        const fields = [];
 
         if (!command) {
             return message.reply(`tuo ei ole kelpo komento!`);
@@ -106,14 +98,13 @@ const command: Command = {
             });
         fields.push({
             name: `**Cooldown:**`,
-            value: `${command.cooldown || 3} sekunti(a)`,
+            value: `${command.cooldown || 3} sekunti${command.cooldown === 1 ? "" : "a"}`,
             inline: true,
         });
 
         new IlluminatiEmbed(message, client, {
             title: "Tietoja komennosta",
-            fields,
-            author,
+            fields
         }).send();
     },
 };

@@ -4,17 +4,15 @@ import { ErrorWithStack } from '../structures/Errors';
 import { IlluminatiClient } from '../structures';
 
 const jobs = fs.readdirSync(__dirname).filter((file) => file !== 'index.js' && !file.endsWith('.map.js') && file.endsWith('.js'));
-
+type ScheludeType = RecurrenceRule | RecurrenceSpecDateRange | RecurrenceSpecObjLit | string | number;
 export interface IlluminatiJob {
     name: string;
-    schedule: RecurrenceRule | RecurrenceSpecDateRange | RecurrenceSpecObjLit | string | number;
+    schedule: ScheludeType
     devOnly?: boolean;
     run: (client: IlluminatiClient) => JobCallback;
-
     onInit?: (client: IlluminatiClient) => void;
 }
 
-console.log(jobs)
 const importSchedules = async (client: IlluminatiClient) => {
     try {
         for await (const job of jobs) {

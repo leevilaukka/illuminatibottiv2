@@ -13,7 +13,7 @@ const command: Command = {
     usage: "<määrä {alkuperäinen yksikkö} {uusi yksikkö}>",
     aliases: ["c", "muunna"],
     category: Categories.math,
-    run(message, args: any, _settings, client) {
+    async run(message, args: any, _settings, client) {
         let result: any;
         if (!args.length) {
             const measures = convert().measures();
@@ -99,7 +99,7 @@ const command: Command = {
             throw new BotError(e);
         }
 
-        new IlluminatiEmbed(message, client, {
+        return new IlluminatiEmbed(message, client, {
             title: "Muunnos",
             description: "Annettu lukusi muutettiin haluaamasi muotoon",
             fields: [

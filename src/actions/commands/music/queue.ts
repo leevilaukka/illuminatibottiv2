@@ -1,53 +1,50 @@
-import { EmbedBuilder } from "discord.js";
 import { IlluminatiEmbed } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
+
 const command: Command = {
     name: "queue",
     aliases: ["q"],
     description: "Näytä nykyinen jono",
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild.id);
+    async run(message, args, settings, client, { queue }) {
+        const comingUpPages = [[]];
 
-        if (queue.tracks.data.length > 25) {
-            const embed = new IlluminatiEmbed(message, client)
-                .setTitle("Jono")
-                .setDescription(
-                    `Nyt soi: ${
-                        queue.currentTrack.title
-                    } \n\n Näe koko jono [täältä](${client.getPlayerLink(
-                        message.guildId
-                    )})`
-                )
-                .setThumbnail(queue.currentTrack.thumbnail)
-                .setFooter({
-                    text: `Kappaleita jonossa: ${queue.tracks.data.length}`,
-                })
-                .setTimestamp();
+        queue.tracks.map((track, index) => {
+            if (index % 10 === 0) {
+                comingUpPages.push([]);
+            }
 
-            return message.channel.send({ embeds: [embed] });
-        }
-
-        const comingUp = queue.tracks.map((track) => {
-            return {
-                name: track.title,
-                value: track.author,
-            };
+            comingUpPages[Math.floor(index / 10)].push(track);
         });
 
-        const embed = new IlluminatiEmbed(message, client)
-            .setTitle("Jono")
-            .setDescription(`Nyt soi: ${queue.currentTrack.title}`)
-            .addFields(comingUp)
-            .setThumbnail(queue.currentTrack.thumbnail)
-            .setFooter({
-                text: `Kappaleita jonossa: ${queue.tracks.data.length}`,
-            })
-            .setTimestamp();
+        const mainPage = new IlluminatiEmbed(message, client, {
+            title: "Jono",
+            description: `**Nyt soi:** ${queue.currentTrack.title} (${queue.currentTrack.author})`,
+            fields: comingUpPages[0].map((track) => ({
+                name: `${track.title}`,
+                value: `Lisännyt: ${track.requestedBy.tag}`,
+            })),
+        });
 
-        return message.channel.send({ embeds: [embed] });
+        if (comingUpPages.length > 0) {
+            const newPages = comingUpPages.slice(1);
+            for (const page of newPages) {
+                const embedPage = new IlluminatiEmbed(message, client, {
+                    title: "Jono",
+                    description: `**Seuraavaksi soi:** ${queue.currentTrack.title} (${queue.currentTrack.author})`,
+                    fields: page.map((track) => ({
+                        name: `${track.title}`,
+                        value: `Lisännyt: ${track.requestedBy.tag}`,
+                    })),
+                });
+
+                mainPage.addPage(embedPage);
+            }
+        }
+
+        mainPage.reply();
     },
 };
 export default command;

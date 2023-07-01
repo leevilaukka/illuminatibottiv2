@@ -1,13 +1,26 @@
 import { User } from "discord.js";
-import Alcometer from "../models/Alcometer";
+import Alcometer, {type Alcometer as TAlcometer} from "../models/Alcometer";
+import IlluminatiUser from "./IlluminatiUser";
+import { InferSchemaType } from "mongoose";
+/*
+export default class UserAlcometer {
+    user: IlluminatiUser<User>;
+    meter: any
+    constructor(user: IlluminatiUser<User>) {
+        this.user = user;
+        this.setMeter();
+    }
 
-export default async function Meter(user: User) {
-    const meter = await Alcometer.findOne({ user: user.id });
+        hasMeter() {
+            return this.meter !== null;
+        }
 
-    return {
-        get: () => meter,
-        hasMeter: () => meter !== null,
-        start: ({
+        async setMeter() {
+            const meter = await Alcometer.findOne({ user: this.user.id });
+            this.meter = meter;
+        }
+
+        start({
             weight,
             gender,
             user,
@@ -15,7 +28,7 @@ export default async function Meter(user: User) {
             weight: number;
             gender: "m" | "n";
             user: User;
-        }) => {
+        }) {
             const newAlcometer = new Alcometer({
                 user: user.id,
                 info: {
@@ -33,23 +46,25 @@ export default async function Meter(user: User) {
             newAlcometer.save();
 
             return newAlcometer;
-        },
+        }
 
-        getDrinks: () => meter.drinks,
+        get drinks() {
+            return this.meter.drinks
+        }
 
-        decrementBAC: async () => {
-            const time = new Date().getTime() - meter.lastDrink.getTime();
+        async decrementBAC()  {
+            const time = new Date().getTime() - this.meter.lastDrink.getTime();
             const hours = time / 1000 / 60 / 60;
 
-            const bac = meter.bac - 0.1 * hours;
-            meter.bac = bac < 0 ? 0 : bac;
+            const bac = this.meter.bac - 0.1 * hours;
+            this.meter.bac = bac < 0 ? 0 : bac;
 
-            await meter.save();
+            await this.meter.save();
         },
 
-        updateBAC: async () => {
-            meter.bac = 0;
-            meter.drinks.forEach((drink) => {
+        async updateBAC() {
+            this.meter.bac = 0;
+            this.meter.drinks.forEach((drink) => {
                 const time = new Date().getTime() - drink.time.getTime();
                 const hours = time / 1000 / 60 / 60;
 
@@ -63,7 +78,7 @@ export default async function Meter(user: User) {
                 time: new Date(),
             });
 
-            await meter.save();
+            await this.meter.save();
         },
 
         addDrink: async (drink: {
@@ -94,3 +109,4 @@ export default async function Meter(user: User) {
         },
     };
 }
+*/

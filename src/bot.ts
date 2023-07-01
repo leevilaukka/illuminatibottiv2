@@ -34,12 +34,8 @@ const client = new IlluminatiClient({
     await setupImports(client).then(() => console.log("Imports setup done!"));
 
     client.isDevelopment && console.log(client.eventNames());
-    client.logger.log(client.jobs);
-
-    client.on("trackAdd", (queue, track) => {
-        console.log(queue, track);
-    });
-
+    
+    mongoose.set("strictQuery", false);
     // Connect to database
     mongoose.connect(process.env.MONGOURI, (mongoErr) => {
         if (mongoErr) {
@@ -47,11 +43,6 @@ const client = new IlluminatiClient({
         } else console.log("Connected to database! ✔");
     });
 
-    mongoose.set("strictQuery", false);
-
-    process.on("unhandledRejection", (err) => {
-        console.error("Unhandled promise rejection:", err);
-    });
 
     process.on("warning", console.warn);
 

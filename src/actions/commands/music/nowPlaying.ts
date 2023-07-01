@@ -15,8 +15,7 @@ const command: Command = {
     description: "Sends the currently playing song.",
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, settings, client) {
-        const queue = client.player.nodes.get(message.guild);
+    async run(message, args, settings, client, {queue}) {
         const nowPlaying = queue.currentTrack;
 
         if (!nowPlaying) throw new UserError("No song playing.");

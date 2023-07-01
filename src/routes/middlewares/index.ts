@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { User } from "../../models";
 
 const checkQueue: RequestHandler = async (req, res, next) => {
     const guildID = String(req.body.guildID || req.params.id);
@@ -50,4 +51,27 @@ const checkChannel: RequestHandler = (req, res, next) => {
     next();
 };
 
-export { checkQueue, checkGuild, checkChannel };
+const checkUser: RequestHandler = async (req, res, next) => {
+    console.log(req.params.userID || req.body.userID);
+
+    const user = req.client.users.cache.get(
+        req.params.userID || req.body.userID
+    );
+
+    const dbUser = await User.findOne({ discordID: user.id });
+
+    if (!user || !dbUser) {
+        return res.status(206).json({
+            error: "User not found",
+        });
+    }
+
+    req.user = {
+        discordUser: user,
+        dbUser,
+    };
+
+    next();
+};
+
+export { checkQueue, checkGuild, checkChannel, checkUser };
