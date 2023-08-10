@@ -5,8 +5,7 @@ import { Errors, IlluminatiClient } from "./structures";
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
 
-import { GuildQueue } from "discord-player";
-import { Channel, Guild } from "discord.js";
+import { ErrorEvent } from "discord.js";
 
 // Setup client
 const client = new IlluminatiClient({
@@ -53,14 +52,26 @@ const client = new IlluminatiClient({
             if (client.isDevelopment) {
                 console.log("Logged in as development version");
                 const allAliases = IlluminatiClient.commands
-                    .map((cmd) => cmd.aliases && cmd.aliases)
+                    .map((cmd) => cmd.aliases ? cmd.aliases : [])
                     .flat();
                 console.log(`All aliases: `, allAliases);
+
+                // If maching aliases found, throw error
+                if (
+                    allAliases.some(
+                        (alias) =>
+                            allAliases.filter((a) => a === alias).length > 1
+                    )
+                ) {
+                    throw new Errors.BotError(
+                        `Duplicate aliases found! Check your commands.`
+                    );
+                }
             } else {
                 console.log("Ready! ✔");
             }
         })
-        .catch((err: any) => {
+        .catch((err: ErrorEvent) => {
             if (err.message.includes("invalid token")) {
                 throw new Errors.BotError("Invalid token!");
             } else {

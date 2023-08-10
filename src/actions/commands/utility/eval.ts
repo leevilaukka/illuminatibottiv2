@@ -12,8 +12,9 @@ const command: Command = {
     category: Categories.config,
     async run(message, args, _settings, client, user) {
         try {
-            const code = argsToString(args);
-            let evaled = eval(code);
+            const code = argsToString(args)
+
+            let evaled = eval("(async () => {" + code + "})()");
 
             if (typeof evaled !== "string")
                 evaled = require("util").inspect(evaled);

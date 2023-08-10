@@ -7,15 +7,18 @@ const command: Command = {
     usage: "<DD.MM.YYYY>",
     aliases: ["bday", "synttärit"],
     category: "fun",
-    run: async (message, args, settings, client, {user}) => {
+    async run(message, args, settings, client, { user }) {
         const [date, month, year] = args[0].split(".", 3).map(Number);
         const birthday = new Date(year, month - 1, date, 12, 0, 0, 0);
 
-        if (isNaN(birthday.getTime())) return message.channel.send("Päivämäärä väärässä muodossa! Käytä muotoa: DD.MM.YYYY");
+        if (isNaN(birthday.getTime()))
+            return message.channel.send(
+                "Päivämäärä väärässä muodossa! Käytä muotoa: DD.MM.YYYY"
+            );
 
-        user.updateUserStats({birthday});
-        message.reply(`Birthday set: ${time(birthday)}`);
-    }
-}
+        await user.updateUserStats({ birthday });
+        message.reply(`Birthday set: ${time(birthday, "D")}`);
+    },
+};
 
 export default command;

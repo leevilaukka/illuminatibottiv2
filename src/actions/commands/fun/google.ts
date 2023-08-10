@@ -4,7 +4,7 @@ import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "google",
-    aliases: ["hae", "g", "gs"],
+    aliases: ["hae", "gs"],
     description: "Hae Googlen Knowledge Graphista",
     usage: "<hakusana>",
     category: Categories.other,

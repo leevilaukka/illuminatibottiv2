@@ -15,7 +15,7 @@ const command: Command = {
     outOfOrder: true,
     async run(message, args: any, _settings, _client, { guild }) {
         const [num = 1, option, ...rest] = args;
-        if (isNaN(num)) return message.reply("anna numero, saatana.");
+        if (isNaN(num)) return message.reply("anna numero.");
         if (num > 5) return message.reply("viis heittoo maks :D");
 
         const randoms = function (x: number, imgs: string[]): Array<string> {

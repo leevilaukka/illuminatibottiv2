@@ -52,10 +52,10 @@ const command: Command = {
     aliases: ["hsl"],
     args: true,
     outOfOrder: true,
-    async run(message, args, settings, client, { guild }) {
+    async run(message, args, settings, client, { guild: {getGuild} }) {
         const [origin, destination] = args;
 
-        const places = (await guild.getGuild()).places;
+        const places = (await getGuild()).places;
         const originResult = places.find(({ name }) => name === origin);
         const destResult = places.find(({ name }) => name === destination);
 

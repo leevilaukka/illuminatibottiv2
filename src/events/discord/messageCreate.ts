@@ -8,6 +8,7 @@ import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
+import { validateArgs } from "../../utils";
 
 const cooldowns: Collection<
     string /*command name*/,
@@ -94,22 +95,20 @@ export default async (client: IlluminatiClient, message: Message) => {
                     );
                 }
 
-                // Log command usage
-                if (client.isDevelopment)
-                    console.log(`Cmd ${command.name} called!`);
+                // Command call event
+                    client.events.emit("commandCall", command);
 
                 const queue = client.player.nodes.get(message.guild);
 
                 //Execute command and catch errors
                 try {
                     message.channel.sendTyping();
+                    await validateArgs(command.evalSchema)(args);
                     await command
                         .run(message, args, settings, client, { guild, user, queue })
                         .then(() => {
                             user.addCommandUse(command.name);
-                            if (client.isDevelopment)
-                                console.log(`Cmd ${command.name} executed!`);
-                            
+                            client.events.emit("commandExec", command)
                             if (command.cleanUp) command.cleanUp(client);
                         })
                         .catch(async (error) => {

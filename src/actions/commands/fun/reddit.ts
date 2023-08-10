@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { IlluminatiEmbed, Errors } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
@@ -11,6 +12,12 @@ import {
     time,
 } from "discord.js";
 
+const schema = z.object({
+    args: z.tuple([z.string()]).rest(z.string()),
+});
+
+type Args = z.infer<typeof schema>;
+
 const command: Command = {
     name: "reddit",
     aliases: ["r", "r/"],
@@ -18,10 +25,10 @@ const command: Command = {
     category: Categories.other,
     guildOnly: true,
     usage: "<subreddit>",
-    args: true,
+    evalSchema: schema,
     async run(
         message: Message & { channel: TextChannel },
-        args,
+        args: Args["args"],
         settings,
         client
     ) {
@@ -29,15 +36,7 @@ const command: Command = {
 
         // Command arguments
         const [subreddit, skipnsfw] = args;
-        // Subreddit argument given check
-        if (!subreddit) {
-            try {
-                return message.channel.send("Anna subreddit!");
-            } catch (e) {
-                return await message.channel.send(e);
-            }
-        }
-
+        
         // Dynamically get random reddit post from given subreddit
         client.axios
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)

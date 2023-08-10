@@ -1,4 +1,4 @@
-import { Formatters } from 'discord.js'
+import { time } from 'discord.js'
 import { IlluminatiEmbed, Errors } from '../../../structures'
 import { Command } from '../../../types'
 import { Categories } from '../../../types/IlluminatiCommand'
@@ -26,12 +26,12 @@ const command: Command = {
             const fields: Field[] = [
                 {
                     name: "Lähtö",
-                    value: `${data.departure.airport} | ${data.departure.icao}\n${Formatters.time(data.departure.actual || data.departure.estimated, "F")})`,
+                    value: `${data.departure.airport} | ${data.departure.icao}\n${time(data.departure.actual || data.departure.estimated, "F")})`,
                     inline: true
                 },
                 {
                     name: "Saapuminen",
-                    value: `${data.arrival.airport} | ${data.arrival.icao}\n${Formatters.time(data.arrival.actual || data.arrival.estimated, "F")}`,
+                    value: `${data.arrival.airport} | ${data.arrival.icao}\n${time(data.arrival.actual || data.arrival.estimated, "F")}`,
                     inline: true
                 }
             ];
@@ -53,7 +53,7 @@ const command: Command = {
             if(data.live) {
                 fields.push({
                     name: "Reaaliaikaiset tiedot",
-                    value: `Korkeus: ${data.live.altitude}\nSuunta: ${data.live.direction}°\nMaanopeus: ${data.live.speed_horizontal / 1.852} kts\nPäivitetty viimeksi: ${Formatters.time(data.live.updated, "R")}`
+                    value: `Korkeus: ${data.live.altitude}\nSuunta: ${data.live.direction}°\nMaanopeus: ${data.live.speed_horizontal / 1.852} kts\nPäivitetty viimeksi: ${time(data.live.updated, "R")}`
                 })
             }
 

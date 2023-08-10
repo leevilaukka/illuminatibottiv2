@@ -1,7 +1,7 @@
 import { IlluminatiJob } from ".";
 
 import Package from "../models/Package";
-import { DHLResponse } from "../types";
+import type { DHLResponse } from "../types";
 
 const job: IlluminatiJob = {
     name: "packages",

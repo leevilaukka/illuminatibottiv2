@@ -5,10 +5,21 @@ import { SlashCommand, Button, SelectMenu, ContextMenu } from "../../helpers/int
 export default async (client: IlluminatiClient, interaction: Interaction)  => {
     console.log(interaction);
 
-    if(interaction.isContextMenuCommand()) return ContextMenu(client, interaction);
-    if(interaction.isCommand()) return SlashCommand(client, interaction);
-    if(interaction.isButton()) return Button(client, interaction);
-    if(interaction.isSelectMenu()) return SelectMenu(client, interaction);   
-    
+
+    if (interaction.isAutocomplete()) {
+        const command = IlluminatiClient.commands.get(interaction.commandName);
+        
+        if (command && command.autocomplete) {
+            command.autocomplete(client, interaction);
+        }
+    }
+    else if (interaction.isChatInputCommand()) {
+        const command = IlluminatiClient.commands.get(interaction.commandName);
+
+        if (command && command.interactionRun) {
+            command.interactionRun(client, interaction);
+        }
+    }
+
     return
 }

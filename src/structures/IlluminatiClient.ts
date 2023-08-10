@@ -30,6 +30,7 @@ import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
 import { Errors } from ".";
 import { IlluminatiJob } from "../schedules";
+import { EventEmitter } from "events";
 
 
 /**
@@ -39,53 +40,44 @@ import { IlluminatiJob } from "../schedules";
  */
 export default class IlluminatiClient extends Client {
     // Types
-    static commands: Collection<string, Command>;
-    static interactions: Collection<string, IlluminatiInteraction>;
-    jobs: Collection<string, IlluminatiJob> = new Collection();
+    static commands: Collection<string, Command> = new Collection();
+    static interactions: Collection<string, IlluminatiInteraction> = new Collection<
+        string,
+        Types.IlluminatiInteraction
+    >();
+
+    jobs: Collection<string, IlluminatiJob> = new Collection<string, IlluminatiJob>();
+
     metrics: {
         playerCount: Counter;
     };
     player: Player;
-    config: typeof config;
-    userManager: typeof IlluminatiUser;
-    guildManager: typeof IlluminatiGuild;
+    config: typeof config = config;
+    userManager: typeof IlluminatiUser = IlluminatiUser;
+    guildManager: typeof IlluminatiGuild = IlluminatiGuild;
     isDevelopment: boolean;
     isProduction: boolean;
     env: string;
-    axios: AxiosInstance;
-    logger: IlluminatiLogger;
+    axios: AxiosInstance = axios.create();;
+    logger: IlluminatiLogger = new IlluminatiLogger(this);
     hostIP: string;
+    events: EventEmitter = new EventEmitter();
 
-    static packageInfo: typeof info;
+    static packageInfo: typeof info = info;
 
     constructor(clientOptions: ClientOptions) {
         super(clientOptions);
 
         this.setMaxListeners(0);
 
-        // Set static members
-        IlluminatiClient.commands = new Collection();
-        IlluminatiClient.interactions = new Collection<
-            string,
-            Types.IlluminatiInteraction
-        >();
-        IlluminatiClient.packageInfo = info;
-
-        // Metadata
-        this.config = config;
         this.env = process.env.NODE_ENV;
 
         this.isDevelopment = this.env === "development";
         this.isProduction = !this.isDevelopment;
 
-        // Helpers
-        this.logger = new IlluminatiLogger(this);
-
-        this.axios = axios.create();
-
-        // Manager instances
-        this.userManager = IlluminatiUser;
-        this.guildManager = IlluminatiGuild;
+        this.events.on("command", (command) => {
+            console.log(`[Command] ${command.name} executed!`);
+        });
     }
 
     /**
@@ -270,8 +262,9 @@ export default class IlluminatiClient extends Client {
         return this.axios.get("https://player.leevila.fi/api/status");
     }
 
-    async getPlayerLink(guildID: string) {
-        return `https://player.leevila.fi/?guild=${guildID}`;
+
+    getPlayerLink<ID extends string, BaseURL extends string = "https://player.leevila.fi">(guildID: ID, baseURL = "https://player.leevila.fi" as BaseURL): `${BaseURL}/?guild=${ID}` {
+        return `${baseURL}/?guild=${guildID}`;
     }
 
     toString(): string {

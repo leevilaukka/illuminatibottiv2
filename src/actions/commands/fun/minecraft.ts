@@ -12,6 +12,7 @@ const command: Command = {
     aliases: ["mc", "mine"],
     cooldown: 15,
     category: Categories.other,
+    outOfOrder: true,
     async run(message, args, settings, client) {
         // Variables for subcommand and server host
         const [subcommand, ...rest] = args;

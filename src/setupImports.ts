@@ -1,73 +1,71 @@
-import { GuildQueueHistory, Player, PlayerEvents } from "discord-player";
+import {
+    GuildQueueEvents,
+    Player,
+} from "discord-player";
 import express, { RequestHandler } from "express";
 import fs from "fs";
-import registerInteractions from "./helpers/interactions/registerInteractions";
 import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import cors from "cors";
-import importSchedules from "./schedules";
-import { Command } from "./types";
+import schedules from "./schedules";
+import { Command, EventType } from "./types";
 import { YouTubeExtractor } from "@discord-player/extractor";
 import path from "path";
 
-type EventType = (client: IlluminatiClient, ...args: any[]) => void;
 
-// Import events
-export const eventImports = async (client: IlluminatiClient) => {
-    console.group("Loading events...");
-    console.time("events");
-    try {
+const importMap = {
+    player: {
+        path: `${__dirname}/events/player/`,
+    },
+    discord: {
+        path: `${__dirname}/events/discord/`,
+    },
+    process: {
+        path: `${__dirname}/events/process/`,
+    },
+    client: {
+        path: `${__dirname}/events/client/`,
+    },
+};
+
+export const importEvents = (client: IlluminatiClient) => {
+    for (const [key, value] of Object.entries(importMap)) {
         const eventFiles = fs
-            .readdirSync(`${__dirname}/events/discord/`)
+            .readdirSync(value.path)
             .filter((file: string) => file.endsWith(".js"));
-        for await (const file of eventFiles) {
-            import(`${__dirname}/events/discord/${file}`).then(
+        for (const file of eventFiles) {
+            import(`${value.path}${file}`).then(
                 ({ default: evt }: { default: EventType }) => {
                     let evtName = file.split(".")[0];
-                    client.on(evtName, evt.bind(null, client));
+                    switch (key) {
+                        case "player":
+                            client.player.events.on(
+                                evtName as keyof GuildQueueEvents,
+                                evt.bind(null, client)
+                            );
+                            break;
+                        case "discord":
+                            client.on(
+                                evtName,
+                                evt.bind(null, client)
+                            );
+                            break;
+                        case "process":
+                            process.on(evtName, evt.bind(null, client));
+                            break;
+                        case "client":
+                            client.events.on(evtName, evt.bind(null, client));
+                            break;
+                    }
+
                     if (client.isDevelopment)
                         console.log(`Loaded Evt: ${evtName}`);
                 }
             );
         }
-
-        const playerEventFiles = fs
-            .readdirSync(`${__dirname}/events/player/`)
-            .filter((file: string) => file.endsWith(".js"));
-        for await (const file of playerEventFiles) {
-            import(`${__dirname}/events/player/${file}`).then(
-                ({ default: evt }: { default: EventType }) => {
-                    let evtName = file.split(".")[0] as keyof PlayerEvents;
-                    client.player.events.on(evtName, evt.bind(null, client));
-                    if (client.isDevelopment)
-                        console.log(`Loaded and bound playerEvt: ${evtName}`);
-                }
-            );
-        }
-
-        const processEventFiles = fs
-            .readdirSync(`${__dirname}/events/process/`)
-            .filter((file: string) => file.endsWith(".js"));
-        for await (const file of processEventFiles) {
-            import(`${__dirname}/events/process/${file}`).then(
-                ({ default: evt }: { default: EventType }) => {
-                    let evtName = file.split(".")[0];
-                    process.on(evtName, evt.bind(null, client));
-                    if (client.isDevelopment)
-                        console.log(`Loaded processEvt: ${evtName}`);
-                }
-            );
-        }
-
-        console.groupEnd();
-    } catch (error) {
-        throw new Errors.ErrorWithStack(error);
     }
-    console.groupEnd();
-    console.timeEnd("events");
 };
 
-// Import Player events
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`);
@@ -143,6 +141,18 @@ const setupExpress = async (client: IlluminatiClient) => {
         console.log(`[Express] Serving static files from ${wwwPath}`);
         app.use(express.static(wwwPath));
 
+        const limiter = require("express-rate-limit")({
+            windowMs: 15 * 60 * 1000,
+            max: 100,
+            message: {
+                error: "Too many requests, please try again later.",
+            },
+            legacyHeaders: false,
+            standardHeaders: true,
+        });
+
+        //app.use("/api", limiter);
+
         app.use(
             cors({
                 origin: "*",
@@ -183,11 +193,11 @@ const initPlayer = async (client: IlluminatiClient) => {
 
 export default async (client: IlluminatiClient) => {
     await Promise.all([
-        eventImports(client),
+        importEvents(client),
         commandImports(client),
-        setupExpress(client),
-        importSchedules.importSchedules(client),
         initPlayer(client),
+        setupExpress(client),
+        schedules.importSchedules(client),
     ]).catch((err) => {
         throw new Errors.ErrorWithStack(err);
     });

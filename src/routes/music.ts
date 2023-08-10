@@ -1,9 +1,10 @@
-import { RequestHandler, Router } from "express";
-import { checkChannel, checkGuild, checkQueue } from "./middlewares";
-import { Track, useHistory, useMasterPlayer } from "discord-player";
+import { RequestHandler, Response, Router } from "express";
+import { checkChannel, checkGuild, checkQueue, validate } from "./middlewares";
+import { GuildQueue, Track, useHistory, useMasterPlayer } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
 import GuildFunctions from "../structures/IlluminatiGuild";
+import { z } from "zod";
 
 const router = Router();
 
@@ -38,7 +39,9 @@ const burger: RequestHandler = async (req, res, next) => {
 };
 
 // Optimize this later
-router.get("/events/:id", burger, ({ client, params }, res) => {
+router.get("/events/:id", burger, ({ client, params, query }, res) => {
+    const { player } = client;
+    const pingInterval = Number(query.interval) || 2000;
     res.set({
         "Cache-Control": "no-cache",
         "Content-Type": "text/event-stream",
@@ -63,9 +66,9 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
                 })}\n\n`
             );
         }
-    }, 2000);
+    }, pingInterval);
 
-    client.player.events.on("playerTrigger", (queue, track) => {
+    player.events.on("playerTrigger", (queue, track, reason) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -73,11 +76,12 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
                     track,
                     queue: queue.tracks,
                     channel: queue.channel.toJSON(),
+                    reason,
                 })}\n\n`
             );
     });
 
-    client.player.events.on("audioTrackAdd", (queue, track) => {
+    player.events.on("audioTrackAdd", (queue, track) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -88,7 +92,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
             );
     });
 
-    client.player.events.on("audioTrackRemove", (queue) => {
+    player.events.on("audioTrackRemove", (queue) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -98,7 +102,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
             );
     });
 
-    client.player.events.on("playerResume", (queue) => {
+    player.events.on("playerResume", (queue) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -110,7 +114,7 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
             );
     });
 
-    client.player.events.on("playerPause", (queue) => {
+    player.events.on("playerPause", (queue) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -122,13 +126,22 @@ router.get("/events/:id", burger, ({ client, params }, res) => {
             );
     });
 
-    client.player.events.on("playerFinish", (queue, track) => {
+    player.events.on("playerFinish", (queue, track) => {
         params.id == queue.guild.id &&
             res.write(
                 `event: message\ndata: ${JSON.stringify({
                     state: "finish",
                 })}\n\n`
             );
+    });
+
+    player.events.on("disconnect", (queue) => {
+        params.id == queue.guild.id &&
+            res.write(
+                `event: message\ndata: ${JSON.stringify({
+                    state: "disconnect",
+                })}\n\n`
+            )
     });
 });
 
@@ -141,8 +154,14 @@ router.get("/queue/:id", checkQueue, ({ queue }, res) => {
     });
 });
 
+const playSchema = z.object({
+    body: z.object({
+        query: z.string().optional(),
+    })
+});
+
 // Add a track to the queue
-router.post("/add/", checkQueue, async ({ queue, body: { query } }, res) => {
+router.post("/add/", checkQueue, validate(playSchema), async ({ queue, body: { query } }, res) => {
     try {
         queue.addTrack(query);
         res.json({
@@ -156,10 +175,12 @@ router.post("/add/", checkQueue, async ({ queue, body: { query } }, res) => {
     }
 });
 
+
 router.post(
     "/play/",
     checkGuild,
     checkChannel,
+    validate(playSchema),
     async ({ client, channel, body }, res) => {
         try {
             client.player.play(channel.id, body.query, {
@@ -183,12 +204,31 @@ router.post(
     }
 );
 
-router.post("/controls/:id", checkQueue, async ({ queue, body }, res) => {
-    const action = body.action;
+router.post("/autocomplete", checkQueue, async ({ queue, body, client }, res) => {
+    const results = await queue.player.search(body.query, { requestedBy: client.user });
 
-    if (!action) return res.status(400).json({ error: "No action provided" });
+    res.json({
+        results: results.tracks.splice(0, 5),
+    });
+});
 
+const actionSchema = z.object({
+    body: z.object({
+        action: z.enum(
+            ["play", "pause", "resume", "stop", "skip", "volume", "seek", "jump"], 
+            {
+                required_error: "No action provided",
+                invalid_type_error: "Invalid action",
+            }
+        ),
+        data: z.any().optional(),
+    })
+});
+
+router.post("/controls/:id", checkQueue, validate(actionSchema), async ({ queue, body }, res) => {
+    const action = body.action
     try {
+        
         const actionResult = await queue.node[action](body.data || undefined);
 
         res.json({
@@ -294,6 +334,60 @@ router.delete("/clear/", checkQueue, ({ queue }, res) => {
     res.status(200).json({
         current: queue.currentTrack,
         queue: queue.tracks,
+    });
+});
+
+router.get("/:id/filters/", checkQueue, ({ queue }, res) => {
+    const filters = {
+        enabled: queue.filters.ffmpeg.getFiltersEnabled(),
+        disabled: queue.filters.ffmpeg.getFiltersDisabled(),
+    }
+
+    res.status(200).json({
+        filters,
+        current: queue.currentTrack,
+    });
+});
+
+router.post("/filters/toggle/", checkQueue, ({ body: { filter }, queue }, res) => {
+    if(!filter) return res.status(400).json({ error: "No filter provided" });
+
+    if(!queue.filters.ffmpeg.isValidFilter(filter)) return res.status(400).json({ error: "Invalid filter" });
+
+    queue.setTransitioning(true);
+    queue.filters.ffmpeg.toggle(filter);
+    queue.setTransitioning(false);
+
+    res.status(200).json({
+        toggled: filter,
+        current: queue.currentTrack,
+    });
+});
+
+const eqSchema = z.object({
+    body: z.object({
+        bands: z.array(
+            z.object({
+                band: z.number().min(0).max(14),
+                gain: z.number().min(-0.25).max(1.0),
+            }),
+            {
+                required_error: "No bands provided",
+                invalid_type_error: "Invalid bands",
+                description: "An array of bands and their gain",
+            }
+        ).max(15),
+    })
+});
+
+router.post("/eq/", checkQueue, validate(eqSchema), ({ body: { bands }, queue }, res) => {    
+    queue.setTransitioning(true);
+    queue.filters.equalizer.setEQ(bands);
+    queue.setTransitioning(false);
+
+    res.status(200).json({
+        bands,
+        current: queue.currentTrack,
     });
 });
 

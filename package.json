@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.12",
+    "version": "6.1.13",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {
@@ -42,6 +42,7 @@
         "discord.js": "^14.8.0",
         "do-wrapper": "^4.5.1",
         "express": "^4.18.2",
+        "express-rate-limit": "^6.8.0",
         "ffmpeg": "^0.0.4",
         "ffmpeg-static": "^4.4.0",
         "graphql": "^15.5.0",
@@ -56,7 +57,7 @@
         "node-schedule": "^2.1.1",
         "openai": "^3.2.1",
         "opusscript": "^0.0.8",
-        "ytdl-core": "^4.9.1",
+        "ytdl-core": "^4.11.5",
         "zod": "^3.21.4"
     },
     "devDependencies": {

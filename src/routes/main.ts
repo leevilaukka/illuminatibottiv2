@@ -1,16 +1,23 @@
 import express from "express";
 const router = express.Router();
 
-router.get("/status", ({ client, queue }, res) => {
+router.get("/", (req, res) => {
     res.json({
+        message: "IlluminatiBotti API",
+    });
+});
+
+router.get("/status", ({ client, queue }, res) => {
+    res.status(200).json({
         status: "online",
         guilds: client.guilds.cache.size,
         users: client.users.cache.size,
         channels: client.channels.cache.size,
         uptime: client.uptime,
-        isDevelopment: client.isDevelopment,
-        queue: queue,
+        environment: process.env.NODE_ENV,
+        queue: queue || null,
         activity: client.user.presence.activities[0],
+        ping: client.ws.ping,
     });
 });
 
@@ -35,5 +42,7 @@ router.post("/activity", ({ client, body }, res) => {
         activity: activityRes,
     });
 });
+
+
 
 export default router;
