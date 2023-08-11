@@ -181,12 +181,12 @@ router.post(
     "/play/",
     checkGuild,
     checkChannel,
-    linkUser,
+    // linkUser,
     validate(playSchema),
     async ({ client, channel, body, user }, res) => {
         try {
             client.player.play(channel.id, body.query, {
-                requestedBy: user.discordUser || client.user,
+                requestedBy: client.user,
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
