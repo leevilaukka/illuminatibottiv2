@@ -43,7 +43,7 @@ const checkChannel: RequestHandler = (req, res, next) => {
 
     if (!channel) {
         return res.status(206).json({
-            error: "Channel not found",
+            error: "Channel not found.",
         });
     }
 
