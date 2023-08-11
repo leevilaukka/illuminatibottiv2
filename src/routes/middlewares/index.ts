@@ -52,20 +52,12 @@ const checkChannel: RequestHandler = (req, res, next) => {
     next();
 };
 
-const checkUser: RequestHandler = async (req, res, next) => {
-    console.log(req.params.userID || req.body.userID);
-
+const linkUser: RequestHandler = async (req, res, next) => {
     const user = req.client.users.cache.get(
         req.params.userID || req.body.userID
     );
 
     const dbUser = await User.findOne({ discordID: user.id });
-
-    if (!user || !dbUser) {
-        return res.status(206).json({
-            error: "User not found",
-        });
-    }
 
     req.user = {
         discordUser: user,
@@ -91,4 +83,4 @@ const validate =
     };
 
 
-export { checkQueue, checkGuild, checkChannel, checkUser, validate };
+export { checkQueue, checkGuild, checkChannel, linkUser, validate };

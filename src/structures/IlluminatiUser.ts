@@ -62,6 +62,7 @@ class IlluminatiUser<T extends User> extends Discord.User {
                 return res;
             });
         } else return await this.getUser();
+        return null;
     }
         
     async updateUser  (data: Partial<IlluminatiUserTypes>): Promise<void | UserPromise> {
@@ -136,7 +137,8 @@ class IlluminatiUser<T extends User> extends Discord.User {
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 return days === 0;
             }
-        }
+        } 
+        return false;
     }
 
     async updateLastCommand(): Promise<void | UserPromise> {

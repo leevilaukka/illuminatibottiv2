@@ -1,5 +1,5 @@
 import { RequestHandler, Response, Router } from "express";
-import { checkChannel, checkGuild, checkQueue, validate } from "./middlewares";
+import { checkChannel, checkGuild, checkQueue, linkUser, validate } from "./middlewares";
 import { GuildQueue, Track, useHistory, useMasterPlayer } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
@@ -21,7 +21,7 @@ router.get("/now-playing/:id", checkQueue, ({ queue, client }, res) => {
             channel: queue.channel.toJSON(),
         });
     } catch (e) {
-        res.status(500).json({
+        return res.status(500).json({
             error: e,
         });
     }
@@ -66,6 +66,7 @@ router.get("/events/:id", burger, ({ client, params, query }, res) => {
                 })}\n\n`
             );
         }
+        return null
     }, pingInterval);
 
     player.events.on("playerTrigger", (queue, track, reason) => {
@@ -180,11 +181,12 @@ router.post(
     "/play/",
     checkGuild,
     checkChannel,
+    linkUser,
     validate(playSchema),
-    async ({ client, channel, body }, res) => {
+    async ({ client, channel, body, user }, res) => {
         try {
             client.player.play(channel.id, body.query, {
-                requestedBy: client.user,
+                requestedBy: user.discordUser || client.user,
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
@@ -231,7 +233,7 @@ router.post("/controls/:id", checkQueue, validate(actionSchema), async ({ queue,
         
         const actionResult = await queue.node[action](body.data || undefined);
 
-        res.json({
+        return res.json({
             action: body.action,
             result: actionResult,
             track: queue.currentTrack,
@@ -358,7 +360,7 @@ router.post("/filters/toggle/", checkQueue, ({ body: { filter }, queue }, res) =
     queue.filters.ffmpeg.toggle(filter);
     queue.setTransitioning(false);
 
-    res.status(200).json({
+    return res.status(200).json({
         toggled: filter,
         current: queue.currentTrack,
     });
@@ -403,7 +405,7 @@ router.post(
 
             queue.addTrack(playlist.tracks);
 
-            res.json({
+            return res.json({
                 message: "Added playlist to queue",
                 playlist: playlist,
                 track: queue.currentTrack,

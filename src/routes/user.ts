@@ -1,9 +1,9 @@
 import express from "express";
-import { checkUser } from "./middlewares";
+import { linkUser } from "./middlewares";
 
 const router = express.Router();
 
-router.get("/:userID", checkUser, async (req, res) => {
+router.get("/:userID", linkUser, async (req, res) => {
     res.json({
         user: req.user,
     });

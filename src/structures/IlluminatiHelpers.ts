@@ -36,7 +36,7 @@ export const formatDate = (date: number) => {
     let seconds = "0" + newDate.getSeconds();
 
     // Will display time in 10:30:23 format
-    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    return hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
 };
 
 export const messageCheck = (message: Message) => {
