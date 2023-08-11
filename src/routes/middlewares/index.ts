@@ -53,6 +53,9 @@ const checkChannel: RequestHandler = (req, res, next) => {
 };
 
 const linkUser: RequestHandler = async (req, res, next) => {
+    if (!req.params.userID && !req.body.userID) {
+        next(); 
+    }
     const user = req.client.users.cache.get(
         req.params.userID || req.body.userID
     );
