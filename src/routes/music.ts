@@ -1,9 +1,8 @@
 import { RequestHandler, Response, Router } from "express";
 import { checkChannel, checkGuild, checkQueue, linkUser, validate } from "./middlewares";
-import { GuildQueue, Track, useHistory, useMasterPlayer } from "discord-player";
+import { GuildQueue, Track, useHistory, useMasterPlayer, usePlayer } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
-import GuildFunctions from "../structures/IlluminatiGuild";
 import { z } from "zod";
 
 const router = Router();
@@ -53,7 +52,6 @@ router.get("/events/:id", burger, ({ client, params, query }, res) => {
 
     setInterval(() => {
         const node = client.player?.nodes?.get(params.id);
-        const player = useMasterPlayer();
         if (params.id == node?.guild.id) {
             return res.write(
                 `event: message\ndata: ${JSON.stringify({
@@ -62,7 +60,7 @@ router.get("/events/:id", burger, ({ client, params, query }, res) => {
                     track: node?.currentTrack,
                     queue: node?.tracks,
                     channel: node?.channel?.toJSON(),
-                    stats: player?.generateStatistics(),
+                    stats: node?.player.generateStatistics(),
                 })}\n\n`
             );
         }
