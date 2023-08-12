@@ -1,9 +1,22 @@
 import { RequestHandler, Response, Router } from "express";
-import { checkChannel, checkGuild, checkQueue, linkUser, validate } from "./middlewares";
-import { GuildQueue, Track, useHistory, useMasterPlayer, usePlayer } from "discord-player";
+import {
+    checkChannel,
+    checkGuild,
+    checkQueue,
+    linkUser,
+    validate,
+} from "./middlewares";
+import {
+    GuildQueue,
+    QueryType,
+    Track,
+    useHistory,
+    usePlayer,
+} from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
 import { z } from "zod";
+import multer from "multer";
 
 const router = Router();
 
@@ -64,7 +77,7 @@ router.get("/events/:id", burger, ({ client, params, query }, res) => {
                 })}\n\n`
             );
         }
-        return null
+        return null;
     }, pingInterval);
 
     player.events.on("playerTrigger", (queue, track, reason) => {
@@ -140,7 +153,7 @@ router.get("/events/:id", burger, ({ client, params, query }, res) => {
                 `event: message\ndata: ${JSON.stringify({
                     state: "disconnect",
                 })}\n\n`
-            )
+            );
     });
 });
 
@@ -156,24 +169,28 @@ router.get("/queue/:id", checkQueue, ({ queue }, res) => {
 const playSchema = z.object({
     body: z.object({
         query: z.string().optional(),
-    })
+    }),
 });
 
 // Add a track to the queue
-router.post("/add/", checkQueue, validate(playSchema), async ({ queue, body: { query } }, res) => {
-    try {
-        queue.addTrack(query);
-        res.json({
-            message: "Added track to queue",
-            track: queue.currentTrack,
-        });
-    } catch (e) {
-        res.status(500).json({
-            error: e,
-        });
+router.post(
+    "/add/",
+    checkQueue,
+    validate(playSchema),
+    async ({ queue, body: { query } }, res) => {
+        try {
+            queue.addTrack(query);
+            res.json({
+                message: "Added track to queue",
+                track: queue.currentTrack,
+            });
+        } catch (e) {
+            res.status(500).json({
+                error: e,
+            });
+        }
     }
-});
-
+);
 
 router.post(
     "/play/",
@@ -204,45 +221,128 @@ router.post(
     }
 );
 
-router.post("/autocomplete", checkQueue, async ({ queue, body, client }, res) => {
-    const results = await queue.player.search(body.query, { requestedBy: client.user });
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, "uploads/");
+        },
+        filename: (req, file, cb) => {
+            cb(null, `${file.originalname}`);
+        },
+    }),
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("audio/")) {
+            return cb(new Error("File is not an audio file"));
+        }
 
-    res.json({
-        results: results.tracks.splice(0, 5),
-    });
+        cb(null, true);
+    },
+    limits: {
+        fileSize: 1024 * 1024 * 50,
+        files: 1,
+    },
 });
+
+router.post(
+    "/playfile/",
+    upload.single("file"),
+    checkGuild,
+    checkChannel,
+    // linkUser,
+    async ({ client, body, file, channel }, res) => {
+        console.log("file:", file);
+        console.log("body:", body);
+
+        try {
+            client.player.play(channel.id, file.path, {
+                searchEngine: QueryType.FILE,
+                requestedBy: client.user,
+                nodeOptions: {
+                    metadata: {
+                        fromAPI: true,
+                        channel: client.channels.cache.get(channel.id),
+                    },
+                },
+            });
+
+            res.json({
+                message: "Playing track",
+            });
+        } catch (e) {
+            throw e;
+        }
+    }
+);
+
+const autocompleteSchema = z.object({
+    body: z.object({
+        query: z.string().optional(),
+        limit: z.number().optional(),
+    }),
+});
+
+router.post(
+    "/autocomplete",
+    checkQueue,
+    validate(autocompleteSchema),
+    async ({ queue, body, client }, res) => {
+        const results = await queue.player.search(body.query, {
+            requestedBy: client.user,
+        });
+        const limit = body.limit || 5;
+
+        res.json({
+            results: results.tracks.splice(0, limit),
+        });
+    }
+);
 
 const actionSchema = z.object({
     body: z.object({
         action: z.enum(
-            ["play", "pause", "resume", "stop", "skip", "volume", "seek", "jump"], 
+            [
+                "play",
+                "pause",
+                "resume",
+                "stop",
+                "skip",
+                "volume",
+                "seek",
+                "jump",
+            ],
             {
                 required_error: "No action provided",
                 invalid_type_error: "Invalid action",
             }
         ),
         data: z.any().optional(),
-    })
+    }),
 });
 
-router.post("/controls/:id", checkQueue, validate(actionSchema), async ({ queue, body }, res) => {
-    const action = body.action
-    try {
-        
-        const actionResult = await queue.node[action](body.data || undefined);
+router.post(
+    "/controls/:id",
+    checkQueue,
+    validate(actionSchema),
+    async ({ queue, body }, res) => {
+        const action = body.action;
+        try {
+            const actionResult = await queue.node[action](
+                body.data || undefined
+            );
 
-        return res.json({
-            action: body.action,
-            result: actionResult,
-            track: queue.currentTrack,
-        });
-    } catch (e) {
-        return res.status(400).json({
-            error: "Invalid action",
-            message: e,
-        });
+            return res.json({
+                action: body.action,
+                result: actionResult,
+                track: queue.currentTrack,
+            });
+        } catch (e) {
+            return res.status(400).json({
+                error: "Invalid action",
+                message: e,
+            });
+        }
     }
-});
+);
 
 router.get("/history/:id", checkQueue, ({ queue }, res) => {
     res.json({
@@ -341,7 +441,7 @@ router.get("/:id/filters/", checkQueue, ({ queue }, res) => {
     const filters = {
         enabled: queue.filters.ffmpeg.getFiltersEnabled(),
         disabled: queue.filters.ffmpeg.getFiltersDisabled(),
-    }
+    };
 
     res.status(200).json({
         filters,
@@ -349,47 +449,60 @@ router.get("/:id/filters/", checkQueue, ({ queue }, res) => {
     });
 });
 
-router.post("/filters/toggle/", checkQueue, ({ body: { filter }, queue }, res) => {
-    if(!filter) return res.status(400).json({ error: "No filter provided" });
+router.post(
+    "/filters/toggle/",
+    checkQueue,
+    ({ body: { filter }, queue }, res) => {
+        if (!filter)
+            return res.status(400).json({ error: "No filter provided" });
 
-    if(!queue.filters.ffmpeg.isValidFilter(filter)) return res.status(400).json({ error: "Invalid filter" });
+        if (!queue.filters.ffmpeg.isValidFilter(filter))
+            return res.status(400).json({ error: "Invalid filter" });
 
-    queue.setTransitioning(true);
-    queue.filters.ffmpeg.toggle(filter);
-    queue.setTransitioning(false);
+        queue.setTransitioning(true);
+        queue.filters.ffmpeg.toggle(filter);
+        queue.setTransitioning(false);
 
-    return res.status(200).json({
-        toggled: filter,
-        current: queue.currentTrack,
-    });
-});
+        return res.status(200).json({
+            toggled: filter,
+            current: queue.currentTrack,
+        });
+    }
+);
 
 const eqSchema = z.object({
     body: z.object({
-        bands: z.array(
-            z.object({
-                band: z.number().min(0).max(14),
-                gain: z.number().min(-0.25).max(1.0),
-            }),
-            {
-                required_error: "No bands provided",
-                invalid_type_error: "Invalid bands",
-                description: "An array of bands and their gain",
-            }
-        ).max(15),
-    })
+        bands: z
+            .array(
+                z.object({
+                    band: z.number().min(0).max(14),
+                    gain: z.number().min(-0.25).max(1.0),
+                }),
+                {
+                    required_error: "No bands provided",
+                    invalid_type_error: "Invalid bands",
+                    description: "An array of bands and their gain",
+                }
+            )
+            .max(15),
+    }),
 });
 
-router.post("/eq/", checkQueue, validate(eqSchema), ({ body: { bands }, queue }, res) => {    
-    queue.setTransitioning(true);
-    queue.filters.equalizer.setEQ(bands);
-    queue.setTransitioning(false);
+router.post(
+    "/eq/",
+    checkQueue,
+    validate(eqSchema),
+    ({ body: { bands }, queue }, res) => {
+        queue.setTransitioning(true);
+        queue.filters.equalizer.setEQ(bands);
+        queue.setTransitioning(false);
 
-    res.status(200).json({
-        bands,
-        current: queue.currentTrack,
-    });
-});
+        res.status(200).json({
+            bands,
+            current: queue.currentTrack,
+        });
+    }
+);
 
 router.post(
     "/playlists/play/",

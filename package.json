@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.18",
+    "version": "6.1.19",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {
@@ -50,10 +50,12 @@
         "i18next": "^21.8.7",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
+        "mediaplex": "^0.0.2",
         "minecraft-server-util": "^3.5.1",
         "moment": "^2.29.1",
         "mongodb": "^4.7.0",
         "mongoose": "^6.3.6",
+        "multer": "^1.4.5-lts.1",
         "node-schedule": "^2.1.1",
         "openai": "^3.2.1",
         "opusscript": "^0.0.8",
@@ -67,6 +69,7 @@
         "@types/lodash": "^4.14.195",
         "@types/md5": "^2.3.1",
         "@types/mongoose": "^5.11.97",
+        "@types/multer": "^1.4.7",
         "@types/node": "^18.11.14",
         "@types/node-schedule": "^2.1.0",
         "cpy-cli": "^4.2.0",

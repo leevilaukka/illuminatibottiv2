@@ -6,3 +6,4 @@ ecosystem.config.js
 package-lock.json
 /.vscode
 /build
+/uploads
