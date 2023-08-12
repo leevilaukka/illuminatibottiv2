@@ -6,17 +6,12 @@ import {
     linkUser,
     validate,
 } from "./middlewares";
-import {
-    GuildQueue,
-    QueryType,
-    Track,
-    useHistory,
-    usePlayer,
-} from "discord-player";
+import { GuildQueue, QueryType, Track, useHistory, usePlayer } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
 import { z } from "zod";
 import multer from "multer";
+
 
 const router = Router();
 
@@ -221,14 +216,14 @@ router.post(
     }
 );
 
-const upload = multer({
+const upload = multer({ 
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            cb(null, "uploads/");
+            cb(null, `${__dirname}/../uploads/`);
         },
         filename: (req, file, cb) => {
             cb(null, `${file.originalname}`);
-        },
+        }
     }),
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("audio/")) {
@@ -239,8 +234,9 @@ const upload = multer({
     },
     limits: {
         fileSize: 1024 * 1024 * 50,
-        files: 1,
-    },
+        files: 1
+    }
+    
 });
 
 router.post(
@@ -251,7 +247,7 @@ router.post(
     // linkUser,
     async ({ client, body, file, channel }, res) => {
         console.log("file:", file);
-        console.log("body:", body);
+        console.log("body:", body)
 
         try {
             client.player.play(channel.id, file.path, {
