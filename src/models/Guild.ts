@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
+import { Events } from "discord.js";
 
 const pointSchema = new Schema({
     type: {
@@ -63,6 +64,7 @@ type GuildProperties = {
     commandErrors: {
         [key: string]: number;
     };
+    lastUsedVoiceChannel: string;
 };
 
 const GuildSchema = new Schema<GuildSettings & GuildProperties>({
@@ -89,6 +91,10 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     joinedAt: {
         type: Date,
         required: true,
+    },
+    lastUsedVoiceChannel: {
+        type: String,
+        default: null,
     },
     places: [PlaceSchema],
     removedMemberChannel: String,
@@ -122,3 +128,5 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
 export default model;
+
+

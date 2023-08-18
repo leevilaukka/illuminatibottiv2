@@ -1,6 +1,6 @@
 import { translateTable } from "../utils";
 
-const valueParser = (value: any) => {
+function valueParser(value: string) {
     // Get value from translate table array of objects
     const translatedValue = translateTable.find((v) => v.original === value);
 

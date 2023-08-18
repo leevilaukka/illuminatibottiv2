@@ -233,7 +233,6 @@ const upload = multer({
         fileSize: 1024 * 1024 * 50,
         files: 1
     }
-    
 });
 
 router.post(
@@ -243,9 +242,6 @@ router.post(
     checkChannel,
     // linkUser,
     async ({ client, body, file, channel }, res) => {
-        console.log("file:", file);
-        console.log("body:", body)
-
         try {
             client.player.play(channel.id, file.path, {
                 searchEngine: QueryType.FILE,
@@ -262,7 +258,9 @@ router.post(
                 message: "Playing track",
             });
         } catch (e) {
-            throw e;
+            res.status(500).json({
+                error: e,
+            });
         }
     }
 );

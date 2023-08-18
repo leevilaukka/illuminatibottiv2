@@ -10,10 +10,10 @@ import {
     TextBasedChannel,
 } from "discord.js";
 
+import fs from "fs"
+
 // DiscordPlayer
 import { Player, PlayerInitOptions } from "discord-player";
-import { Downloader } from "@discord-player/downloader";
-import { Client as GeniusClient } from "genius-lyrics";
 
 import axios, { AxiosInstance } from "axios";
 
@@ -24,13 +24,12 @@ import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from ".";
 import config from "../config.js";
 import info from "../../package.json";
 import Types, { Command, IlluminatiInteraction } from "../types";
-import io from "@pm2/io";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
-import { Errors } from ".";
 import { IlluminatiJob } from "../schedules";
 import { EventEmitter } from "events";
+import { cwd } from "process";
 
 
 /**
@@ -68,16 +67,17 @@ export default class IlluminatiClient extends Client {
     constructor(clientOptions: ClientOptions) {
         super(clientOptions);
 
-        this.setMaxListeners(0);
+        this.setMaxListeners(0)
 
         this.env = process.env.NODE_ENV;
 
         this.isDevelopment = this.env === "development";
         this.isProduction = !this.isDevelopment;
 
-        this.events.on("command", (command) => {
-            console.log(`[Command] ${command.name} executed!`);
-        });
+        this.hostIP = JSON.parse(fs.readFileSync(`${cwd()}/config.json`, "utf-8")).ip;
+
+        console.log("IP:", this.hostIP)
+        this.events.emit("ready");
     }
 
     /**
@@ -221,37 +221,24 @@ export default class IlluminatiClient extends Client {
         }
     }
 
-    // Log this
-    log() {
-        console.log(this);
-    }
 
-    checkIP() {
-        this.axios.get("https://api.ipify.org?format=json").then((res) => {
-            this.hostIP = res.data.ip;
 
-            IP.findOne({ botID: this.user.id })
-                .then((res) => {
-                    if (!res) {
-                        IP.create({
-                            botID: this.user.id,
-                            ip: this.hostIP,
-                        });
-                    } else {
-                        if (res.ip !== this.hostIP) {
-                            IP.updateOne(
-                                { botID: this.user.id },
-                                {
-                                    ip: this.hostIP,
-                                }
-                            );
-                        }
-                    }
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        });
+    async updateIP() {
+        const newip = await this.axios.get("https://api.ipify.org/?format=json");
+        console.log(newip.data.ip, this.hostIP)
+        if (newip.data.ip !== this.hostIP) {
+            this.hostIP = newip.data.ip;
+
+            const file = fs.readFileSync(`${cwd()}/config.json`, "utf-8");
+
+            const newConfig = JSON.parse(file);
+
+            newConfig.ip = this.hostIP;
+
+            fs.writeFileSync(`${cwd()}/config.json`, JSON.stringify(newConfig, null, 4));
+
+            this.events.emit("ipChange", this.hostIP);
+        }
     }
 
     get ipData() {
@@ -268,16 +255,15 @@ export default class IlluminatiClient extends Client {
     }
 
     toString(): string {
-        return `[IlluminatiClient] {
+        return `[${this.constructor.name}] {
             version: ${IlluminatiClient.packageInfo.version},
             isDevelopment: ${this.isDevelopment},
             ${
                 this.user
-                    ? `user: {
+                    && `user: {
                     tag: ${this.user.tag},
                     id: ${this.user.id}
                 },`
-                    : ""
             }
             guilds: ${this.guilds.cache.size},
             commands: ${IlluminatiClient.commands.size},
@@ -285,5 +271,9 @@ export default class IlluminatiClient extends Client {
             readyAt: ${this.readyAt}
             shard: ${this.shard}
         }`;
+    }
+
+    log(asString: boolean = false) {
+        console.log(asString ? this.toString() : this);
     }
 }

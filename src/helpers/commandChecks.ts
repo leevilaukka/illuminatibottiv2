@@ -72,7 +72,7 @@ export const commandChecks = async (
             reply += `\nOikea käyttötapa olisi: \`${settings.prefix}${command.name} ${command.usage}\``;
         }
 
-        throw reply;
+        throw new UserError(reply);
     }
 
     return true;

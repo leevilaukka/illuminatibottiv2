@@ -37,6 +37,7 @@ class IlluminatiGuild<T extends Guild> {
      * @returns Guild settings *or* Default settings
      */
 
+
     async getGuild(): GuildPromise {
         const guildSettings = await GuildModel.findOne({
             guildID: this.guild.id,

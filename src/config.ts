@@ -57,6 +57,7 @@ export type GuildSettings = {
     };
     stacksEnabled: boolean;
     playlists: ObjectId[];
+    lastUsedVoiceChannel: string;
 };
 
 const config = {
@@ -104,6 +105,7 @@ const config = {
         },
         stacksEnabled: true,
         playlists: [] as ObjectId[],
+        lastUsedVoiceChannel: "",
     },
 } as const;
 

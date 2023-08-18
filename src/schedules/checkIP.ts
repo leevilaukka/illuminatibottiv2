@@ -2,9 +2,9 @@ import { IlluminatiJob } from ".";
 
 const job: IlluminatiJob = {
     name: "checkIP",
-    schedule: "*/5 * * * *",
+    schedule: "*/15 * * * *",
     run: (client) => async () => {
-        client.checkIP();
+        client.updateIP();
     },
 };
 
