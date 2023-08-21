@@ -27,7 +27,7 @@ const registerSlashCommands = async (client: IlluminatiClient) => {
     try {
         console.log('Started refreshing application (/) commands.');
 
-        await rest.put(
+        client.isDevelopment && await rest.put(
             Routes.applicationGuildCommands(client.user.id, process.env.DEVSERVERID),
             { body: commands },
         );
