@@ -32,13 +32,14 @@ const evt: PlayerEvent = async (client, queue, track: Track) => {
         .setFields([
             {
                 name: "Web GUI",
-                value: `[Link](${await client.getPlayerLink(
-                    queue.metadata.message.guild.id
+                value: `[Link](${client.getPlayerLink(
+                    queue.metadata?.message?.guild.id || queue.metadata.guild.id
                 )})`,
             },
         ])
         .setColor(Colors.Blurple);
 
+    console.log(queue.metadata.channel)
     return queue.metadata.channel.send({ embeds: [embed] });
 };
 

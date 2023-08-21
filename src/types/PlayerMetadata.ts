@@ -1,5 +1,5 @@
 import { GuildQueue } from "discord-player";
-import { Message, TextBasedChannel, UserResolvable } from "discord.js";
+import { Guild, Message, TextBasedChannel, UserResolvable } from "discord.js";
 import { Command } from "../types";
 
 export type PlayerQueue = GuildQueue & {metadata: PlayerMetadata}
@@ -10,4 +10,5 @@ export type PlayerMetadata = {
     message?: Message,
     command?: Command
     fromAPI?: boolean
+    guild?: Guild
 }

@@ -8,6 +8,7 @@ import {
     User,
     Message,
     TextBasedChannel,
+    CommandOptionDataTypeResolvable,
 } from "discord.js";
 
 import fs from "fs"
@@ -23,13 +24,15 @@ import { IlluminatiLogger, IlluminatiGuild, IlluminatiUser } from ".";
 // Config imports
 import config from "../config.js";
 import info from "../../package.json";
-import Types, { Command, IlluminatiInteraction } from "../types";
+import Types, { Command, SlashCommand } from "../types";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import IP from "../models/Ip";
 import { codeBlock } from "@discordjs/builders";
 import { IlluminatiJob } from "../schedules";
 import { EventEmitter } from "events";
 import { cwd } from "process";
+
+
 
 
 /**
@@ -40,11 +43,8 @@ import { cwd } from "process";
 export default class IlluminatiClient extends Client {
     // Types
     static commands: Collection<string, Command> = new Collection();
-    static interactions: Collection<string, IlluminatiInteraction> = new Collection<
-        string,
-        Types.IlluminatiInteraction
-    >();
-
+    static slashCommands: Collection<string, SlashCommand> = new Collection();
+  
     jobs: Collection<string, IlluminatiJob> = new Collection<string, IlluminatiJob>();
 
     metrics: {
@@ -130,32 +130,7 @@ export default class IlluminatiClient extends Client {
         return [...this.commands.values()];
     }
 
-    /**
-     * Get interaction by name
-     * @method getInteraction
-     * @param {string} name
-     * @returns IlluminatiInteraction
-     * @see getInteractions
-     * @example
-     * client.getInteraction("test").then(interaction => {
-     *   console.log(interaction.name)
-     * })
-     */
 
-    static getInteraction(name: string): IlluminatiInteraction {
-        return this.interactions.get(name);
-    }
-
-    /**
-     * Get all interactions
-     * @method getInteractions
-     * @returns {IlluminatiInteraction[]} Array of IlluminatiInteractions
-     * @memberof IlluminatiClient
-     */
-
-    static get Interactions(): IlluminatiInteraction[] {
-        return [...this.interactions.values()];
-    }
 
     /**
      * Get all user-interactable objects
@@ -166,11 +141,9 @@ export default class IlluminatiClient extends Client {
      */
     static get Interactables(): {
         commands: Types.Command[];
-        interactions: IlluminatiInteraction[];
     } {
         return {
             commands: [...this.Commands],
-            interactions: [...this.Interactions],
         };
     }
 
@@ -267,7 +240,6 @@ export default class IlluminatiClient extends Client {
             }
             guilds: ${this.guilds.cache.size},
             commands: ${IlluminatiClient.commands.size},
-            interactions: ${IlluminatiClient.interactions.size}
             readyAt: ${this.readyAt}
             shard: ${this.shard}
         }`;

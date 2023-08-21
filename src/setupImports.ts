@@ -66,6 +66,29 @@ export const importEvents = (client: IlluminatiClient) => {
     }
 };
 
+// Slash command import
+const slashCommandFolders = fs.readdirSync(`${__dirname}/actions/slashcommands/`);
+
+export const slashCommandImports = async () => {
+    try {
+        console.group("Loading slash commands...");
+        for await (const folder of slashCommandFolders) {
+            const slashCommandFiles = fs.readdirSync(`${__dirname}/actions/slashcommands/${folder}`).filter((file: string) => file.endsWith(".js"));
+            for await (const file of slashCommandFiles) {
+                console.log(file);
+                const command = require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
+
+                console.log(command);
+                IlluminatiClient.slashCommands.set(command.data.name, command);
+                console.log(`Loaded slash cmd: ${file}`);
+            }
+        }
+        console.groupEnd();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`);
@@ -109,24 +132,6 @@ export const commandImports = async (client: IlluminatiClient) => {
     console.timeEnd("Loaded commands");
 };
 
-/* const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
-
-export const interactionImports = async (client: IlluminatiClient) => {
-    try {
-        console.group("Loading interactions...");
-        for await (const file of interactionFiles) {
-            import(`${__dirname}/actions/interactions/${file}`).then(({ default: interaction }) => {
-                IlluminatiClient.interactions.set(interaction.data.name, interaction);
-                console.log(`Loaded interaction: ${file}`);
-            })
-        }
-        registerInteractions(client).then(() => console.log(`Interactions registered!`))
-        console.groupEnd();
-    } catch (error) {
-        throw new Errors.ErrorWithStack(error);
-    }
-};
- */
 const setupExpress = async (client: IlluminatiClient) => {
     try {
         const app = express();
@@ -198,8 +203,9 @@ export default async (client: IlluminatiClient) => {
         initPlayer(client),
         setupExpress(client),
         schedules.importSchedules(client),
+        slashCommandImports(),
     ]).catch((err) => {
-        throw new Errors.ErrorWithStack(err);
+        throw new Errors.ErrorWithStack(err.message);
     });
 
     return;

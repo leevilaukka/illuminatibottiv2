@@ -8,7 +8,10 @@ import {
     MessageComponentInteraction,
     MessageInteraction,
     PermissionResolvable,
+    RESTPostAPIChatInputApplicationCommandsJSONBody,
     SelectMenuInteraction,
+    SlashCommandAttachmentOption,
+    SlashCommandBuilder,
     User,
 } from "discord.js";
 import { RawInteractionData } from "discord.js/typings/rawDataTypes";
@@ -145,17 +148,17 @@ interface Command {
     cleanUp?: (client: IlluminatiClient) => void;
 }
 
-// Interaction types
-type IlluminatiInteraction = {
+interface SlashCommand {
     data: any;
-    permissions?: {
-        id: string;
-        type: string;
-        permission: boolean;
-    };
-    execute: (data: Interactions, client: IlluminatiClient) => void;
-    update?: (data: Interactions, client: IlluminatiClient) => void;
-};
+    execute: (
+        client: IlluminatiClient,
+        interaction: CommandInteraction
+    ) => Promise<any>;
+    autocomplete?: (
+        client: IlluminatiClient,
+        interaction: AutocompleteInteraction
+    ) => Promise<any>;        
+}
 
 type Interactions =
     | CommandInteraction

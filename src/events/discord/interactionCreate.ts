@@ -1,25 +1,44 @@
-import { Interaction } from "discord.js";
+import { AutocompleteInteraction, ChatInputCommandInteraction, Interaction } from "discord.js";
 import { IlluminatiClient } from "../../structures";
-import { SlashCommand, Button, SelectMenu, ContextMenu } from "../../helpers/interactions"
 
-export default async (client: IlluminatiClient, interaction: Interaction)  => {
-    console.log(interaction);
+const handleChatInput = async (client: IlluminatiClient, interaction: ChatInputCommandInteraction) => {    
+    console.log(`Received command interaction: ${interaction.commandName}`);
 
+    const commandName = interaction.commandName;
+    const command = IlluminatiClient.slashCommands.find(cmd => cmd.data.name === commandName);
 
-    if (interaction.isAutocomplete()) {
-        const command = IlluminatiClient.commands.get(interaction.commandName);
-        
-        if (command && command.autocomplete) {
-            command.autocomplete(client, interaction);
-        }
+    if (!command) return;
+
+    try {
+        await command.execute(client, interaction);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({ content: 'An error occurred while executing the command.', ephemeral: true });
     }
-    else if (interaction.isChatInputCommand()) {
-        const command = IlluminatiClient.commands.get(interaction.commandName);
+};
 
-        if (command && command.interactionRun) {
-            command.interactionRun(client, interaction);
-        }
+const handleAutocomplete = async (client: IlluminatiClient, interaction: AutocompleteInteraction) => {
+    console.log(`Received autocomplete interaction: ${interaction.commandName}`);
+
+    const command = IlluminatiClient.slashCommands.get(interaction.commandName);
+
+    if (!command) return;
+
+    try {
+        await command.autocomplete(client, interaction);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+export default async (client: IlluminatiClient, interaction: Interaction)  => {    
+    if(interaction.isAutocomplete()) {
+        handleAutocomplete(client, interaction);
     }
 
-    return
+    if(interaction.isChatInputCommand()) {
+        handleChatInput(client, interaction);
+    } 
 }
+   

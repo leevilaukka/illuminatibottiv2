@@ -1,7 +1,80 @@
-import { ShardingManager, Shard } from 'discord.js';
+// Structures
+import { Errors, IlluminatiClient } from "./structures";
 
-const manager = new ShardingManager(`${__dirname}/bot.js`, { token: process.env.TOKEN });
+// Node modules
+import mongoose from "mongoose";
+import setupImports from "./setupImports";
 
-manager.on('shardCreate', (shard: Shard) => console.log(`Launched shard ${shard.id}`));
+import { ErrorEvent } from "discord.js";
 
-manager.spawn();
+// Setup client
+const client = new IlluminatiClient({
+    intents: 36495,
+    // Presence data
+    presence: {
+        status: "online",
+        activities: [
+            {
+                name: "over the Illuminati",
+                type: 3,
+            },
+        ],
+    },
+});
+
+// STARTUP
+(async () => {
+    // Check if ownerID given
+    if (!client.config.ownerID && !client.isDevelopment)
+        throw new Errors.BotError(
+            "No ownerID given! Check your env variables."
+        );
+
+    await setupImports(client).then(() => console.log("Imports setup done!"));
+
+    client.isDevelopment && console.log(client.eventNames());
+
+    mongoose.set("strictQuery", false);
+    // Connect to database
+    mongoose.connect(process.env.MONGOURI, (mongoErr) => {
+        if (mongoErr) {
+            throw new Errors.DatabaseError(mongoErr.message);
+        } else console.log("Connected to database! ✔");
+    });
+
+    process.on("warning", console.warn);
+
+    // Bot client login
+    await client
+        .login(client.config.token)
+        .then(() => {
+            if (client.isDevelopment) {
+                console.log("Logged in as development version");
+                const allAliases = IlluminatiClient.commands
+                    .map((cmd) => (cmd.aliases ? cmd.aliases : []))
+                    .flat();
+                console.log(`All aliases: `, allAliases);
+
+                // If maching aliases found, throw error
+                if (
+                    allAliases.some(
+                        (alias) =>
+                            allAliases.filter((a) => a === alias).length > 1
+                    )
+                ) {
+                    throw new Errors.BotError(
+                        `Duplicate aliases found! Check your commands.`
+                    );
+                }
+            } else {
+                console.log("Ready! ✔");
+            }
+        })
+        .catch((err: ErrorEvent) => {
+            if (err.message.includes("invalid token")) {
+                throw new Errors.BotError("Invalid token!");
+            } else {
+                throw new Errors.BotError(err.message);
+            }
+        });
+})();
