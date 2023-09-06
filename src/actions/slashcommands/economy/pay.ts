@@ -4,7 +4,7 @@ import { SlashCommand } from "../../../types";
 const command: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName("pay").setNameLocalization("fi", "maksa")
-        .setDescription("Pay a user").setNameLocalization("fi", "Maksa käyttäjälle")
+        .setDescription("Pay a user").setNameLocalization("fi", "Maksa")
         .addUserOption(option => option.setName("user").setDescription("User to pay").setRequired(true))
         .addIntegerOption(option => option.setName("amount").setDescription("Amount to pay").setRequired(true))
         .toJSON(),

@@ -80,9 +80,8 @@ export default class IlluminatiClient extends Client {
         this.isDevelopment = this.env === "development";
         this.isProduction = !this.isDevelopment;
 
-        this.domainData = JSON.parse(fs.readFileSync(`${cwd()}/config.json`, "utf-8")).ip;
+        this.domainData = JSON.parse(fs.readFileSync(`${cwd()}/config.json`, "utf-8"))
 
-        console.log("IP:", this.domainData.ip)
         this.events.emit("ready");
     }
 
@@ -208,8 +207,9 @@ export default class IlluminatiClient extends Client {
 
     async updateIP() {
         const newip = await this.axios.get("https://api.ipify.org/?format=json");
-        console.log(new Date(), newip.data.ip, this.domainData.ip)
+        console.log(new Date(), `New IP: ${newip.data.ip}`, `Old IP: ${this.domainData.ip}`)
         if (newip.data.ip !== this.domainData.ip) {
+            console.log(this.domainData)
             this.domainData.ip = newip.data.ip;
 
             const file = fs.readFileSync(`${cwd()}/config.json`, "utf-8");

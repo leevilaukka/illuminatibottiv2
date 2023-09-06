@@ -1,4 +1,4 @@
-+import {
+import {
     AutocompleteInteraction,
     ButtonInteraction,
     Channel,
