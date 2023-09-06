@@ -6,7 +6,7 @@ const job: IlluminatiJob = {
     name: "digitalocean",
     schedule: "5 * * * *",
     run: (client) => async () => {
-        const ip = client.hostIP;
+        const ip = client.ip
         if (!ip) {
             return;
         }
@@ -22,7 +22,7 @@ const job: IlluminatiJob = {
 
         const digitalOcean = new DigitalOcean(process.env.DO_TOKEN);
 
-        const { domains } = await client.ipData;
+        const { domains } = client.domainData;
 
         const updates = domains.map(async (subdomain) => {
             return digitalOcean.domains.updateRecord(

@@ -100,6 +100,8 @@ export default async (client: IlluminatiClient, message: Message) => {
 
                 const queue = client.player.nodes.get(message.guild);
 
+                client.lastMessage = message;
+
                 //Execute command and catch errors
                 try {
                     message.channel.sendTyping();
@@ -109,7 +111,7 @@ export default async (client: IlluminatiClient, message: Message) => {
                         .then(() => {
                             user.addCommandUse(command.name);
                             client.events.emit("commandExec", command)
-                            if (command.cleanUp) command.cleanUp(client);
+                            if (command.cleanUp) command.cleanUp(client)
                         })
                         .catch(async (error) => {
                             throw error;

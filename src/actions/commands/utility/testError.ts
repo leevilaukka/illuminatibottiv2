@@ -35,6 +35,10 @@ const command: Command = {
             case 'errorWithStack':
                 error = new ErrorWithStack(errorMessage)
                 break
+            case "clientError":
+                error = new Error(errorMessage)
+                client.emit("error", error)
+                break
             default:
                 error = new Error(errorMessage)
                 break

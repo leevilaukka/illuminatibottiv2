@@ -1,4 +1,4 @@
-import {
++import {
     AutocompleteInteraction,
     ButtonInteraction,
     Channel,
@@ -169,7 +169,7 @@ type Interactions =
 // Express types
 declare global {
     namespace Express {
-        export interface Request {
+        interface Request {
             client?: IlluminatiClient;
             queue?: GuildQueue;
             guild?: Guild;

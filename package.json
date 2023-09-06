@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.24",
+    "version": "6.1.25",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {
@@ -60,7 +60,8 @@
         "openai": "^3.2.1",
         "opusscript": "^0.0.8",
         "ytdl-core": "^4.11.5",
-        "zod": "^3.21.4"
+        "zod": "^3.21.4",
+        "zod-express-middleware": "^1.4.0"
     },
     "devDependencies": {
         "@types/algebra.js": "^0.2.1",

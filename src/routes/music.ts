@@ -6,12 +6,12 @@ import {
     linkUser,
     validate,
 } from "./middlewares";
-import { GuildQueue, QueryType, Track, useHistory, usePlayer } from "discord-player";
+import { QueryType, useHistory } from "discord-player";
 import Playlist from "../models/Playlist";
 import { Guild } from "../models";
 import { z } from "zod";
 import multer from "multer";
-
+import { validateRequest, validateRequestBody } from "zod-express-middleware";
 
 const router = Router();
 
@@ -161,18 +161,17 @@ router.get("/queue/:id", checkQueue, ({ queue }, res) => {
     });
 });
 
-const playSchema = z.object({
-    body: z.object({
-        query: z.string().optional(),
-    }),
-});
+const playSchema = 
+    z.object({
+        query: z.string()
+    })
 
 // Add a track to the queue
 router.post(
     "/add/",
     checkQueue,
-    validate(playSchema),
-    async ({ queue, body: { query } }, res) => {
+    validateRequestBody(playSchema),
+    ({ queue, body: { query } }, res) => {
         try {
             queue.addTrack(query);
             res.json({
@@ -192,7 +191,7 @@ router.post(
     checkGuild,
     checkChannel,
     // linkUser,
-    validate(playSchema),
+    validateRequestBody(playSchema),
     async ({ client, channel, body, user }, res) => {
         try {
             client.player.play(channel.id, body.query, {

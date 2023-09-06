@@ -1,16 +1,16 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../../types";
 
 const command: SlashCommand = {
     data: new SlashCommandBuilder()
-        .setName("pay")
-        .setDescription("Pay a user")
+        .setName("pay").setNameLocalization("fi", "maksa")
+        .setDescription("Pay a user").setNameLocalization("fi", "Maksa käyttäjälle")
         .addUserOption(option => option.setName("user").setDescription("User to pay").setRequired(true))
         .addIntegerOption(option => option.setName("amount").setDescription("Amount to pay").setRequired(true))
         .toJSON(),
-    async execute(client, interaction) {
+    async execute(client, interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user', true);
-        const amount = interaction.options.get('amount').value as number;
+        const amount = interaction.options.getInteger('amount', true);
 
         if (amount < 0) {
             await interaction.reply("You can't pay a negative amount!");
@@ -22,13 +22,12 @@ const command: SlashCommand = {
             return;
         }
 
-        const toPay = new client.userManager(user);
-
-        if (toPay.bot) {
+        if (user.bot) {
             await interaction.reply("You can't pay a bot!");
             return;
         }
-
+        
+        const toPay = new client.userManager(user);
         const from = new client.userManager(interaction.user);
 
         const userBalance = (await from.getStats()).money

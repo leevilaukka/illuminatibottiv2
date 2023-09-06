@@ -32,13 +32,10 @@ import { IlluminatiJob } from "../schedules";
 import { EventEmitter } from "events";
 import { cwd } from "process";
 
-
-
-
 /**
  * @name IlluminatiClient
  * @description Custom class for the bot client.
- * @extends Discord.Client
+ * @extends Client
  */
 export default class IlluminatiClient extends Client {
     // Types
@@ -59,8 +56,17 @@ export default class IlluminatiClient extends Client {
     env: string;
     axios: AxiosInstance = axios.create();;
     logger: IlluminatiLogger = new IlluminatiLogger(this);
-    hostIP: string;
+    domainData: {
+        domains: [
+            {
+                id: string;
+                name: string;
+            }
+        ]
+        ip: string;
+    }
     events: EventEmitter = new EventEmitter();
+    lastMessage: Message;
 
     static packageInfo: typeof info = info;
 
@@ -74,9 +80,9 @@ export default class IlluminatiClient extends Client {
         this.isDevelopment = this.env === "development";
         this.isProduction = !this.isDevelopment;
 
-        this.hostIP = JSON.parse(fs.readFileSync(`${cwd()}/config.json`, "utf-8")).ip;
+        this.domainData = JSON.parse(fs.readFileSync(`${cwd()}/config.json`, "utf-8")).ip;
 
-        console.log("IP:", this.hostIP)
+        console.log("IP:", this.domainData.ip)
         this.events.emit("ready");
     }
 
@@ -152,7 +158,11 @@ export default class IlluminatiClient extends Client {
      * @param {string} mention Message content
      */
 
-    static getUserFromMention(mention: string): User {
+    static getUserFromMention(mention: Message | string): User {
+        if (!mention) return;
+
+        if(mention instanceof Message) mention = mention.content;
+
         // The id is the first and only match found by the RegEx.
         const matches = mention
             .matchAll(MessageMentions.UsersPattern)
@@ -169,7 +179,7 @@ export default class IlluminatiClient extends Client {
     }
 
     get ip(): string {
-        return this.hostIP;
+        return this.domainData.ip;
     }
 
     sendError(
@@ -198,19 +208,19 @@ export default class IlluminatiClient extends Client {
 
     async updateIP() {
         const newip = await this.axios.get("https://api.ipify.org/?format=json");
-        console.log(newip.data.ip, this.hostIP)
-        if (newip.data.ip !== this.hostIP) {
-            this.hostIP = newip.data.ip;
+        console.log(new Date(), newip.data.ip, this.domainData.ip)
+        if (newip.data.ip !== this.domainData.ip) {
+            this.domainData.ip = newip.data.ip;
 
             const file = fs.readFileSync(`${cwd()}/config.json`, "utf-8");
 
             const newConfig = JSON.parse(file);
 
-            newConfig.ip = this.hostIP;
+            newConfig.ip = this.domainData.ip;
 
             fs.writeFileSync(`${cwd()}/config.json`, JSON.stringify(newConfig, null, 4));
 
-            this.events.emit("ipChange", this.hostIP);
+            this.events.emit("ipUpdate", this.domainData.ip);
         }
     }
 

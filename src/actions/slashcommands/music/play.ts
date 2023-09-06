@@ -1,17 +1,32 @@
-import { GuildMember, SlashCommandBuilder  } from "discord.js";
+import { ChatInputApplicationCommandData, ChatInputCommandInteraction, GuildMember, SlashCommandBuilder  } from "discord.js";
 import { SlashCommand } from "../../../types";
 
 const command: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName("play")
+        .setNameLocalizations({
+            fi: "soita",
+        })
         .setDescription("Play a song")
-        .addStringOption(option => option.setName("song").setDescription("Song to play").setRequired(true).setAutocomplete(true))
-        .addBooleanOption(option => option.setName("playnext").setDescription("Play next").setRequired(false))
+        .setDescriptionLocalizations({
+            fi: "Soita kappale",
+        })
+        .addStringOption(option => option
+            .setName("song").setNameLocalization("fi", "kappale")
+            .setDescription("Song to play").setDescriptionLocalization("fi", "Kappale jonka haluat soittaa")
+            .setRequired(true).setAutocomplete(true)
+        )
+        .addBooleanOption(option => option
+            .setName("playnext")
+            .setNameLocalization("fi", "seuraava")
+            .setDescription("Play next").setRequired(false)
+            .setDescriptionLocalization("fi", "Soita seuraavaksi")
+        )
         .toJSON()
-    ,async execute(client, interaction) {
+    ,async execute(client, interaction: ChatInputCommandInteraction) {
         const player = client.player;
-        const query = interaction.options.get('song').value as string;
-        const playNext = interaction.options.get('playnext')?.value as boolean;
+        const query = interaction.options.getString('song', true);
+        const playNext = interaction.options.getBoolean('playnext', false);
         const searchResult = await player.search(query, { requestedBy: interaction.user });
 
         if (!searchResult.hasTracks()) {
