@@ -3,11 +3,13 @@ import {
     ButtonInteraction,
     Channel,
     CommandInteraction,
+    ContextMenuCommandBuilder,
     Guild,
     Message,
     MessageComponentInteraction,
     MessageInteraction,
     PermissionResolvable,
+    RESTPostAPIApplicationCommandsJSONBody,
     RESTPostAPIChatInputApplicationCommandsJSONBody,
     SelectMenuInteraction,
     SlashCommandAttachmentOption,
@@ -148,8 +150,11 @@ interface Command {
     cleanUp?: (client: IlluminatiClient) => void;
 }
 
+type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
+type CommandJSONBodyTypes = RESTPostAPIChatInputApplicationCommandsJSONBody | RESTPostAPIApplicationCommandsJSONBody;
+
 interface SlashCommand {
-    data: any;
+    data: CommandBuilders | CommandJSONBodyTypes;
     execute: (
         client: IlluminatiClient,
         interaction: CommandInteraction

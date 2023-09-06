@@ -3,8 +3,8 @@ import { SlashCommand } from "../../../types";
 
 const command: SlashCommand = {
     data: new SlashCommandBuilder()
-        .setName("pay").setNameLocalization("fi", "maksa")
-        .setDescription("Pay a user").setNameLocalization("fi", "Maksa")
+        .setName("pay")
+        .setDescription("Pay a user")
         .addUserOption(option => option.setName("user").setDescription("User to pay").setRequired(true))
         .addIntegerOption(option => option.setName("amount").setDescription("Amount to pay").setRequired(true))
         .toJSON(),

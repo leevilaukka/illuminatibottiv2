@@ -14,7 +14,7 @@ import {
 import fs from "fs"
 
 // DiscordPlayer
-import { Player, PlayerInitOptions } from "discord-player";
+import { Player } from "discord-player";
 
 import axios, { AxiosInstance } from "axios";
 
@@ -206,10 +206,9 @@ export default class IlluminatiClient extends Client {
 
 
     async updateIP() {
-        const newip = await this.axios.get("https://api.ipify.org/?format=json");
-        console.log(new Date(), `New IP: ${newip.data.ip}`, `Old IP: ${this.domainData.ip}`)
+        const newip = await this.axios.get<{ip: string}>("https://api.ipify.org/?format=json");
         if (newip.data.ip !== this.domainData.ip) {
-            console.log(this.domainData)
+            console.log("IP Update at: ", new Date(), `\nNew IP: ${newip.data.ip}`, `Old IP: ${this.domainData.ip}`)
             this.domainData.ip = newip.data.ip;
 
             const file = fs.readFileSync(`${cwd()}/config.json`, "utf-8");
