@@ -50,7 +50,7 @@
         "i18next": "^21.8.7",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
-        "mediaplex": "^0.0.2",
+        "mediaplex": "^0.0.8",
         "minecraft-server-util": "^3.5.1",
         "moment": "^2.29.1",
         "mongodb": "^4.7.0",
