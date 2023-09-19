@@ -53,7 +53,7 @@
         "mediaplex": "^0.0.2",
         "minecraft-server-util": "^3.5.1",
         "moment": "^2.29.1",
-        "mongodb": "^4.7.0",
+        "mongodb": "^6.1.0",
         "mongoose": "^6.3.6",
         "multer": "^1.4.5-lts.1",
         "node-schedule": "^2.1.1",
