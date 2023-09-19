@@ -8,7 +8,7 @@ import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
 import cors from "cors";
 import schedules from "./schedules";
-import { Command, EventType } from "./types";
+import { Command, EventType, SlashCommand } from "./types";
 import { YouTubeExtractor } from "@discord-player/extractor";
 import path from "path";
 
@@ -75,10 +75,7 @@ export const slashCommandImports = async () => {
         for await (const folder of slashCommandFolders) {
             const slashCommandFiles = fs.readdirSync(`${__dirname}/actions/slashcommands/${folder}`).filter((file: string) => file.endsWith(".js"));
             for await (const file of slashCommandFiles) {
-                console.log(file);
-                const command = require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
-
-                console.log(command);
+                const command: SlashCommand = require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
                 IlluminatiClient.slashCommands.set(command.data.name, command);
                 console.log(`Loaded slash cmd: ${file}`);
             }
@@ -167,7 +164,7 @@ const setupExpress = async (client: IlluminatiClient) => {
         app.use(injectClient);
         app.use(express.json());
 
-        routes.forEach(async (route) => {
+        routes.forEach((route) => {
             app.use(`/api${route.path}`, route.file);
         });
 
@@ -191,7 +188,7 @@ const initPlayer = async (client: IlluminatiClient) => {
         },
     });
     await client.player.extractors.loadDefault();
-    client.player.extractors.register(YouTubeExtractor, {});
+    await client.player.extractors.register(YouTubeExtractor, {});
     client.player.setMaxListeners(0);
     console.log("Player initialized!");
 };

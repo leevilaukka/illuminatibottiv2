@@ -1,6 +1,6 @@
 import express from "express";
 import { checkChannel, checkGuild } from "./middlewares";
-import { BaseGuildVoiceChannel, Channel, ChannelType } from "discord.js";
+import { Channel, ChannelType } from "discord.js";
 
 const router = express.Router();
 

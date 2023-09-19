@@ -11,7 +11,7 @@ import Playlist from "../models/Playlist";
 import { Guild } from "../models";
 import { z } from "zod";
 import multer from "multer";
-import { validateRequest, validateRequestBody } from "zod-express-middleware";
+import { validateRequestBody } from "zod-express-middleware";
 
 const router = Router();
 
@@ -194,7 +194,7 @@ router.post(
     validateRequestBody(playSchema),
     async ({ client, channel, body, user }, res) => {
         try {
-            client.player.play(channel.id, body.query, {
+            await client.player.play(channel.id, body.query, {
                 requestedBy: client.user,
                 nodeOptions: {
                     metadata: {
@@ -242,7 +242,7 @@ router.post(
     // linkUser,
     async ({ client, body, file, channel }, res) => {
         try {
-            client.player.play(channel.id, file.path, {
+            await client.player.play(channel.id, file.path, {
                 searchEngine: QueryType.FILE,
                 requestedBy: client.user,
                 nodeOptions: {
@@ -369,8 +369,8 @@ router.post("/repeat/", checkQueue, ({ queue, body: { repeat } }, res) => {
 });
 
 // TODO: Move to /controls
-router.post("/seek/", checkQueue, ({ body: { position }, queue }, res) => {
-    queue.node.seek(position);
+router.post("/seek/", checkQueue, async ({ body: { position }, queue }, res) => {
+    await queue.node.seek(position);
 
     res.json({
         position,
