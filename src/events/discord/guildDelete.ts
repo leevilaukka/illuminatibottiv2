@@ -5,7 +5,7 @@ import { BotError } from "../../structures/Errors";
 const evt = async (client: IlluminatiClient, guild: Guild) => {
     try {
         if (guild.available) {
-            await client.guildManager(guild).deleteGuild();
+            await new client.guildManager(guild).deleteGuild();
         }
     } catch (e) {
         throw new BotError(e)

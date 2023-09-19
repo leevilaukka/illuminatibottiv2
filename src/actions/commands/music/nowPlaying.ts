@@ -1,25 +1,24 @@
-import { IlluminatiEmbed } from '../../../structures';
-import { UserError } from '../../../structures/Errors';
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { IlluminatiEmbed } from "../../../structures";
+import { UserError } from "../../../structures/Errors";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 enum queueModeEmoji {
     ":x:",
     ":repeat_one:",
     ":repeat:",
-    ":infinity: (AutoPlay)"
+    ":infinity: (AutoPlay)",
 }
 
 const command: Command = {
-    name: 'nowplaying',
-    aliases: ['np'],
-    description: 'Sends the currently playing song.',
+    name: "nowplaying",
+    aliases: ["np"],
+    description: "Sends the currently playing song.",
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild)
-        const nowPlaying = queue.nowPlaying()
+    async run(message, args, settings, client, {queue}) {
+        const nowPlaying = queue.currentTrack;
 
-        if (!nowPlaying) throw new UserError('No song playing.')
+        if (!nowPlaying) throw new UserError("No song playing.");
 
         new IlluminatiEmbed(message, client, {
             title: `Nyt soi: ${nowPlaying.title}`,
@@ -28,29 +27,29 @@ const command: Command = {
             fields: [
                 {
                     name: "Kanava",
-                    value: nowPlaying.author
+                    value: nowPlaying.author,
                 },
                 {
                     name: "Kesto",
                     value: nowPlaying.duration,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Näyttökerrat",
                     value: nowPlaying.views.toString(),
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Toistotila",
                     value: queueModeEmoji[queue.repeatMode],
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Aikajana",
-                    value: queue.createProgressBar()
-                }
+                    value: queue.node.createProgressBar(),
+                },
             ],
         }).send();
-    }
-}
-export default command
+    },
+};
+export default command;

@@ -2,8 +2,8 @@ import moment from "moment";
 
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "day",
     description: "Päivän kalenteritiedot",
@@ -26,7 +26,7 @@ const command: Command = {
                             const parsedDate = moment(result.date).format(
                                 "DD.MM.YYYY"
                             );
-                            
+
                             const fields = [
                                 {
                                     name: "Päivämäärä",

@@ -1,6 +1,6 @@
-import { IlluminatiClient } from '../../../structures';
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { IlluminatiClient } from "../../../structures";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "reload",
     description: "Reloads a command",
@@ -14,8 +14,6 @@ const command: Command = {
             IlluminatiClient.commands.find(
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
-
-        console.log(command);
 
         if (!command) {
             return message.channel.send(
@@ -38,4 +36,4 @@ const command: Command = {
     },
 };
 
-export default command
+export default command;

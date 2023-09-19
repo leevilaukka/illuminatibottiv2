@@ -1,11 +1,14 @@
+import { Collector, Collection } from 'discord.js'
 import { UserError } from '../../../structures/Errors'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+
 const command: Command = {
     name: 'trade',
     args: true,
     aliases: ['give'],
     description: 'Trade with a user',
     usage: "<user> <amount>",
+    category: "economy",
     async run(message, args, settings, client, {user}) {
         const giveTo = message.mentions.users.first()
         const amount = parseInt(args[1])

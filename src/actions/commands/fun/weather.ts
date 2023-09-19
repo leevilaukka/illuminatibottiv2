@@ -1,40 +1,39 @@
 import { umlautRemover, argsToString, formatDate } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 interface WeatherData {
     weather: {
         description: string;
         icon: string;
-    }[]
+    }[];
     main: {
-        temp: number
-        pressure: number
-        humidity: number
-        temp_min: number
-        temp_max: number
-        feels_like: number
-    }
+        temp: number;
+        pressure: number;
+        humidity: number;
+        temp_min: number;
+        temp_max: number;
+        feels_like: number;
+    };
     wind: {
-        speed: number
-        deg: number
-    }
+        speed: number;
+        deg: number;
+    };
     clouds: {
-        all: number
-    }
+        all: number;
+    };
     sys: {
-        sunrise: number
-        sunset: number
-        country: string
-    }
-    timezone: number
-    name: string
-    code: number
-    message: string
-    success: boolean
+        sunrise: number;
+        sunset: number;
+        country: string;
+    };
+    timezone: number;
+    name: string;
+    code: number;
+    message: string;
+    success: boolean;
 }
-
 
 const command: Command = {
     name: "weather",
@@ -44,8 +43,11 @@ const command: Command = {
     category: Categories.other,
     async run(message, args, settings, client) {
         const query = umlautRemover(argsToString(args));
-        client.axios.get<WeatherData>(`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`)
-            .then(res => {
+        client.axios
+            .get<WeatherData>(
+                `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.OWM_API}&lang=fi&units=metric`
+            )
+            .then((res) => {
                 const weather = res.data.weather[0];
                 const main = res.data.main;
                 let fields = [
@@ -56,27 +58,27 @@ const command: Command = {
                     {
                         name: "Minimi :arrow_down:",
                         value: main.temp_min + " °C",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Maksimi :arrow_up:",
                         value: main.temp_max + " °C",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Tuntuu kuin :thermometer_face:",
                         value: main.feels_like + " °C",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Ilmankosteus :sweat_drops:",
                         value: main.humidity + "%",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Ilmanpaine :compression:",
                         value: main.pressure + " hPa",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Tuuli :wind_blowing_face:",
@@ -90,20 +92,21 @@ const command: Command = {
                 if (res.data.sys.sunrise === res.data.sys.sunset) {
                     fields.push({
                         name: "Auringonnousu ja -lasku",
-                        value: "YÖTÖN YÖ"
-                    })
-
+                        value: "YÖTÖN YÖ",
+                    });
                 } else {
-                    fields.push({
+                    fields.push(
+                        {
                             name: "Auringonnousu :sunrise:",
                             value: formatDate(res.data.sys.sunrise),
-                            inline: true
+                            inline: true,
                         },
                         {
                             name: "Auringonlasku :city_sunset:",
                             value: formatDate(res.data.sys.sunset),
-                            inline: true
-                        });
+                            inline: true,
+                        }
+                    );
                 }
 
                 new IlluminatiEmbed(message, client, {
@@ -113,13 +116,13 @@ const command: Command = {
                     fields,
                     footer: {
                         icon_url: `http://openweathermap.org/img/wn/${weather.icon}@2x.png`,
-                        text: "Sää"
+                        text: "Sää",
                     },
-                    timestamp: Date.now().toString()
-                }).send()
+                    timestamp: Date.now().toString(),
+                }).send();
             })
-            .catch(e => console.error(e))
-    }
+            .catch((e) => console.error(e));
+    },
 };
 
 export default command;

@@ -1,6 +1,7 @@
-import Command, { Categories } from '../../../types/IlluminatiCommand';
-import { IlluminatiClient, IlluminatiEmbed } from '../../../structures';
-import { ChannelType } from 'discord.js';
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
+import { IlluminatiClient, IlluminatiEmbed } from "../../../structures";
+import { ChannelType } from "discord.js";
 
 const command: Command = {
     name: `help`,
@@ -9,54 +10,56 @@ const command: Command = {
     usage: `[komento]`,
     cooldown: 5,
     category: Categories.general,
-    async run(message, args: any, settings, client) {
-
-        const { commands } = IlluminatiClient;
-        const prefix = settings.prefix;
-
-        const author = {
-            name: "IlluminatiBotti",
-            icon_url: client.user.avatarURL() || undefined
-        };
+    async run(message, args, settings, client) {
+        const { commands, getCommand } = IlluminatiClient;
+        const { prefix } = settings;
 
         if (!args.length) {
             let fields = [];
 
-            console.log(Object.entries(Categories));
             // Valmistele komentojen lista
             for (const [_category, value] of Object.entries(Categories)) {
-                const commandsInCategory = commands.filter(cmd => cmd.category === value);
-                console.log(commandsInCategory)
+                const commandsInCategory = commands.filter(
+                    (cmd) => cmd.category === value
+                );
                 if ([...commandsInCategory].length) {
                     fields.push({
-                        name: `${value[0].toUpperCase()}${value.slice(1)} [${[...commandsInCategory].length}]`,
-                        value: commandsInCategory.map(cmd => `\`${cmd.name}\``).join(", ")
+                        name: `${value[0].toUpperCase()}${value.slice(1)} [${
+                            [...commandsInCategory].length
+                        }]`,
+                        value: commandsInCategory
+                            .map((cmd) => `\`${cmd.name}\``)
+                            .join(", "),
                     });
                 }
             }
 
             const embed = new IlluminatiEmbed(message, client, {
                 title: `Lista kaikista saatavilla olevista komennoista luokittain:`,
-                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta!`,
-                fields,
-                author
+                description: `Voit lähettää \`${prefix}help [komento]\` saadaksesi tietoja tietystä komennosta! \n\n Komentoja on yhteensä ${commands.size}.`,
+                fields
             });
 
             //Lähetä DM
             try {
-                await message.author.send({ embeds: [embed.embedObject] });
-                if (message.channel.type === ChannelType.DM)
-                    return;
-                return message.reply(`lähetin sinulle DM:n kaikista komennoista!`);
+                await message.author.send({ embeds: [embed] });
+                if (message.channel.type === ChannelType.DM) return;
+                return message.reply(
+                    `lähetin sinulle DM:n kaikista komennoista!`
+                );
             } catch (error) {
-                console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
-                return message.reply(`vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`);
+                console.error(
+                    `Could not send help DM to ${message.author.tag}.\n`,
+                    error
+                );
+                return message.reply(
+                    `vaikuttaa siltä, etten voi lähettää sinulle yksityisviestejä, ovathan ne käytössä?`
+                );
             }
         }
         const name = args[0]?.toLowerCase();
-        const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
-        let fields = [
-        ];
+        const command = getCommand(name);
+        const fields = [];
 
         if (!command) {
             return message.reply(`tuo ei ole kelpo komento!`);
@@ -65,40 +68,44 @@ const command: Command = {
         fields.push({
             name: `**Nimi:**`,
             value: command.name,
-            inline: true
+            inline: true,
         });
 
-        if (command.aliases) fields.push({
-            name: `**Aliakset:**`,
-            value: `${command.aliases.join(`, `)}`
-        });
-        if (command.description) fields.push({
-            name: `**Kuvaus:**`,
-            value: `${command.description}`,
-            inline: true
-        });
-        if (command.usage) fields.push({
-            name: `**Käyttö:**`,
-            value: `${prefix}${command.name} \`${command.usage}\``,
-            inline: true
-        });
-        if (command.category) fields.push({
-            name: `**Kategoria:**`,
-            value: `${command.category[0].toUpperCase()}${command.category.slice(1)}`,
-            inline: true
-        });
+        if (command.aliases)
+            fields.push({
+                name: `**Aliakset:**`,
+                value: `${command.aliases.join(`, `)}`,
+            });
+        if (command.description)
+            fields.push({
+                name: `**Kuvaus:**`,
+                value: `${command.description}`,
+                inline: true,
+            });
+        if (command.usage)
+            fields.push({
+                name: `**Käyttö:**`,
+                value: `${prefix}${command.name} \`${command.usage}\``,
+                inline: true,
+            });
+        if (command.category)
+            fields.push({
+                name: `**Kategoria:**`,
+                value: `${command.category[0].toUpperCase()}${command.category.slice(
+                    1
+                )}`,
+                inline: true,
+            });
         fields.push({
             name: `**Cooldown:**`,
-            value: `${command.cooldown || 3} sekunti(a)`,
-            inline: true
+            value: `${command.cooldown || 3} sekunti${command.cooldown === 1 ? "" : "a"}`,
+            inline: true,
         });
 
         new IlluminatiEmbed(message, client, {
             title: "Tietoja komennosta",
-            fields,
-            author
+            fields
         }).send();
-
     },
 };
 

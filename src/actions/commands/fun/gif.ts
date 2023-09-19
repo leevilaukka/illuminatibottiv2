@@ -1,9 +1,11 @@
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
 import { IlluminatiEmbed } from "../../../structures";
 
 const command: Command = {
     name: "gif",
     description: "Send random GIF from GIPHY",
+    category: Categories.fun,
     async run(message, args, settings, client) {
         client.axios.get(`https://api.giphy.com/v1/gifs/random?api_key=${process.env.GIPHYAPI}&tag=&rating=g`)
         .then(async res => {

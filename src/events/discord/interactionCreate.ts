@@ -1,14 +1,61 @@
-import { Interaction } from "discord.js";
+import { AutocompleteInteraction, ChatInputCommandInteraction, Interaction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import { IlluminatiClient } from "../../structures";
-import { SlashCommand, Button, SelectMenu, ContextMenu } from "../../helpers/interactions"
 
-export default async (client: IlluminatiClient, interaction: Interaction)  => {
-    console.log(interaction);
+const handleChatInput = async (client: IlluminatiClient, interaction: ChatInputCommandInteraction) => {    
+    console.log(`Received command interaction: ${interaction.commandName}`);
 
-    if(interaction.isContextMenuCommand()) return ContextMenu(client, interaction);
-    if(interaction.isCommand()) return SlashCommand(client, interaction);
-    if(interaction.isButton()) return Button(client, interaction);
-    if(interaction.isSelectMenu()) return SelectMenu(client, interaction);   
-    
-    return
+    const commandName = interaction.commandName;
+    const command = IlluminatiClient.slashCommands.find(cmd => cmd.data.name === commandName);
+
+    if (!command) return;
+
+    try {
+        await command.execute(client, interaction);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({ content: 'An error occurred while executing the command.', ephemeral: true });
+    }
+};
+
+const handleAutocomplete = async (client: IlluminatiClient, interaction: AutocompleteInteraction) => {
+    console.log(`Received autocomplete interaction: ${interaction.commandName}`);
+
+    const command = IlluminatiClient.slashCommands.get(interaction.commandName);
+
+    if (!command) return;
+
+    try {
+        await command.autocomplete(client, interaction);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const handleUserContextMenu = async (client: IlluminatiClient, interaction: UserContextMenuCommandInteraction) => {
+    console.log(`Received context menu interaction: ${interaction.commandName}`);
+
+    const command = IlluminatiClient.slashCommands.get(interaction.commandName);
+
+    if (!command) return;
+
+    try {
+        await command.execute(client, interaction);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export default async (client: IlluminatiClient, interaction: Interaction)  => {    
+    if(interaction.isAutocomplete()) {
+        handleAutocomplete(client, interaction);
+    }
+
+    if (interaction.isUserContextMenuCommand()) {
+        handleUserContextMenu(client, interaction);
+    }
+
+    if(interaction.isChatInputCommand()) {
+        handleChatInput(client, interaction);
+    } 
 }
+   

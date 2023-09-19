@@ -1,53 +1,54 @@
 import algebra from "algebra.js";
-import { argsToString }  from "../../../helpers";
+import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
 
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
     name: "math",
     description: "Matikkaaa!",
     args: true,
     category: Categories.math,
     run(message, args, _settings, client) {
-
         if (!args.includes("x")) {
-            args.toString().split("").unshift("x", "=")
+            args.toString().split("").unshift("x", "=");
         }
 
         try {
             const exp: any = algebra.parse(argsToString(args));
             const ansX = exp.solveFor("x");
 
-            const image = `http://chart.apis.google.com/chart?cht=tx&chl=${encodeURIComponent(argsToString(args))}`;
+            const image = `http://chart.apis.google.com/chart?cht=tx&chl=${encodeURIComponent(
+                argsToString(args)
+            )}`;
             let fields = [
                 {
                     name: "Lasku",
-                    value: argsToString(args)
+                    value: argsToString(args),
                 },
                 {
                     name: "X",
-                    value: ansX
-                }
+                    value: ansX,
+                },
             ];
             if (args.includes("y")) {
                 const ansY = exp.solveFor("y");
                 fields.push({
                     name: "Y",
-                    value: ansY
-                })
+                    value: ansY,
+                });
             }
             new IlluminatiEmbed(message, client, {
                 title: "Vastaus",
                 image: {
-                    url: image
+                    url: image,
                 },
                 fields,
             }).send();
         } catch (e) {
             return message.channel.send(e.message);
         }
-    }
+    },
 };
 
-export default command
+export default command;

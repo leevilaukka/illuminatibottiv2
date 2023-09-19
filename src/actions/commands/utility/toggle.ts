@@ -1,5 +1,7 @@
 import { IlluminatiClient, IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from '../../../types/IlluminatiCommand'
+import { Command } from '../../../types'
+import { Categories } from '../../../types/IlluminatiCommand'
+
 const command: Command = {
     name: 'toggle',
     permissions: ['ManageGuild'],

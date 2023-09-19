@@ -1,52 +1,94 @@
-import { PlayerEvents } from "discord-player";
-import fs from "fs"
-import registerInteractions from "./helpers/interactions/registerInteractions";
+import {
+    GuildQueueEvents,
+    Player,
+} from "discord-player";
+import express, { RequestHandler } from "express";
+import fs from "fs";
+import routes from "./routes";
 import { IlluminatiClient, Errors } from "./structures";
-import Command from "./types/IlluminatiCommand";
+import cors from "cors";
+import schedules from "./schedules";
+import { Command, EventType, SlashCommand } from "./types";
+import { YouTubeExtractor } from "@discord-player/extractor";
+import path from "path";
 
-type EventType = (client: IlluminatiClient, ...args: any[]) => void;
 
-// Import events
-const eventFolders = fs.readdirSync(`${__dirname}/events/`)
-
-export const eventImports = async (client: IlluminatiClient) => {
-    console.group("Loading events...");
-    console.time("events");
-    try {
-        
-        const eventFiles = fs.readdirSync(`${__dirname}/events/discord/`).filter((file: string) => file.endsWith(".js"));
-        for await (const file of eventFiles) {
-            import(`${__dirname}/events/discord/${file}`).then(({ default: evt }: { default: EventType }) => {
-                let evtName = file.split(".")[0];
-                client.on(evtName, evt.bind(null, client));
-                if (client.isDevelopment) console.log(`Loaded Evt: ${evtName}`);
-            })
-        }
-
-        const playerEventFiles = fs.readdirSync(`${__dirname}/events/player/`).filter((file: string) => file.endsWith(".js"));
-        for await (const file of playerEventFiles) {
-            import(`${__dirname}/events/player/${file}`).then(({ default: evt }: { default: EventType }) => {
-                let evtName = file.split(".")[0] as keyof PlayerEvents
-                client.player.on(evtName, evt.bind(null, client));
-                if (client.isDevelopment) console.log(`Loaded and bound playerEvt: ${evtName}`);
-            })
-        }
-
-        console.groupEnd();
-
-    } catch (error) {
-        throw new Errors.ErrorWithStack(error);
-    }
-    console.groupEnd();
-    console.timeEnd("events");
+const importMap = {
+    player: {
+        path: `${__dirname}/events/player/`,
+    },
+    discord: {
+        path: `${__dirname}/events/discord/`,
+    },
+    process: {
+        path: `${__dirname}/events/process/`,
+    },
+    client: {
+        path: `${__dirname}/events/client/`,
+    },
 };
 
-// Import Player events
+export const importEvents = (client: IlluminatiClient) => {
+    for (const [key, value] of Object.entries(importMap)) {
+        const eventFiles = fs
+            .readdirSync(value.path)
+            .filter((file: string) => file.endsWith(".js"));
+        for (const file of eventFiles) {
+            import(`${value.path}${file}`).then(
+                ({ default: evt }: { default: EventType }) => {
+                    let evtName = file.split(".")[0];
+                    switch (key) {
+                        case "player":
+                            client.player.events.on(
+                                evtName as keyof GuildQueueEvents,
+                                evt.bind(null, client)
+                            );
+                            break;
+                        case "discord":
+                            client.on(
+                                evtName,
+                                evt.bind(null, client)
+                            );
+                            break;
+                        case "process":
+                            process.on(evtName, evt.bind(null, client));
+                            break;
+                        case "client":
+                            client.events.on(evtName, evt.bind(null, client));
+                            break;
+                    }
 
+                    if (client.isDevelopment)
+                        console.log(`Loaded Evt: ${evtName}`);
+                }
+            );
+        }
+    }
+};
+
+// Slash command import
+const slashCommandFolders = fs.readdirSync(`${__dirname}/actions/slashcommands/`);
+
+export const slashCommandImports = async () => {
+    try {
+        console.group("Loading slash commands...");
+        for await (const folder of slashCommandFolders) {
+            const slashCommandFiles = fs.readdirSync(`${__dirname}/actions/slashcommands/${folder}`).filter((file: string) => file.endsWith(".js"));
+            for await (const file of slashCommandFiles) {
+                const command: SlashCommand = require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
+                IlluminatiClient.slashCommands.set(command.data.name, command);
+                console.log(`Loaded slash cmd: ${file}`);
+            }
+        }
+        console.groupEnd();
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 
 // Command import
-const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`)
+const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`);
 
 export const commandImports = async (client: IlluminatiClient) => {
     console.group("Loading commands...");
@@ -60,17 +102,26 @@ export const commandImports = async (client: IlluminatiClient) => {
             console.group(`Loading commands from ${folder}...`);
             for await (const file of commandFiles) {
                 console.group();
-                import(`${__dirname}/actions/commands/${folder}/${file}`).then(async ({ default: command }: { default: Command }) => {
-                    IlluminatiClient.commands.set(command.name, command);
-                    console.log(`Loaded cmd: ${folder}/${file}`);
-                    await command.onInit?.(client);
-                }).catch(err => {
-                    throw new Errors.ErrorWithStack(`Command ${file} failed to load.\n${err}`)
-                })
+                import(`${__dirname}/actions/commands/${folder}/${file}`)
+                    .then(
+                        async ({ default: command }: { default: Command }) => {
+                            IlluminatiClient.commands.set(
+                                command.name,
+                                command
+                            );
+                            console.log(`Loaded cmd: ${folder}/${file}`);
+                            command.onInit?.(client);
+                        }
+                    )
+                    .catch((err) => {
+                        throw new Errors.ErrorWithStack(
+                            `Command ${file} failed to load.\n${err}`
+                        );
+                    });
                 console.groupEnd();
             }
             console.groupEnd();
-        };
+        }
     } catch (error) {
         throw new Errors.ErrorWithStack(error);
     }
@@ -78,33 +129,81 @@ export const commandImports = async (client: IlluminatiClient) => {
     console.timeEnd("Loaded commands");
 };
 
-
-const interactionFiles = fs.readdirSync(`${__dirname}/actions/interactions/`).filter((file: string) => file.endsWith(".js"));
-
-export const interactionImports = async (client: IlluminatiClient) => {
+const setupExpress = async (client: IlluminatiClient) => {
     try {
-        console.group("Loading interactions...");
-        for await (const file of interactionFiles) {
-            import(`${__dirname}/actions/interactions/${file}`).then(({ default: interaction }) => {
-                IlluminatiClient.interactions.set(interaction.data.name, interaction);
-                console.log(`Loaded interaction: ${file}`);
+        const app = express();
+
+        const injectClient: RequestHandler = (req, res, next) => {
+            req.client = client;
+            next();
+        };
+
+        const wwwPath = path.join(__dirname, "www");
+
+        console.log(`[Express] Serving static files from ${wwwPath}`);
+        app.use(express.static(wwwPath));
+
+        const limiter = require("express-rate-limit")({
+            windowMs: 15 * 60 * 1000,
+            max: 100,
+            message: {
+                error: "Too many requests, please try again later.",
+            },
+            legacyHeaders: false,
+            standardHeaders: true,
+        });
+
+        //app.use("/api", limiter);
+
+        app.use(
+            cors({
+                origin: "*",
             })
-        }
-        registerInteractions(client).then(() => console.log(`Interactions registered!`))
-        console.groupEnd();
+        );
+
+        app.use(injectClient);
+        app.use(express.json());
+
+        routes.forEach((route) => {
+            app.use(`/api${route.path}`, route.file);
+        });
+
+        app.listen(process.env.EXPRESS_PORT || 3000, () => {
+            console.log("Express server started!");
+        });
+
+        app.setMaxListeners(0);
+
+        return app;
     } catch (error) {
         throw new Errors.ErrorWithStack(error);
     }
 };
 
+const initPlayer = async (client: IlluminatiClient) => {
+    client.player = new Player(client, {
+        ytdlOptions: {
+            filter: "audioonly",
+            highWaterMark: 1 << 25,
+        },
+    });
+    await client.player.extractors.loadDefault();
+    await client.player.extractors.register(YouTubeExtractor, {});
+    client.player.setMaxListeners(0);
+    console.log("Player initialized!");
+};
+
 export default async (client: IlluminatiClient) => {
     await Promise.all([
-        eventImports(client),
+        importEvents(client),
         commandImports(client),
-        interactionImports(client)
-    ]).catch(err => {
-        throw new Errors.ErrorWithStack(err);
+        initPlayer(client),
+        setupExpress(client),
+        schedules.importSchedules(client),
+        slashCommandImports(),
+    ]).catch((err) => {
+        throw new Errors.ErrorWithStack(err.message);
     });
 
-    return
+    return;
 };

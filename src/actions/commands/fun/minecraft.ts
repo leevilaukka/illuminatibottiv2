@@ -3,7 +3,8 @@ import util from "minecraft-server-util";
 import { argsToString } from "../../../helpers";
 import { IlluminatiEmbed, Errors } from "../../../structures";
 
-import Command, { Categories } from "../../../types/IlluminatiCommand";
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 
 const command: Command = {
     name: "minecraft",
@@ -11,6 +12,7 @@ const command: Command = {
     aliases: ["mc", "mine"],
     cooldown: 15,
     category: Categories.other,
+    outOfOrder: true,
     async run(message, args, settings, client) {
         // Variables for subcommand and server host
         const [subcommand, ...rest] = args;
@@ -80,7 +82,7 @@ const command: Command = {
 
                     // If res.players isn't empty, push players to embed
                     if (res_1.players) {
-                        embed_1.embedObject.addFields([
+                        embed_1.addFields([
                             {
                                 name: "Pelaajat online",
                                 value: res_1.players.join(),

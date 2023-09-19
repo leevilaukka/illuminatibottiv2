@@ -1,11 +1,12 @@
-import Command ,{ Categories } from '../../../types/IlluminatiCommand'
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 const command: Command = {
-    name: 'me',
-    aliases: ['mä'],
-    description: 'View your profile',
+    name: "me",
+    aliases: ["mä"],
+    description: "View your profile",
     category: Categories.utility,
-    async run(message, args, settings, client, {user}) {
-        (await user.infoAsEmbed(message, client)).send()
-    }
-}
-export default command
+    async run(message, args, settings, client, { user }) {
+        (await user.infoAsEmbed(message, client)).send();
+    },
+};
+export default command;

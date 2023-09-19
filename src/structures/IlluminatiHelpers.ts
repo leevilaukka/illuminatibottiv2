@@ -1,5 +1,4 @@
 import { Message } from "discord.js";
-import { CommandArguments } from "../types/IlluminatiCommand";
 import { translateTable } from "../utils";
 
 /**
@@ -16,13 +15,15 @@ export function clean(text: string): string {
   
 }
 
-export function argsToString(args: CommandArguments): string {
+export function argsToString(args: string[]): string {
     const regExp = /,/gi;
     return args.toString().replace(regExp, " ")
 };
 
-export const randomArray = (array: any[]) => {
-    return array[Math.floor(Math.random() * array.length)]
+// Get random item from array
+export const randomArray = <T extends unknown[]>(arr: T): T[number] => {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
 };
 
 export const formatDate = (date: number) => {
@@ -35,7 +36,7 @@ export const formatDate = (date: number) => {
     let seconds = "0" + newDate.getSeconds();
 
     // Will display time in 10:30:23 format
-    return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    return hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
 };
 
 export const messageCheck = (message: Message) => {

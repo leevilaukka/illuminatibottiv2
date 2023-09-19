@@ -1,40 +1,40 @@
-import { IlluminatiEmbed } from '../../../structures'
-import Command, { Categories } from "../../../types/IlluminatiCommand";
-import { BotError, UserError } from '../../../structures/Errors'
+import { Command } from "../../../types";
+import { lyricsExtractor } from "@discord-player/extractor";
 
 const command: Command = {
-    name: 'lyrics',
-    aliases: ['lyric'],
-    description: 'Searches for lyrics.',
-    guildOnly: true,
-    category: Categories.music,
-    async run(message, args, settings, client) {
-        const queue = client.player.getQueue(message.guild)
+    name: "lyrics",
+    description: "Get lyrics for a song",
+    usage: "<song name>",
+    category: "music",
+    cooldown: 2,
 
-        const { title } = queue.nowPlaying() 
+    async run(message, args, settings, client, meta) {
+        const lyricsFinder = lyricsExtractor();
 
-        if(!title) {
-            throw new UserError('No song playing.')
-        }
-        const lyrics = await client.lyrics.search(title)
-        console.log(lyrics)
-        
-        if(!lyrics) {
-            throw new BotError('No lyrics found.')
-        }
+        const query =
+            meta.queue.currentTrack?.title
+            || args.join(" ");
 
-        return new IlluminatiEmbed(message, client, {
-            title: `Sanat kappaleelle ${lyrics.title}`,
-            url: lyrics.url,
-            thumbnail: { url: lyrics.image },
-            description: lyrics.lyrics,
-            fields: [
-                {
-                    name: "Artisti",
-                    value: lyrics.artist.name
-                }
-            ]
-        }).reply()
-    }
-}
-export default command
+        if (!query)
+            return message.reply(
+                "No song is currently playing or you didn't provide a song name"
+            );
+
+        console.log(query);
+
+        const lyrics = await lyricsFinder.search(query)
+            .catch((e) => {
+                console.error(e);
+            });
+
+        if (!lyrics) return message.reply("No lyrics found for this song");
+
+        message.reply(`
+        **${lyrics.title}** by **${lyrics.artist.name}**
+
+        ${lyrics.lyrics}
+        `);
+    },
+};
+
+export default command;

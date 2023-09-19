@@ -2,49 +2,47 @@ import { gql, request } from "graphql-request";
 
 import { formatDate, valueParser } from "../../../helpers";
 import { IlluminatiEmbed } from "../../../structures";
-import Command, { Categories } from '../../../types/IlluminatiCommand'
-
+import { Command } from "../../../types";
+import { Categories } from "../../../types/IlluminatiCommand";
 type RequestResultData = {
     plan: {
         itineraries: Itinerany[];
-    }
-}
+    };
+};
 
 type Itinerany = {
-    startTime: number
-    endTime: number
-    duration: number
-    legs: Leg[]
-    waitingTime: number
-    walkTime: number
-    walkDistance: number,
+    startTime: number;
+    endTime: number;
+    duration: number;
+    legs: Leg[];
+    waitingTime: number;
+    walkTime: number;
+    walkDistance: number;
     fares: {
-        type: string,
-        currency: string,
-        cents: number,
-        components: any
-    }[],
-    elevationGained: number,
-    elevationLost: number,
-}
+        type: string;
+        currency: string;
+        cents: number;
+        components: any;
+    }[];
+    elevationGained: number;
+    elevationLost: number;
+};
 
-
-type Leg = { 
-    startTime: number 
-    endTime: number 
-    distance: number; 
+type Leg = {
+    startTime: number;
+    endTime: number;
+    distance: number;
     departureDelay: number;
     legGeometry: {
         length: number;
         points: string;
-    }
-    duration: number; 
-    from: { name: string; }; 
-    to: { name: string; }; 
-    mode: string; 
-    trip: { tripHeadsign: string; routeShortName: string; }; 
+    };
+    duration: number;
+    from: { name: string };
+    to: { name: string };
+    mode: string;
+    trip: { tripHeadsign: string; routeShortName: string };
 };
-
 
 const command: Command = {
     name: "reitti",
@@ -53,16 +51,13 @@ const command: Command = {
     cooldown: 5,
     aliases: ["hsl"],
     args: true,
-    async run(message, args, settings, client, { guild }) {
+    outOfOrder: true,
+    async run(message, args, settings, client, { guild: {getGuild} }) {
         const [origin, destination] = args;
 
-        const places = (await guild.getGuild()).places;
-        console.log(guild);
+        const places = (await getGuild()).places;
         const originResult = places.find(({ name }) => name === origin);
         const destResult = places.find(({ name }) => name === destination);
-
-        console.log(originResult);
-        console.log(destResult);
 
         const query = gql`
               {
@@ -94,12 +89,18 @@ const command: Command = {
                   }
               }
           `;
+
         request(
             "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql",
             query
         ).then((data: RequestResultData) => {
             const route = data.plan.itineraries[0];
             message.channel.send("Reittisi!");
+
+            const mainEmbed = new IlluminatiEmbed(message, client, {
+                title: "Reittisi",
+                description: "Katso vaiheet vaihtamalla sivua",
+            });
 
             route.legs.map((leg, index) => {
                 const startTime = new Date(leg.startTime);
@@ -139,16 +140,20 @@ const command: Command = {
                     ],
                 });
                 if (leg.trip) {
-                    embed.setFields([{
-                        name: "Trip",
-                        value: `${leg.trip.tripHeadsign} / ${leg.trip.routeShortName}`,
-                        inline: true,
-                    }]);
+                    embed.setFields([
+                        {
+                            name: "Trip",
+                            value: `${leg.trip.tripHeadsign} / ${leg.trip.routeShortName}`,
+                            inline: true,
+                        },
+                    ]);
                 }
-                message.channel.send({ embeds: [embed.embedObject] });
+                mainEmbed.addPage(embed);
             });
+
+            mainEmbed.send();
         });
     },
 };
 
-export default command
+export default command;

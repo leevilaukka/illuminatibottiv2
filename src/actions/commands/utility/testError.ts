@@ -1,5 +1,5 @@
 import { CommandError, CommandNotFoundError, DatabaseError, ErrorWithStack, PlayerError } from '../../../structures/Errors';
-import Command from "IlluminatiCommand";
+import { Command } from "../../../types"
 import { BotError, UserError } from "../../../structures/Errors";
 
 const command: Command = {
@@ -24,7 +24,7 @@ const command: Command = {
                 error = new CommandNotFoundError(errorMessage)
                 break
             case 'player':
-                error = new PlayerError(errorMessage, client.player.getQueue(message.guild).player)
+                error = new PlayerError(errorMessage, client.player.nodes.get(message.guild)?.player)
                 break
             case 'database':
                 error = new DatabaseError(errorMessage)
@@ -34,6 +34,10 @@ const command: Command = {
                 break
             case 'errorWithStack':
                 error = new ErrorWithStack(errorMessage)
+                break
+            case "clientError":
+                error = new Error(errorMessage)
+                client.emit("error", error)
                 break
             default:
                 error = new Error(errorMessage)

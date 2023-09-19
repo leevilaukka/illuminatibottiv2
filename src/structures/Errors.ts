@@ -1,7 +1,5 @@
 import { Player } from "discord-player";
-import Command from "IlluminatiCommand";
-
-
+import { Command } from "../types";
 
 /**
  * @class
@@ -22,7 +20,7 @@ export class BotError extends Error {
  */
 export class UserError extends BotError {
     constructor(message: string) {
-        super(message);
+        super(`Nyt mokasit! | ${message}`);
         this.name = "UserError";
     }
 }
@@ -34,7 +32,7 @@ export class UserError extends BotError {
  */
 export class CommandNotFoundError extends BotError {
     constructor(message: string) {
-        super(message);
+        super(`Command not found: ${message}`);
         this.name = "CommandNotFoundError";
     }
 }
@@ -59,7 +57,7 @@ export class ErrorWithStack extends BotError {
 export class PlayerError extends ErrorWithStack {
     private Player: Player;
     constructor(message: string, player: Player) {
-        super(message);
+        super(`Player Error: ${message}`);
         this.name = "PlayerError";
         this.Player = player;
     }
@@ -78,6 +76,13 @@ export class DatabaseError extends ErrorWithStack {
     constructor(message: string) {
         super(message);
         this.name = "DatabaseError";
+    }
+}
+
+export class NotFoundError extends DatabaseError {
+    constructor(message: string) {
+        super(message);
+        this.name = "NotFoundError";
     }
 }
 

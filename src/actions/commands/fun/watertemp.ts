@@ -1,5 +1,5 @@
 import { IlluminatiEmbed } from '../../../structures'
-import Command from "IlluminatiCommand"
+import { Command } from "../../../types"
 
 interface TempData {
     comment: string
@@ -22,11 +22,20 @@ interface TempData {
 const command: Command = {
     name: 'watertemp',
     aliases: ["vesi"],
-    async run(message, args, settings, client) {
+    description: 'Helsingin uimapaikkojen lämpötilat',
+    category: "fun",
+    async run(message, args, settings, client, {guild}) {
         client.axios.request<TempData>({ url: `https://iot.fvh.fi/opendata/uiras/uiras2_v1.json` })
             .then(res => {
                 const { data } = res
-                const fields = []
+                const fields = [
+                    [
+
+                    ],
+                    [
+
+                    ],
+                ]
                 let sensors = []
                 
                 for(const sensor in data.sensors) {
@@ -36,27 +45,38 @@ const command: Command = {
                     sensors.push({meta, data: sData[sData.length - 1]})
                 }
 
-                console.log(sensors)
-
                 sensors.sort((a, b) => {
                     if(a.data.temp_water > b.data.temp_water) return -1
                     if(a.data.temp_water < b.data.temp_water) return 1
                     return 0
-                }).map(sensor => {
+                }).map((sensor, index) => {
                     const { meta, data } = sensor
-                    fields.push({
+                    if (index <= 24) fields[0].push({
+                        name: `${meta.name}`,
+                        value: `🏖️: ${Math.round(data.temp_air)} °C || 💧: ${Math.round(data.temp_water)} °C ${meta.servicemap_url ? `| [Kartta](${meta.servicemap_url})` : ""} ${meta.site_url ? `| [Nettisivut](${meta.site_url})` : ""}`
+                    })
+                    else fields[1].push({
                         name: `${meta.name}`,
                         value: `🏖️: ${Math.round(data.temp_air)} °C || 💧: ${Math.round(data.temp_water)} °C ${meta.servicemap_url ? `| [Kartta](${meta.servicemap_url})` : ""} ${meta.site_url ? `| [Nettisivut](${meta.site_url})` : ""}`
                     })
                 })
                 
-                
-
-                new IlluminatiEmbed(message, client, {
+                const page2 = new IlluminatiEmbed(message, client, {
                     title: 'Helsingin uimapaikkojen lämpötilat',
                     description: "Tiedot päivitetty viimeisen 30min - 1h aikana",
-                    fields
-                }).send()
+                    fields: fields[1]
+                })
+
+                const embed = new IlluminatiEmbed(message, client, {
+                    title: 'Helsingin uimapaikkojen lämpötilat',
+                    description: "Tiedot päivitetty viimeisen 30min - 1h aikana",
+                    fields: fields[0]
+                })
+
+                if (fields[1].length > 0) embed.addPages([page2])
+
+                embed.send()
+
             })
     }
 }
