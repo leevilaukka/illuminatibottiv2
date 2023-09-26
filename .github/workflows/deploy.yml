@@ -14,9 +14,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /var/www/nodeapps/illuminatibottiv2 # navigate into the folder
-            rm -rf build # Delete current build
-            git pull origin master # clone the repo
-            npm install # install dependencies
-            tsc --build --verbose # build typescript
-            pm2 start ecosystem.config.js # start as a background service.
+            ./updateBot.sh
