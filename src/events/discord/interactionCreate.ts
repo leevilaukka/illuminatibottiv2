@@ -9,12 +9,7 @@ const handleChatInput = async (client: IlluminatiClient, interaction: ChatInputC
 
     if (!command) return;
 
-    try {
-        await command.execute(client, interaction);
-    } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'An error occurred while executing the command.', ephemeral: true });
-    }
+    await command.execute(client, interaction);
 };
 
 const handleAutocomplete = async (client: IlluminatiClient, interaction: AutocompleteInteraction) => {
@@ -24,11 +19,7 @@ const handleAutocomplete = async (client: IlluminatiClient, interaction: Autocom
 
     if (!command) return;
 
-    try {
-        await command.autocomplete(client, interaction);
-    } catch (error) {
-        console.error(error);
-    }
+    await command.autocomplete(client, interaction);
 };
 
 const handleUserContextMenu = async (client: IlluminatiClient, interaction: UserContextMenuCommandInteraction) => {
@@ -38,24 +29,36 @@ const handleUserContextMenu = async (client: IlluminatiClient, interaction: User
 
     if (!command) return;
 
-    try {
-        await command.execute(client, interaction);
-    } catch (error) {
-        console.error(error);
-    }
+    await command.execute(client, interaction);
 };
 
 export default async (client: IlluminatiClient, interaction: Interaction)  => {    
-    if(interaction.isAutocomplete()) {
-        handleAutocomplete(client, interaction);
-    }
+    try {
+        if(interaction.isAutocomplete()) {
+            handleAutocomplete(client, interaction);
+        }
+    
+        if (interaction.isUserContextMenuCommand()) {
+            handleUserContextMenu(client, interaction);
+        }
+    
+        if(interaction.isChatInputCommand()) {
+            handleChatInput(client, interaction);
+        } 
+    } catch (error) {
+        console.error(error);
 
-    if (interaction.isUserContextMenuCommand()) {
-        handleUserContextMenu(client, interaction);
-    }
+        if (interaction.isAutocomplete()) return
+        
+        const repliedOrDeferred = interaction.replied || interaction.deferred;
 
-    if(interaction.isChatInputCommand()) {
-        handleChatInput(client, interaction);
-    } 
+        if (repliedOrDeferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+    }
+    
+   
 }
    

@@ -1,12 +1,12 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, UserContextMenuCommandInteraction } from "discord.js";
 import { SlashCommand } from "../../../types";
 
-const command: SlashCommand = {
+const command: SlashCommand<UserContextMenuCommandInteraction> = {
     data: new ContextMenuCommandBuilder()
         .setName("Give Premium")
         .setType(ApplicationCommandType.User)
         .toJSON(),
-    async execute(client, interaction: UserContextMenuCommandInteraction) {
+    async execute(client, interaction) {
         const target = interaction.targetUser;
 
         if (!target) {

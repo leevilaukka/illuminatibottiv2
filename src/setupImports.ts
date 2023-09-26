@@ -99,7 +99,7 @@ export const commandImports = async (client: IlluminatiClient) => {
                 .readdirSync(`${__dirname}/actions/commands/${folder}`)
                 .filter((file: string) => file.endsWith(".js"));
 
-            console.group(`Loading commands from ${folder}...`);
+            console.group(`Loading commands from:`, folder);
             for await (const file of commandFiles) {
                 console.group();
                 import(`${__dirname}/actions/commands/${folder}/${file}`)
@@ -132,12 +132,6 @@ export const commandImports = async (client: IlluminatiClient) => {
 const setupExpress = async (client: IlluminatiClient) => {
     try {
         const app = express();
-
-        const injectClient: RequestHandler = (req, res, next) => {
-            req.client = client;
-            next();
-        };
-
         const wwwPath = path.join(__dirname, "www");
 
         console.log(`[Express] Serving static files from ${wwwPath}`);
@@ -161,7 +155,13 @@ const setupExpress = async (client: IlluminatiClient) => {
             })
         );
 
-        app.use(injectClient);
+        app.use(
+            (req, res, next) => {
+                req.client = client;
+                next();
+            }
+        );
+
         app.use(express.json());
 
         routes.forEach((route) => {

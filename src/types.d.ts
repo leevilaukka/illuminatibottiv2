@@ -125,20 +125,11 @@ interface Command {
     usage?: string;
     category: Categories | keyof typeof Categories;
     cooldown?: number;
-    enableSlash?: boolean;
     outOfOrder?: boolean;
     options?: SlashOptions[];
     permissions?: PermissionResolvable[];
     ownerOnly?: boolean;
     evalSchema?: AnyZodObject;
-    autocomplete?: (
-        client: IlluminatiClient,
-        interaction: AutocompleteInteraction
-    ) => Promise<any>;
-    interactionRun?: (
-        client: IlluminatiClient,
-        interaction: CommandInteraction
-    ) => Promise<any>;
     run: (
         message: Message,
         args: any[],
@@ -153,11 +144,11 @@ interface Command {
 type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
 type CommandJSONBodyTypes = RESTPostAPIChatInputApplicationCommandsJSONBody | RESTPostAPIApplicationCommandsJSONBody;
 
-interface SlashCommand {
+interface SlashCommand<InteractionType = CommandInteraction> {
     data: CommandBuilders | CommandJSONBodyTypes;
     execute: (
         client: IlluminatiClient,
-        interaction: CommandInteraction
+        interaction: InteractionType
     ) => Promise<any>;
     autocomplete?: (
         client: IlluminatiClient,
@@ -165,12 +156,6 @@ interface SlashCommand {
     ) => Promise<any>;        
 }
 
-type Interactions =
-    | CommandInteraction
-    | MessageInteraction
-    | ButtonInteraction
-    | SelectMenuInteraction
-    | MessageComponentInteraction;
 // Express types
 declare global {
     namespace Express {
