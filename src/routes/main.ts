@@ -1,5 +1,6 @@
 import express from "express";
 import Shortlink from "../models/Shortlink";
+import pm2 from "pm2";
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -27,7 +28,7 @@ router.get("/sh/:shortlink", async (req, res) => {
     res.redirect(shortlinkData.url);
 });
 
-router.get("/sh/stats/:shortlink", async (req, res) => {
+router.get("/shstats/:shortlink", async (req, res) => {
     const shortlink = req.params.shortlink;
 
     const shortlinkData = await Shortlink.findOne({
@@ -62,7 +63,12 @@ router.post("/sh", async (req, res) => {
 
     if (shortlink) {
         return res.status(400).json({
-            error: "Code already exists",
+            error: "Code already exists, try again",
+            retry: {    
+                url: url,
+                userID: userID,
+                to: "/api/sh",
+            }
         });
     }
 
@@ -114,6 +120,78 @@ router.post("/activity", ({ client, body }, res) => {
     });
 });
 
+// Teapot
+router.get("/teapot", (req, res) => {
+    res.status(418).json({
+        error: "I'm a teapot",
+    });
+});
+
+router.get("/pm2", (req, res) => {
+    pm2.connect((err) => {
+        if (err) {
+            console.error(err);
+        }
+
+        pm2.list((err, list) => {
+            if (err) {
+                console.error(err);
+            }
+
+            res.json({
+                pm2: list,
+            });
+
+            pm2.disconnect();
+        });
+    });
+});
+
+// RESTART BOT
+/* router.post("/restart", async (req, res) => {
+    const { client } = req;
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({
+            error: "No password provided",
+        });
+    }
+
+    if (password !== process.env.RESTART_PASSWORD) {
+        return res.status(403).json({
+            error: "Incorrect password",
+        });
+    }
+
+    if (client.isDevelopment) {
+        return res.status(403).json({
+            error: "Restarting is not allowed in development mode",
+        });
+    }
+
+    res.json({
+        message: "Restarting bot...",
+    });
+
+    client.destroy();
+    pm2.connect((err) => {
+        if (err) {
+            console.error(err);
+            process.exit(2);
+        }
+        pm2.restart("illuminatibotti", (err, proc) => {
+            if (err) {
+                console.error(err);
+            }
+
+            console.log(proc);
+
+            pm2.disconnect();
+        });
+    });
+}); */
+    
 
 
 export default router;

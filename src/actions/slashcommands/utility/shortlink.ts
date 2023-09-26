@@ -14,11 +14,13 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
         console.log(shortenerURL)
 
+        interaction.deferReply();
+
         client.axios.post(shortenerURL, {
             url: url,
             userID: interaction.user.id,
         }).then(res => {
-            const url = res.data.redicectURL;
+            const url = res.data.redirectURL;
 
             interaction.reply(url);
         }).catch(err => {
