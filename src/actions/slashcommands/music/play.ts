@@ -1,7 +1,7 @@
 import { ChatInputApplicationCommandData, ChatInputCommandInteraction, GuildMember, SlashCommandBuilder  } from "discord.js";
 import { SlashCommand } from "../../../types";
 
-const command: SlashCommand = {
+const command: SlashCommand<ChatInputCommandInteraction> = {
     data: new SlashCommandBuilder()
         .setName("play")
         .setNameLocalizations({
@@ -23,47 +23,52 @@ const command: SlashCommand = {
             .setDescriptionLocalization("fi", "Soita seuraavaksi")
         )
         .toJSON()
-    ,async execute(client, interaction: ChatInputCommandInteraction) {
+    ,async execute(client, interaction) {
         const player = client.player;
         const query = interaction.options.getString('song', true);
         const playNext = interaction.options.getBoolean('playnext', false);
         const searchResult = await player.search(query, { requestedBy: interaction.user });
 
-        if (!searchResult.hasTracks()) {
-            //Check if we found results for this query
-            await interaction.reply(`We found no tracks for ${query}!`);
-            return;
-        } else {
-            const member = interaction.member as GuildMember;
-            const res = await player.play(member.voice.channel, searchResult, {
-                requestedBy: interaction.user,
-                nodeOptions: {
-                    metadata: {
-                        channel: interaction.channel,
-                        author: interaction.user,
-                        guild: interaction.guild,
-                    }
-                },
-            });
-
-            if (res.queue.tracks.data.length > 0) {
-                if (playNext) {
-                    res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
-                    await interaction.reply(`Playing ${res.track.title} next!`);
-                    return;
-                }
-                await interaction.reply(`Added ${res.track.title} to the queue!`);
+        try {
+            if (!searchResult.hasTracks()) {
+                //Check if we found results for this query
+                await interaction.reply(`We found no tracks for ${query}!`);
+                return;
             } else {
-                await interaction.reply(`Playing ${res.track.title}!`);
+                const member = interaction.member as GuildMember;
+                const res = await player.play(member.voice.channel, searchResult, {
+                    requestedBy: interaction.user,
+                    nodeOptions: {
+                        metadata: {
+                            channel: interaction.channel,
+                            author: interaction.user,
+                            guild: interaction.guild,
+                        }
+                    },
+                });
+
+                if (res.queue.tracks.data.length > 0) {
+                    if (playNext) {
+                        res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
+                        await interaction.reply(`Playing ${res.track.title} next!`);
+                        return;
+                    }
+                    await interaction.reply(`Added ${res.track.title} to the queue!`);
+                } else {
+                    await interaction.reply(`Playing ${res.track.title}!`);
+                }
             }
+        } catch (error) {
+            console.log(error);
+            await interaction.reply("Something went wrong!");
         }
-        
     },
     async autocomplete(client, interaction) {
         const player = client.player;
         const query = interaction.options.getString('song', true);
         const results = await player.search(query);
 
+        if (!query) return
         //Returns a list of songs with their title
         return interaction.respond(
             results.tracks.slice(0, 10).map((t) => ({

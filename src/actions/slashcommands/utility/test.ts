@@ -1,7 +1,7 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../../types";
 
-const command: SlashCommand = {
+const command: SlashCommand<ChatInputCommandInteraction> = {
     data: new SlashCommandBuilder()
         .setName("test")
         .setDescription("Test command")

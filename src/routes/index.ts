@@ -8,11 +8,11 @@ import { OAuth2Routes } from "discord.js";
 const routes = [
     {
         file: main,
-        path: "/",
+        path: "/"
     },
     {
         file: music,
-        path: "/music",
+        path: "/music"
     },
     {
         file: guilds,
@@ -26,7 +26,15 @@ const routes = [
         file: user,
         path: "/user",
     },
-];
+] as const;
+
+type Route = typeof routes[number];
+
+export type RoutePath = Route["path"];
+
+export type RouteFile = Route["file"];
+
+export type ApiRoute = `/api${RoutePath}`
 
 export const OauthProviders = {
     Discord: {
