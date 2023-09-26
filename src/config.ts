@@ -1,6 +1,5 @@
-import { APIEmbed, Channel, Embed, Message, User } from "discord.js";
+import { Embed } from "discord.js";
 import { IlluminatiEmbed } from "./structures";
-import { Track } from "discord-player";
 import { ObjectId } from "mongodb";
 
 export type Config = {
