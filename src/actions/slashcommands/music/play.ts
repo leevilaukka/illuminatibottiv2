@@ -34,7 +34,7 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
         try {
             if (!searchResult.hasTracks()) {
                 //Check if we found results for this query
-                await interaction.reply(`We found no tracks for ${query}!`);
+                await interaction.editReply(`We found no tracks for ${query}!`);
                 return;
             } else {
                 const member = interaction.member as GuildMember;
@@ -52,17 +52,17 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                 if (res.queue.tracks.data.length > 0) {
                     if (playNext) {
                         res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
-                        await interaction.reply(`Playing ${res.track.title} next!`);
+                        await interaction.editReply(`Playing ${res.track.title} next!`);
                         return;
                     }
-                    await interaction.reply(`Added ${res.track.title} to the queue!`);
+                    await interaction.editReply(`Added ${res.track.title} to the queue!`);
                 } else {
-                    await interaction.reply(`Playing ${res.track.title}!`);
+                    await interaction.editReply(`Playing ${res.track.title}!`);
                 }
             }
         } catch (error) {
             console.log(error);
-            await interaction.reply("Something went wrong!");
+            await interaction.editReply("Something went wrong!");
         }
     },
     async autocomplete(client, interaction) {

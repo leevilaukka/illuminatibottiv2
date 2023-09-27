@@ -22,9 +22,9 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
         }).then(res => {
             const url = res.data.redirectURL;
 
-            interaction.reply(url);
+            interaction.editReply(url);
         }).catch(err => {
-            interaction.reply("An error occurred while creating the shortlink");
+            interaction.editReply("An error occurred while creating the shortlink");
         });
     }
 }
