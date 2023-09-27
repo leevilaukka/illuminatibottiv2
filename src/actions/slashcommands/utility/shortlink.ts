@@ -12,8 +12,6 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
         const shortenerURL = `${process.env.API_URL}:${process.env.EXPRESS_PORT}/api/sh`;
 
-        console.log(shortenerURL)
-
         await interaction.deferReply();
 
         client.axios.post(shortenerURL, {
@@ -24,7 +22,8 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
             interaction.editReply(url);
         }).catch(err => {
-            interaction.editReply("An error occurred while creating the shortlink");
+            console.error(err);
+            interaction.editReply("An error occurred while creating the shortlink:" + err.message || "Unknown error");
         });
     }
 }
