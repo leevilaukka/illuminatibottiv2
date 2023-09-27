@@ -127,26 +127,6 @@ router.get("/teapot", (req, res) => {
     });
 });
 
-router.get("/pm2", (req, res) => {
-    pm2.connect((err) => {
-        if (err) {
-            console.error(err);
-        }
-
-        pm2.list((err, list) => {
-            if (err) {
-                console.error(err);
-            }
-
-            res.json({
-                pm2: list,
-            });
-
-            pm2.disconnect();
-        });
-    });
-});
-
 // RESTART BOT
 /* router.post("/restart", async (req, res) => {
     const { client } = req;
