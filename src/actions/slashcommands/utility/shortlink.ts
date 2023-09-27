@@ -14,7 +14,7 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
         console.log(shortenerURL)
 
-        interaction.deferReply();
+        await interaction.deferReply();
 
         client.axios.post(shortenerURL, {
             url: url,

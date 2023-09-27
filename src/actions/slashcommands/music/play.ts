@@ -28,7 +28,7 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
         const query = interaction.options.getString('song', true);
         const playNext = interaction.options.getBoolean('playnext', false);
 
-        interaction.deferReply();
+        await interaction.deferReply();
         const searchResult = await player.search(query, { requestedBy: interaction.user });
 
         try {
