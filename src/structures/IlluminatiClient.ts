@@ -250,7 +250,6 @@ export default class IlluminatiClient extends Client {
             guilds: ${this.guilds.cache.size},
             commands: ${IlluminatiClient.commands.size},
             readyAt: ${this.readyAt}
-            shard: ${this.shard}
         }`;
     }
 

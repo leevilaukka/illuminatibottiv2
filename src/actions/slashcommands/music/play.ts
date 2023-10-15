@@ -65,19 +65,32 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
             await interaction.editReply("Something went wrong!");
         }
     },
-    async autocomplete(client, interaction) {
-        const player = client.player;
+    async autocomplete({ player }, interaction) {
         const query = interaction.options.getString('song', true);
-        const results = await player.search(query);
+        
+        try {
+            if (!query) return 
+    
+            const results = await player.search(query);
 
-        if (!query) return
-        //Returns a list of songs with their title
-        return interaction.respond(
-            results.tracks.slice(0, 10).map((t) => ({
-                name: `${t.title} | ${t.author}`,
-                value: t.url
-            }))
-        );
+            //Returns a list of songs with their title
+            return interaction.respond(
+                results.tracks.slice(0, 10).map(track => ({
+                    value: slice(`${track.title} - ${track.author}`, 70),
+                    name: track.title,
+                }))
+            );                    
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
+
+const slice = (str: string, length: number) => {
+    if (str.length > length) {
+        return str.slice(0, length) + "...";
+    } else {
+        return str;
     }
 }
 
