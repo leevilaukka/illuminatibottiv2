@@ -4,7 +4,7 @@ import { User } from "discord.js";
 import { IlluminatiClient } from "../structures";
 
 interface IUserMethods {
-    getDiscordUser: (client: any) => Promise<User>;
+    getDiscordUser: (client: IlluminatiClient) => Promise<User>;
     isBirthday: () => boolean;
 }
 
