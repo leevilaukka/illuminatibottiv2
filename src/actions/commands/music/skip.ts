@@ -9,6 +9,10 @@ const command: Command = {
     category: Categories.music,
     guildOnly: true,
     async run(message, args, settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return message.channel.send("Musiikkivisa on käynnissä, joten et voi ohittaa musiikkia!");
+        }
+
         if (queue.repeatMode === QueueRepeatMode.TRACK) {
             queue.setRepeatMode(QueueRepeatMode.OFF);
             queue.node.skip();

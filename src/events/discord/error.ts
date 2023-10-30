@@ -5,6 +5,9 @@ export default (client: IlluminatiClient, error: Error) => {
     // Log error
     console.error(error);
 
+    const lastMessage = client.lastMessage;
+
+    if(!lastMessage) return;
 
     const link = `https://discord.com/channels/${client.lastMessage.guildId}/${client.lastMessage.channelId}/${client.lastMessage.id}`
     // Send error to owner

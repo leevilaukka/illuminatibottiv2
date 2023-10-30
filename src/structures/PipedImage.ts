@@ -29,6 +29,10 @@ class AttachmentWriterWrapper {
         this._attachment = new Discord.AttachmentBuilder(this._path, {
             name: name || "image",
         });
+        
+        this._writer = fs.createWriteStream(this._path, {
+            flags: "w",
+        });
 
         setTimeout(() => {
             this.unlink();

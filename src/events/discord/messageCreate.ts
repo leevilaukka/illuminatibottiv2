@@ -107,6 +107,7 @@ export default async (client: IlluminatiClient, message: Message) => {
                     message.channel.sendTyping();
                     await validateArgs(command.evalSchema)(args);
                     await command
+                        // @ts-ignore
                         .run(message, args, settings, client, { guild, user, queue })
                         .then(() => {
                             user.addCommandUse(command.name);

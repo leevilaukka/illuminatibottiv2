@@ -9,6 +9,10 @@ const command: Command = {
     cooldown: 2,
 
     async run(message, args, settings, client, meta) {
+        if (meta.queue.metadata.queueHidden) {
+            return
+        }
+        
         const lyricsFinder = lyricsExtractor();
 
         const query =

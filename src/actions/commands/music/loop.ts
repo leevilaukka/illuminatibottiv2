@@ -17,6 +17,10 @@ const command: Command = {
     category: Categories.music,
     guildOnly: true,
     run(message, args, settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+        
         const loopMode = queue.repeatMode;
 
         if (queue && loopMode < 3) {
