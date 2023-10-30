@@ -2,7 +2,8 @@ import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 
 import Guild from "../../../models/Guild";
-import { Errors } from "../../../structures";
+import { Errors } from "../../../structures";    
+
 
 const command: Command = {
     name: "addthrow",
@@ -15,11 +16,7 @@ const command: Command = {
     run(message, args, settings, client) {
         const [heitto, ...rest] = args;
 
-        if (
-            heitto.endsWith(".png") ||
-            heitto.endsWith(".jpg") ||
-            heitto.endsWith(".gif")
-        ) {
+        if ([".jpg", ".png", ".gif"].some((suffix) => heitto.endsWith(suffix))) {
             Guild.findOneAndUpdate(
                 { guildID: message.guild.id },
                 {

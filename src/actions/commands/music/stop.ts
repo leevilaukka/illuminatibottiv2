@@ -7,6 +7,10 @@ const command: Command = {
     guildOnly: true,
     category: Categories.music,
     run(message, args, settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return message.channel.send("Musiikkivisa on käynnissä, joten et voi pysäyttää musiikkia!");
+        }
+        
         if (queue) {
             queue.node.stop();
             return message.reply("Musiikki pysäytetty!");

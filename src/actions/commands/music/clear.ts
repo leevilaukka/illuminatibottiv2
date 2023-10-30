@@ -7,6 +7,10 @@ const command: Command = {
     description: "Clear the music queue",
     guildOnly: true,
     run(message, args, settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+
         if (queue && queue.tracks.data.length > 0) {
             queue.clear();
             return message.reply("Jono tyhjennetty!");

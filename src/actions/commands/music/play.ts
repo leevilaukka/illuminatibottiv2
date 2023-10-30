@@ -11,7 +11,11 @@ const command: Command = {
     description: "Plays a song",
     category: Categories.music,
     guildOnly: true,
-    async run(message, args, _settings, client) {
+    async run(message, args, _settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+
         if (!message.member.voice.channelId) {
             throw new UserError("Et ole puhekanavalla!");
         }

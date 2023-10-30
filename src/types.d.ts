@@ -30,6 +30,7 @@ import UserFunctions, {
 } from "./structures/IlluminatiUser";
 import { GuildQueue } from "discord-player";
 import { AnyZodObject, ZodAny, ZodAnyDef, ZodArray, z } from "zod";
+import { PlayerQueue } from "PlayerMetadata";
 
 type BotError = {
     error: Error;
@@ -106,14 +107,22 @@ type SlashOptions = {
 type CommandMeta = {
     guild: IlluminatiGuild<Guild>;
     user: IlluminatiUser<User>;
-    queue: GuildQueue;
+    queue: GuildQueue<{
+        channel: Channel;
+        author?: User;
+        message?: Message;
+        command?: Command;
+        fromAPI?: boolean;
+        guild?: Guild;
+        queueHidden?: boolean;
+    }>;
 };
 
 type CommandResponse =
     | string
     | { embed: any }
     | { content: string; embed: any }
-    | Message<true | false>
+    | Message
     | void;
 
 interface Command {
@@ -143,6 +152,7 @@ interface Command {
 
 type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
 type CommandJSONBodyTypes = RESTPostAPIChatInputApplicationCommandsJSONBody | RESTPostAPIApplicationCommandsJSONBody;
+
 
 interface SlashCommand<InteractionType = CommandInteraction> {
     data: CommandBuilders | CommandJSONBodyTypes;

@@ -18,6 +18,8 @@ const command: Command = {
     async run(message, args, settings, client, {queue}) {
         const nowPlaying = queue.currentTrack;
 
+        if (queue.metadata.queueHidden) return message.channel.send("Jono on piilotettu"); 
+
         if (!nowPlaying) throw new UserError("No song playing.");
 
         new IlluminatiEmbed(message, client, {

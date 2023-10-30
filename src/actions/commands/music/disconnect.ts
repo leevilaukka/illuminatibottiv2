@@ -9,6 +9,10 @@ export default {
     aliases: ["dc", "leave"],
     guildOnly: true,
     run({reply}, args, settings, client, {queue}) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+
         if (queue) {
             queue.delete();
             return reply("Heippa!");

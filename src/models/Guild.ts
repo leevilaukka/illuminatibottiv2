@@ -125,6 +125,20 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Playlist",
     }],
+    musicQuiz: {
+        playlists: {
+            type: [String],
+            default: config.defaultSettings.musicQuiz.playlists,
+        },
+        timeout: {
+            type: Number,
+            default: config.defaultSettings.musicQuiz.timeout,
+        },
+        points: {
+            type: [Number],
+            default: config.defaultSettings.musicQuiz.points,
+        },
+    },
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);
 export default model;

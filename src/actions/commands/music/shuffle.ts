@@ -8,6 +8,10 @@ const command: Command = {
     guildOnly: true,
     category: Categories.music,
     run(message, args, settings, client, { queue }) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+
         if (queue.tracks.data.length > 1) {
             queue.tracks.shuffle();
             return message.reply(

@@ -5,7 +5,11 @@ const command: Command = {
     name: "player", 
     description: "Player web GUI",
     category: "music",
-    async run(message, args, settings, client, {guild}) {
+    async run(message, args, settings, client, {guild, queue}) {
+        if (queue.metadata.queueHidden) {
+            return
+        }
+
         const link = guild.playerLink;
 
         return new IlluminatiEmbed(message, client, {

@@ -11,6 +11,10 @@ const command: Command = {
     async run(message, args, settings, client, { queue }) {
         const comingUpPages = [[]];
 
+        if (queue.metadata.queueHidden) {
+            return message.channel.send("Jono on piilotettu");
+        }
+
         queue.tracks.map((track, index) => {
             if (index % 10 === 0) {
                 comingUpPages.push([]);

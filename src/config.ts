@@ -1,6 +1,7 @@
 import { Embed } from "discord.js";
 import { IlluminatiEmbed } from "./structures";
 import { ObjectId } from "mongodb";
+import { Url } from "url";
 
 export type Config = {
     token: string;
@@ -57,6 +58,12 @@ export type GuildSettings = {
     stacksEnabled: boolean;
     playlists: ObjectId[];
     lastUsedVoiceChannel: string;
+    musicQuiz: {
+        playlists: string[];
+        timeout: number;
+        points: [number, number];
+        rounds: number;
+    };
 };
 
 const config = {
@@ -105,6 +112,14 @@ const config = {
         stacksEnabled: true,
         playlists: [] as ObjectId[],
         lastUsedVoiceChannel: "",
+        musicQuiz: {
+            rounds: 10 as number,
+            points: [2, 1] as [number, number],
+            playlists: [
+                "https://open.spotify.com/playlist/3BnxpQEIcpsEIB0eY8WfJB?si=cfd96cb1202a4d4b"
+            ] as string[],
+            timeout: 30000 as number,
+        },
     },
 } as const;
 

@@ -15,6 +15,10 @@ const command: Command = {
     category: Categories.music,
     evalSchema: schema,
     run(message, args: Args["args"], settings, client, meta) {
+        if (meta.queue.metadata.queueHidden) {
+            return
+        }
+
         const [time] = args 
         if (!time) throw new UserError('Please provide a time to seek to.')
 
