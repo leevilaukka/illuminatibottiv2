@@ -1,10 +1,13 @@
 import { Track } from "discord-player";
-import { Colors } from "discord.js";
+import { Colors, Message } from "discord.js";
 import { IlluminatiEmbed } from "../../structures";
 import { BotError } from "../../structures/Errors";
 import { PlayerEvent } from "../../types/PlayerEvent";
 
 const evt: PlayerEvent = async (client, queue, track: Track) => {
+    if (!queue.metadata.message) {
+        return;
+    }
     if (!track) {
         throw new BotError("No track playing.");
     }
@@ -18,6 +21,10 @@ const evt: PlayerEvent = async (client, queue, track: Track) => {
     }
 
     if (queue.metadata.fromAPI) {
+        return;
+    }
+
+    if (queue.metadata.queueHidden) {
         return;
     }
 
@@ -39,7 +46,6 @@ const evt: PlayerEvent = async (client, queue, track: Track) => {
         ])
         .setColor(Colors.Blurple);
 
-    console.log(queue.metadata.channel)
     return queue.metadata.channel.send({ embeds: [embed] });
 };
 
