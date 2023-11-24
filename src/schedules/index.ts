@@ -19,20 +19,18 @@ const importSchedules = async (client: IlluminatiClient) => {
     try {
         for await (const job of jobs) {
             const jobFileName = `${__dirname}/${job}`
-            try {
-                import(jobFileName).then(({ default: job }: {default: IlluminatiJob}) => {
-                    console.log(`Loaded schedule: ${job.name}`)
-                    if (job.devOnly && process.env.NODE_ENV !== 'development') return;
-                    if (!job.schedule) throw new Error(`Schedule not defined for ${job.name} at ${jobFileName}`)
-                    if (typeof job.run !== "function") throw new Error(`Run function not defined for ${job.name} at ${jobFileName}`)
-                    schedule.scheduleJob(job.schedule, job.run(client))
-                    client.jobs.set(job.name, job);
-                    if (job.onInit) job.onInit(client);
-                });
-            }
-            catch (error) {
-                throw new ErrorWithStack(error);
-            }
+            
+            import(jobFileName).then(({ default: job }: {default: IlluminatiJob}) => {
+                console.log(`Loaded schedule: ${job.name}`)
+                if (job.devOnly && process.env.NODE_ENV !== 'development') return;
+                if (!job.schedule) throw new Error(`Schedule not defined for ${job.name} at ${jobFileName}`)
+                if (typeof job.run !== "function") throw new Error(`Run function not defined for ${job.name} at ${jobFileName}`)
+                
+                schedule.scheduleJob(job.schedule, job.run(client))
+                client.jobs.set(job.name, job);
+                
+                job.onInit?.(client);
+            });  
         }
     } catch (error) {
         throw new ErrorWithStack(error);

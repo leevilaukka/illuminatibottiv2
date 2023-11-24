@@ -31,6 +31,7 @@ import { codeBlock } from "@discordjs/builders";
 import { IlluminatiJob } from "../schedules";
 import { EventEmitter } from "events";
 import { cwd } from "process";
+import MusicQuiz from "./MusicQuiz";
 
 /**
  * @name IlluminatiClient
@@ -56,6 +57,7 @@ export default class IlluminatiClient extends Client {
     env: string;
     axios: AxiosInstance = axios.create();;
     logger: IlluminatiLogger = new IlluminatiLogger(this);
+    quizzes: Collection<string, MusicQuiz> = new Collection();
     domainData: {
         domains: [
             {
