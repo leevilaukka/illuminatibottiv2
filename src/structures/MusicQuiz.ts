@@ -181,7 +181,7 @@ class MusicQuiz {
             // Check if song is already playing
             if (skip) {
                 // Move song to top of queue
-                res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
+                // res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
                 res.queue.node.skip();
             }
         });
