@@ -11,6 +11,16 @@ enum QuizAnswerType {
     TITLE,
     ARTIST,
 }
+
+type PlayerType = {
+    user: IlluminatiUser<User>,
+    correctAnswers: number,
+    incorrectAnswers: number,
+    totalAnswers: number,
+    totalPoints: number,
+    totalWins: number,
+}
+
 class MusicQuiz {
     private songUrls: string[];
     private client: IlluminatiClient;
@@ -30,7 +40,7 @@ class MusicQuiz {
     private playlist: SearchResult;
     private skipStartTime: number;
     private answerThresholds: [number, number];
-    players: Collection<string, IlluminatiUser<User>>;
+    players: Collection<string, PlayerType>;
 
     constructor(interaction: Interaction, playlistUrl: string, client: IlluminatiClient, settings?: { timeout: number, rounds: number, points?: [number, number], answerThresholds?: [number, number], skipStartTime?: number}) {
         this.songUrls = [];
@@ -53,7 +63,7 @@ class MusicQuiz {
         this.guessTimeouts = new Collection<string, NodeJS.Timeout>();
         this.guessTimeout = 1000;
 
-        this.players = new Collection<string, IlluminatiUser<User>>();
+        this.players = new Collection<string, PlayerType>();
 
         this.timeout = settings.timeout || 30000;
         this.timer = setTimeout(() => {
@@ -72,13 +82,26 @@ class MusicQuiz {
     
         // Add the same number of songs as rounds to songUrls
         this.songUrls = this.playlist.tracks.splice(0, this.rounds).map(track => track.url);
+
+        console.log(this.songUrls.length);
     
         // Shuffle songs
         this.songUrls.sort(() => Math.random() - 0.5);
 
         (this.interaction.member as GuildMember).voice.channel.members.forEach(member => {
-            if(!member.user.bot) this.players.set(member.id, new this.client.userManager(member.user));
+            const data = {
+                user: new this.client.userManager(member.user),
+                correctAnswers: 0,
+                incorrectAnswers: 0,
+                totalAnswers: 0,
+                totalPoints: 0,
+                totalWins: 0,
+            }
+
+            if(!member.user.bot) this.players.set(member.id, data);
         });
+
+        console.log(this.players);
 
         // Play first song
         this.playSong(this.songUrls[0]);
@@ -94,17 +117,17 @@ class MusicQuiz {
         return songName.trim();
     }
 
-    async nextSong(getNewFromPlaylist: boolean = false) {
+    async nextSong(/*getNewFromPlaylist: boolean = false*/) {
         // Reset correct answer
         this.correctAnswer = [false, false];
 
         // Get random song from songUrls
         const song = this.songUrls[this.currentIndex++];
 
-        if (getNewFromPlaylist) {
+        /*if (getNewFromPlaylist) {
             console.info("Getting new song from playlist");
             this.songUrls.push(randomArray(this.playlist.tracks).url);
-        } 
+        }*/
 
         if(!song) {
             return this.stop();
@@ -121,7 +144,7 @@ class MusicQuiz {
 
         if (!this.currentSongInfo) {
             console.error("No song info found, skipping song."); 
-            return this.nextSong(true);
+            return this.nextSong();
         }
 
         this.collector = this.interaction.channel.createMessageCollector({ filter: m => !m.author.bot, time: this.timeout }).on('collect', message => {
@@ -142,12 +165,12 @@ class MusicQuiz {
             console.error(err);
             // If error, play next song
             console.error("Error playing song, skipping song.");
-            return this.nextSong(true);
+            return this.nextSong();
         }).then(res => {
             // If no song was found, play next song
             if (!res) {
                 console.error("No song found, skipping song.");
-                return this.nextSong(true);
+                return this.nextSong();
             }
 
             // Set timer for next song
@@ -225,8 +248,6 @@ class MusicQuiz {
             this.rightAnswer();
             this.nextSong();
         }
-
-        return this.correctAnswer;
     }
 
     async stop() {
