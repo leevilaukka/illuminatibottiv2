@@ -1,8 +1,9 @@
-import { Collection, EmbedBuilder, GuildMember, Interaction, Message, MessageCollector, VoiceChannel } from 'discord.js';
+import { Collection, EmbedBuilder, GuildMember, Interaction, Message, MessageCollector, User, VoiceChannel } from 'discord.js';
 import IlluminatiClient from './IlluminatiClient';
 import { compareTwoStrings } from 'string-similarity';
 import { SearchResult } from 'discord-player';
 import { randomArray } from './IlluminatiHelpers';
+import IlluminatiUser from './IlluminatiUser';
 
 const { getPreview } = require("spotify-url-info")(fetch);
 
@@ -29,6 +30,7 @@ class MusicQuiz {
     private playlist: SearchResult;
     private skipStartTime: number;
     private answerThresholds: [number, number];
+    players: Collection<string, IlluminatiUser<User>>;
 
     constructor(interaction: Interaction, playlistUrl: string, client: IlluminatiClient, settings?: { timeout: number, rounds: number, points?: [number, number], answerThresholds?: [number, number], skipStartTime?: number}) {
         this.songUrls = [];
@@ -51,6 +53,8 @@ class MusicQuiz {
         this.guessTimeouts = new Collection<string, NodeJS.Timeout>();
         this.guessTimeout = 1000;
 
+        this.players = new Collection<string, IlluminatiUser<User>>();
+
         this.timeout = settings.timeout || 30000;
         this.timer = setTimeout(() => {
             this.rightAnswer();
@@ -71,7 +75,11 @@ class MusicQuiz {
     
         // Shuffle songs
         this.songUrls.sort(() => Math.random() - 0.5);
-    
+
+        (this.interaction.member as GuildMember).voice.channel.members.forEach(member => {
+            if(!member.user.bot) this.players.set(member.id, new this.client.userManager(member.user));
+        });
+
         // Play first song
         this.playSong(this.songUrls[0]);
     }
@@ -171,15 +179,6 @@ class MusicQuiz {
             return
         }
 
-        const user = new this.client.userManager(message.author);
-        const userData = await user.getStats();
-
-        user.updateUserStats({
-            musicQuiz: {
-                totalAnswers: userData.musicQuiz.totalAnswers + 1,
-            }
-        });
-
         // Clean song title
         const title = this.cleanSongName(this.currentSongInfo.track);
 
@@ -188,17 +187,14 @@ class MusicQuiz {
             this.guessTimeouts.delete(message.member.id);
         }, this.guessTimeout));
 
-        // Check similarity of message content and song title and artist
-        const titleSimilarity = compareTwoStrings(message.content.toLowerCase(), title.toLowerCase());
-        const authorSimilarity = compareTwoStrings(message.content.toLowerCase(), this.currentSongInfo.artist.toLowerCase());
+        const similarities = [compareTwoStrings(message.content.toLowerCase(), title.toLowerCase()), compareTwoStrings(message.content.toLowerCase(), this.currentSongInfo.artist.toLowerCase())];
 
         if (this.client.isDevelopment) {
-            console.log(titleSimilarity);
-            console.log(authorSimilarity);
+            console.log(similarities);
         }
 
         // Check if answer is correct
-        if (titleSimilarity > this.answerThresholds[QuizAnswerType.TITLE] && !this.correctAnswer[QuizAnswerType.TITLE]) {
+        if (similarities[QuizAnswerType.TITLE] > this.answerThresholds[QuizAnswerType.TITLE] && !this.correctAnswer[QuizAnswerType.TITLE]) {
             if (!this.scores.has(message.member.id)) {
                 this.scores.set(message.member.id, 0);
             }
@@ -209,14 +205,7 @@ class MusicQuiz {
             message.react('🎵');
 
             this.correctAnswer[QuizAnswerType.TITLE] = true;
-
-            user.updateUserStats({
-                musicQuiz: {
-                    correctAnswers: userData.musicQuiz.correctAnswers + 1,
-                    totalPoints: userData.musicQuiz.totalPoints + this.points[QuizAnswerType.TITLE],
-                }
-            });
-        } else if (authorSimilarity > this.answerThresholds[QuizAnswerType.ARTIST] && !this.correctAnswer[QuizAnswerType.ARTIST]) {
+        } else if (similarities[QuizAnswerType.ARTIST] > this.answerThresholds[QuizAnswerType.ARTIST] && !this.correctAnswer[QuizAnswerType.ARTIST]) {
             if (!this.scores.has(message.member.id)) {
                 this.scores.set(message.member.id, 0);
             }
@@ -227,20 +216,8 @@ class MusicQuiz {
             message.react('🧑‍🎤');
 
             this.correctAnswer[QuizAnswerType.ARTIST] = true;
-
-            user.updateUserStats({
-                musicQuiz: {
-                    correctAnswers: userData.musicQuiz.correctAnswers + 1,
-                    totalPoints: userData.musicQuiz.totalPoints + this.points[QuizAnswerType.ARTIST],
-                }
-            });
         } else {
             message.react('👎');
-            user.updateUserStats({
-                musicQuiz: {
-                    incorrectAnswers: userData.musicQuiz.incorrectAnswers + 1,
-                }
-            });    
         }
 
         // Check if both answers are correct
