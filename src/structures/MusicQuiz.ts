@@ -79,14 +79,13 @@ class MusicQuiz {
     async init() {
         // Get playlist
         this.playlist = await this.client.player.search(this.playlistUrl, { requestedBy: this.interaction.user })
-    
+        
         // Add the same number of songs as rounds to songUrls
-        this.songUrls = this.playlist.tracks.splice(0, this.rounds).map(track => track.url);
+        this.songUrls = this.playlist.tracks.sort(() => Math.random() - 0.5).splice(0, this.rounds).map(track => track.url);
 
         console.log(this.songUrls.length);
     
         // Shuffle songs
-        this.songUrls.sort(() => Math.random() - 0.5);
 
         (this.interaction.member as GuildMember).voice.channel.members.forEach(member => {
             const data = {
