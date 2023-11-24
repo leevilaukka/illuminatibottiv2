@@ -138,6 +138,14 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
             type: [Number],
             default: config.defaultSettings.musicQuiz.points,
         },
+        answerThresholds: {
+            type: [Number],
+            default: config.defaultSettings.musicQuiz.answerThresholds,
+        },
+        wins: {
+            type: Schema.Types.Map,
+            of: Number,
+        },
     },
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);

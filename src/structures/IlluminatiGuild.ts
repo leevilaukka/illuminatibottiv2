@@ -142,6 +142,7 @@ class IlluminatiGuild<T extends Guild> {
             throw new Errors.DatabaseError(e);
         }
     }
+        
 
     /**
      * Create a new Guild to database

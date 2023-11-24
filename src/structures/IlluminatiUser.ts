@@ -6,6 +6,15 @@ import { BotError, DatabaseError } from "./Errors";
 import { time } from "@discordjs/builders";
 import { RawUserData } from "discord.js/typings/rawDataTypes";
 
+type MusicQuizStats = Partial<{
+    correctAnswers: number;
+    incorrectAnswers: number;
+    totalAnswers: number;
+    totalPoints: number;
+    totalGames: number;
+    totalWins: number;
+}>;
+
 type UserStats = {
     money: number;
     level: number;
@@ -18,6 +27,7 @@ type UserStats = {
     dailyStreak: number,
     lastCommand: Date | null,
     birthday: Date | null,
+    musicQuiz: MusicQuizStats;
 }
 
 export type IlluminatiUserTypes = {

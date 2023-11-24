@@ -28,11 +28,19 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, IlluminatiUserModel
         premium: { type: Boolean, default: false },
         dailyStreak: { type: Number, default: 0 },
         birthday: { type: Date, default: null },
+        musicQuiz: {
+            correctAnswers: { type: Number, default: 0 },
+            incorrectAnswers: { type: Number, default: 0 },
+            totalAnswers: { type: Number, default: 0 },
+            totalPoints: { type: Number, default: 0 },
+            totalWins: { type: Number, default: 0 },
+        },
     },
 })
 
 IlluminatiUserSchema.method<IlluminatiUserTypes>("getDiscordUser", async function (client: IlluminatiClient) {
     return await client.users.fetch(this.discordID);
+    
 });
 
 IlluminatiUserSchema.method<IlluminatiUserTypes>("isBirthday", function () {

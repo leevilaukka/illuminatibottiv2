@@ -37,8 +37,7 @@ export default async (client: IlluminatiClient, message: Message) => {
     if (settings.randomMessages) await messageCheck(message);
 
     // Regex for mention
-    const escapeRegex = (str: string) =>
-        str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const prefixRegex = new RegExp(
         `^(<@!?${client.user.id}>|${escapeRegex(settings.prefix)})\\s*`

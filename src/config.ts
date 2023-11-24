@@ -2,6 +2,7 @@ import { Embed } from "discord.js";
 import { IlluminatiEmbed } from "./structures";
 import { ObjectId } from "mongodb";
 import { Url } from "url";
+import { Mongoose } from "mongoose";
 
 export type Config = {
     token: string;
@@ -63,6 +64,7 @@ export type GuildSettings = {
         timeout: number;
         points: [number, number];
         rounds: number;
+        wins: Map<string, number>;
     };
 };
 
@@ -119,6 +121,8 @@ const config = {
                 "https://open.spotify.com/playlist/3BnxpQEIcpsEIB0eY8WfJB?si=cfd96cb1202a4d4b"
             ] as string[],
             timeout: 30000 as number,
+            wins: {} as Map<string, number>,
+            answerThresholds: [0.5, 0.75] as [number, number],
         },
     },
 } as const;

@@ -13,6 +13,8 @@ import {
     MessageActionRowComponentData,
     ButtonBuilder,
     ButtonComponent,
+    Interaction,
+    ChatInputCommandInteraction,
 } from "discord.js";
 import { IlluminatiClient, Errors } from ".";
 
@@ -28,14 +30,14 @@ import { BaseMessageOptions } from "discord.js/typings/index.js";
  */
 
 export default class IlluminatiEmbed extends EmbedBuilder {
-    private message: Message;
+    private message: Message | ChatInputCommandInteraction;
     private client: IlluminatiClient;
     private rows: ActionRowBuilder[] = [];
     private pages: IlluminatiEmbed[] = [];
     private MAX_DESCRIPTION_LENGTH = 4096 as const;
     currentPage = 0;
 
-    constructor(message: Message, client: IlluminatiClient, data?: APIEmbed) {
+    constructor(message: Message | ChatInputCommandInteraction, client: IlluminatiClient, data?: APIEmbed) {
         super(data);
 
         this.message = message;

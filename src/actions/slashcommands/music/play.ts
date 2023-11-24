@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, ChatInputCommandInteraction, GuildMember, SlashCommandBuilder  } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, SlashCommandBuilder  } from "discord.js";
 import { SlashCommand } from "../../../types";
 
 const command: SlashCommand<ChatInputCommandInteraction> = {
@@ -33,7 +33,6 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
         try {
             if (!searchResult.hasTracks()) {
-                //Check if we found results for this query
                 await interaction.editReply(`We found no tracks for ${query}!`);
                 return;
             } else {
@@ -49,15 +48,34 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                     },
                 });
 
+                const embed = new EmbedBuilder()
+                    .setImage(res.track.thumbnail)
+                    .addFields([
+                        {
+                            name: "Duration",
+                            value: res.track.duration,
+                            inline: true
+                        },
+                        {
+                            name: "Author",
+                            value: res.track.author,
+                            inline: true
+                        },
+                    ]);
+
                 if (res.queue.tracks.data.length > 0) {
                     if (playNext) {
                         res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
-                        await interaction.editReply(`Playing ${res.track.title} next!`);
+                        embed.setTitle(`Playing next: ${res.track.title}`);
+                        await interaction.editReply({ embeds: [embed] });
                         return;
                     }
-                    await interaction.editReply(`Added ${res.track.title} to the queue!`);
+                    
+                    embed.setTitle(`Added to queue: ${res.track.title}`);
+                    await interaction.editReply({ embeds: [embed] });
                 } else {
-                    await interaction.editReply(`Playing ${res.track.title}!`);
+                    embed.setTitle(`Playing: ${res.track.title}`);
+                    await interaction.editReply({ embeds: [embed] });
                 }
             }
         } catch (error) {
