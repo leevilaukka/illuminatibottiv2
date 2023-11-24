@@ -145,7 +145,7 @@ class MusicQuiz {
             // Set timer for next song
             this.timer.refresh()
 
-            res.queue.node.seek(this.skipStartTime * 1000);
+            this.skipStartTime > 1 && res.queue.node.seek(this.skipStartTime * 1000);
 
             this.client.isDevelopment && console.log(this.currentSongInfo);
             // Check if song is already playing
