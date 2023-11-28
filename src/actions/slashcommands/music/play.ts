@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, SlashCommandBuilder  } from "discord.js";
 import { SlashCommand } from "../../../types";
+import { IlluminatiEmbed } from "../../../structures";
 
 const command: SlashCommand<ChatInputCommandInteraction> = {
     data: new SlashCommandBuilder()
@@ -47,9 +48,8 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                         }
                     },
                 });
-
-                const embed = new EmbedBuilder()
-                    .setImage(res.track.thumbnail)
+                const embed = new IlluminatiEmbed(interaction, client)
+                    .setThumbnail(res.track.thumbnail)
                     .addFields([
                         {
                             name: "Duration",
@@ -61,7 +61,12 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                             value: res.track.author,
                             inline: true
                         },
-                    ]);
+                    ])
+                    .setFooter({
+                        text: `Requested by ${res.track.requestedBy.tag}`,
+                        iconURL: res.track.requestedBy.displayAvatarURL()
+                    })
+                    .setTimestamp();
 
                 if (res.queue.tracks.data.length > 0) {
                     if (playNext) {
@@ -75,6 +80,10 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                     await interaction.editReply({ embeds: [embed] });
                 } else {
                     embed.setTitle(`Playing: ${res.track.title}`);
+                    embed.setFooter({
+                        text: `Requested by ${res.track.requestedBy.tag}`,
+                        iconURL: res.track.requestedBy.displayAvatarURL()
+                    });
                     await interaction.editReply({ embeds: [embed] });
                 }
             }

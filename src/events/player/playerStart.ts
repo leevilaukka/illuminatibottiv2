@@ -1,5 +1,5 @@
 import { Track } from "discord-player";
-import { Colors, Message } from "discord.js";
+import { ActivityType, Colors, Message } from "discord.js";
 import { IlluminatiEmbed } from "../../structures";
 import { BotError } from "../../structures/Errors";
 import { PlayerEvent } from "../../types/PlayerEvent";

@@ -4,24 +4,17 @@ import {
     APIEmbed,
     ActionRowBuilder,
     AnyComponentBuilder,
-    MessagePayload,
-    MessageCreateOptions,
-    JSONEncodable,
-    APIActionRowComponent,
-    APIMessageActionRowComponent,
-    ActionRowData,
-    MessageActionRowComponentData,
     ButtonBuilder,
-    ButtonComponent,
-    Interaction,
     ChatInputCommandInteraction,
+    MessagePayloadOption,
+    BaseMessageOptions,
 } from "discord.js";
+
 import { IlluminatiClient, Errors } from ".";
 
-import { BaseMessageOptions } from "discord.js/typings/index.js";
 
 /**
- * A
+ * @classdesc A class that extends the Discord MessageEmbed class. Used for creating embeds with a consistent style. Supports pagination.
  * @constructor
  * @extends {MessageEmbed} Discord MessageEmbed class
  * @param {Message} [message] - The message that executed the command that resulted in this embed
@@ -30,17 +23,17 @@ import { BaseMessageOptions } from "discord.js/typings/index.js";
  */
 
 export default class IlluminatiEmbed extends EmbedBuilder {
-    private message: Message | ChatInputCommandInteraction;
+    private initiator: Message | ChatInputCommandInteraction;
     private client: IlluminatiClient;
     private rows: ActionRowBuilder[] = [];
     private pages: IlluminatiEmbed[] = [];
     private MAX_DESCRIPTION_LENGTH = 4096 as const;
     currentPage = 0;
 
-    constructor(message: Message | ChatInputCommandInteraction, client: IlluminatiClient, data?: APIEmbed) {
+    constructor(initiator: Message | ChatInputCommandInteraction, client: IlluminatiClient, data?: APIEmbed) {
         super(data);
 
-        this.message = message;
+        this.initiator = initiator;
         this.client = client;
 
         this.parseData();
@@ -96,6 +89,11 @@ export default class IlluminatiEmbed extends EmbedBuilder {
         return this;
     }
 
+    setCurrentPage(page: number) {
+        this.currentPage = page;
+        return this;
+    }
+
     pageUp() {
         this.currentPage++;
         if (this.currentPage > this.pages.length - 1) this.currentPage = 0;
@@ -108,14 +106,19 @@ export default class IlluminatiEmbed extends EmbedBuilder {
         return this;
     }
 
-    pageIndicator() {
+    get pageIndicator() {
         return `${this.currentPage + 1}/${this.pages.length}`;
     }
 
-    async createPagination(addedOptions?: any) {
+    private async createPagination(addedOptions?: any) {
         this.pages.unshift(this);
         this.rows.push(
             new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                    .setCustomId("first")
+                    .setLabel("Ensimmäinen")
+                    .setEmoji("⏮️")
+                    .setStyle(2),
                 new ButtonBuilder()
                     .setCustomId("previous")
                     .setLabel("Edellinen")
@@ -125,11 +128,16 @@ export default class IlluminatiEmbed extends EmbedBuilder {
                     .setCustomId("next")
                     .setLabel("Seuraava")
                     .setEmoji("➡️")
+                    .setStyle(2),
+                new ButtonBuilder()
+                    .setCustomId("last")
+                    .setLabel("Viimeinen")
+                    .setEmoji("⏭️")
                     .setStyle(2)
             )
         );
 
-        const msg = await this.message.channel.send({
+        const msg = await this.initiator.channel.send({
             embeds: [this],
             components: this.rows,
             ...addedOptions,
@@ -147,13 +155,24 @@ export default class IlluminatiEmbed extends EmbedBuilder {
                     this.pageUp();
                     interaction.deferUpdate();
                     break;
+                case "first":
+                    this.setCurrentPage(0);
+                    interaction.deferUpdate();
+                    break;
+                case "last":
+                    this.setCurrentPage(this.pages.length - 1);
+                    interaction.deferUpdate();
+                    break;
             }
 
             await msg.edit({ embeds: [this.pages[this.currentPage]] });
         });
 
         collector.on("end", () => {
-            msg.edit({ components: [] });
+            msg.edit({
+                components: [],
+            });
+            msg.deletable && msg.delete();
         });
 
         return msg;
@@ -170,7 +189,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
     async send(addedOptions?: any) {
         if (this.pages.length > 0) return this.createPagination(addedOptions);
         try {
-            return await this.message.channel.send({
+            return await this.initiator.channel.send({
                 embeds: [this],
                 components: this.rows,
                 ...addedOptions,
@@ -180,13 +199,17 @@ export default class IlluminatiEmbed extends EmbedBuilder {
         }
     }
 
-    async reply(options?: any) {
-        if (this.pages.length > 0) return this.createPagination(options);
-        return await this.message.reply({
-            ...options,
-            embeds: [this],
-            components: this.rows,
-        });
+    async reply(addedOptions?: any) {
+        if (this.pages.length > 0) return this.createPagination(addedOptions);
+        try {
+            return await this.initiator.reply({
+                ...addedOptions,
+                embeds: [this],
+                components: this.rows,
+            });
+        } catch (err) {
+            throw new Errors.BotError(err);
+        }
     }
 
     //#endregion
@@ -201,14 +224,14 @@ export default class IlluminatiEmbed extends EmbedBuilder {
      */
 
     async sendMany(embeds?: (EmbedBuilder | IlluminatiEmbed)[], options?: any) {
-        await this.message.channel.send({
+        await this.initiator.channel.send({
             embeds: [this, ...embeds],
             ...options,
         });
     }
 
     async replyMany(embeds: (EmbedBuilder | IlluminatiEmbed)[], options?: any) {
-        await this.message.reply({ embeds: [this, ...embeds], ...options });
+        await this.initiator.reply({ embeds: [this, ...embeds], ...options });
     }
 
     //#endregion
@@ -221,7 +244,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
 
     async save() {
         new this.client
-            .guildManager(this.message.guild)
+            .guildManager(this.initiator.guild)
             .pushToArray("embeds", this);
     }
 }
