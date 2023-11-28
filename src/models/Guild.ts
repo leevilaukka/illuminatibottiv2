@@ -146,6 +146,10 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
             type: Schema.Types.Map,
             of: Number,
         },
+        rounds: {
+            type: Number,
+            default: config.defaultSettings.musicQuiz.rounds,
+        },
     },
 });
 const model = mongoose.model<GuildSettings>("Guild", GuildSchema);

@@ -93,7 +93,7 @@ router.get("/status", ({ client, queue }, res) => {
         uptime: client.uptime,
         environment: process.env.NODE_ENV,
         queue: queue || null,
-        activity: client.user.presence.activities[0],
+        activities: client.user.presence.activities,
         ping: client.ws.ping,
     });
 });
@@ -117,6 +117,14 @@ router.post("/activity", ({ client, body }, res) => {
 
     res.json({
         activity: activityRes,
+    });
+});
+
+router.get("/quizzes", ({ client }, res) => {
+    const quizzes = client.quizzes;
+
+    res.json({
+        quizzes: quizzes,
     });
 });
 

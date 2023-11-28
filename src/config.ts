@@ -65,6 +65,9 @@ export type GuildSettings = {
         points: [number, number];
         rounds: number;
         wins: Map<string, number>;
+        answerThresholds: [number, number];
+        startSkipTime: number | null;
+        firstArtistOnly: boolean;
     };
 };
 
@@ -123,6 +126,8 @@ const config = {
             timeout: 30000 as number,
             wins: {} as Map<string, number>,
             answerThresholds: [0.5, 0.75] as [number, number],
+            startSkipTime: null as number | null,
+            firstArtistOnly: false,
         },
     },
 } as const;
