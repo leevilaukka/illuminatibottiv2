@@ -124,7 +124,7 @@ router.get("/quizzes", ({ client }, res) => {
     const quizzes = client.quizzes;
 
     res.json({
-        quizzes: quizzes,
+        quizzes: quizzes.toJSON(),
     });
 });
 

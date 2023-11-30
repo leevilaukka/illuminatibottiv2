@@ -26,7 +26,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
     private initiator: Message | ChatInputCommandInteraction;
     private client: IlluminatiClient;
     private rows: ActionRowBuilder[] = [];
-    private pages: IlluminatiEmbed[] = [];
+    pages: IlluminatiEmbed[] = [];
     private MAX_DESCRIPTION_LENGTH = 4096 as const;
     currentPage = 0;
 
@@ -111,6 +111,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
     }
 
     private async createPagination(addedOptions?: any) {
+        console.log("Creating pagination");
         this.pages.unshift(this);
         this.rows.push(
             new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -201,6 +202,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
 
     async reply(addedOptions?: any) {
         if (this.pages.length > 0) return this.createPagination(addedOptions);
+        
         try {
             return await this.initiator.reply({
                 ...addedOptions,

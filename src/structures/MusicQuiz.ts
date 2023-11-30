@@ -1,4 +1,4 @@
-import { Collection, EmbedBuilder, GuildMember, Interaction, Message, MessageCollector, User, VoiceChannel } from 'discord.js';
+import { ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Interaction, Message, MessageCollector, User, VoiceChannel } from 'discord.js';
 import IlluminatiClient from './IlluminatiClient';
 import { compareTwoStrings } from 'string-similarity';
 import { SearchResult } from 'discord-player';
@@ -25,7 +25,7 @@ type PlayerType = {
 class MusicQuiz {
     private songUrls: string[];
     private client: IlluminatiClient;
-    private interaction: Interaction;
+    private interaction: ChatInputCommandInteraction;
     private timer: NodeJS.Timeout;
     scores: Collection<string, number>;
     collector: MessageCollector;
@@ -55,17 +55,17 @@ class MusicQuiz {
         firstArtistOnly?: boolean;
     }
 
-    constructor(interaction: Interaction, playlistUrl: string, client: IlluminatiClient, settings?: typeof MusicQuiz.prototype.options) {
+    constructor(interaction: ChatInputCommandInteraction, playlistUrl: string, client: IlluminatiClient, settings?: typeof MusicQuiz.prototype.options) {
         this.songUrls = [];
         this.playlistUrl = playlistUrl;
         this.currentSongInfo = null;
-        this.currentIndex = 0;
         this.playlist = null
 
         this.client = client
         this.interaction = interaction
 
         this.collector = null;
+        this.currentIndex = 0;
 
         this.options = {
             timeout: settings.timeout || 30000,
@@ -78,7 +78,7 @@ class MusicQuiz {
 
         this.correctAnswer = [false, false];
 
-        this.skipStartTimeVariance = 2000;
+        this.skipStartTimeVariance = randomNumberBetween(0, 5000);
 
         this.vc = (this.interaction.member as GuildMember).voice.channel as VoiceChannel;
 
@@ -99,6 +99,10 @@ class MusicQuiz {
     }
     
     async init() {
+        if (!this.vc || !this.vc.joinable) {
+            return this.interaction.reply({ content: "You need to be in a voice channel to start a quiz!" });
+        }
+
         this.client.quizzes.set(this.interaction.guildId, this);
 
         // Get playlist
@@ -157,7 +161,8 @@ class MusicQuiz {
         this.correctAnswer = [false, false];
 
         // Get next song from songUrls
-        const song = this.songUrls[this.currentIndex++];
+        const song = this.songUrls.splice(0, 1)[0];
+        this.currentIndex++;
 
         /*if (getNewFromPlaylist) {
             console.info("Getting new song from playlist");
@@ -180,14 +185,15 @@ class MusicQuiz {
         console.log("playSong:", this.songUrls, this.songUrls.length)
 
         if (!this.currentSongInfo) {
-            console.error("No song info found, skipping song."); 
-            this.interaction.channel.send({ content: "No song info found, skipping song." });
+            const content = "No song info found, skipping song.";
+            console.error(content); 
+            this.interaction.channel.send({ content });
             return this.nextSong();
         }
 
         this.collector = 
             this.interaction.channel.createMessageCollector({ filter: m => !m.author.bot, time: this.options.timeout })
-            .on('collect', m => this.checkAnswer(m));
+            .on('collect', async m => await this.checkAnswer(m));
 
         // Play song
         this.client.player.play(this.vc, songUrl, {
@@ -295,8 +301,7 @@ class MusicQuiz {
 
         // Check if both answers are correct
         if (this.correctAnswer[QuizAnswerType.TITLE] && this.correctAnswer[QuizAnswerType.ARTIST]) {
-            this.rightAnswer();
-            this.nextSong();
+            this.rightAnswer().then(() => this.nextSong());
         }
     }
 
@@ -309,7 +314,7 @@ class MusicQuiz {
         this.collector.stop();
 
         // Stop player
-        if(queue.isPlaying()) queue.node.stop(true);
+        queue?.node.stop();
 
         // Send scores
         this.interaction.channel.send({ content: "Thanks for playing! Here are the results!", embeds: [await this.getScores()] });
@@ -347,7 +352,7 @@ class MusicQuiz {
         return embed;
     }
 
-    rightAnswer() {
+    async rightAnswer() {
         const embed = new EmbedBuilder()
             .setTitle("New song!")
             .setDescription("Last song was:")
@@ -369,7 +374,8 @@ class MusicQuiz {
             })
            
 
-        this.interaction.channel.send({ embeds: [embed] });
+        await this.interaction.channel.send({ embeds: [embed] });
+        return this
     }
 
     async updatePlayerStats(member: IlluminatiUser<User>, won: boolean = false) {
@@ -431,3 +437,7 @@ class MusicQuiz {
 }
 
 export default MusicQuiz;
+
+function randomNumberBetween(arg0: number, arg1: number): number {
+    return Math.random() * (arg1 - arg0) + arg0;
+}

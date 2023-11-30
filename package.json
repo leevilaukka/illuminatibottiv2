@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.50",
+    "version": "6.1.51",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {
@@ -60,6 +60,7 @@
         "openai": "^3.2.1",
         "opusscript": "^0.0.8",
         "pm2": "^5.3.0",
+        "rss-parser": "^3.13.0",
         "spotify-url-info": "^3.2.9",
         "string-similarity": "^4.0.4",
         "ytdl-core": "^4.11.5",
