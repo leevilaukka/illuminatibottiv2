@@ -80,10 +80,6 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                     await interaction.editReply({ embeds: [embed] });
                 } else {
                     embed.setTitle(`Playing: ${res.track.title}`);
-                    embed.setFooter({
-                        text: `Requested by ${res.track.requestedBy.tag}`,
-                        iconURL: res.track.requestedBy.displayAvatarURL()
-                    });
                     await interaction.editReply({ embeds: [embed] });
                 }
             }
@@ -104,7 +100,7 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
             return interaction.respond(
                 results.tracks.slice(0, 10).map(track => ({
                     value: slice(`${track.title} - ${track.author}`, 70),
-                    name: track.title,
+                    name: slice(`${track.title} - ${track.author}`, 70),
                 }))
             );                    
         } catch (error) {
