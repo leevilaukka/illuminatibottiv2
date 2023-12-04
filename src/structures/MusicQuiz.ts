@@ -356,7 +356,6 @@ class MusicQuiz {
         const embed = new EmbedBuilder()
             .setTitle("New song!")
             .setDescription("Last song was:")
-            .setThumbnail(this.currentSongInfo.image)
             .addFields([
                 {
                     name: "Title",
@@ -372,7 +371,8 @@ class MusicQuiz {
             .setFooter({
                 text:`Song ${this.currentIndex + 1}/${this.options.rounds}`
             })
-           
+
+        this.currentSongInfo.image && embed.setThumbnail(this.currentSongInfo.image);
 
         await this.interaction.channel.send({ embeds: [embed] });
         return this
