@@ -9,6 +9,7 @@ import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
 import { validateArgs } from "../../utils";
+import { PlayerMetadata } from "PlayerMetadata";
 
 const cooldowns: Collection<
     string /*command name*/,
@@ -32,7 +33,9 @@ export default async (client: IlluminatiClient, message: Message) => {
         throw new ErrorWithStack(e);
     }
 
-    if (await user.getUser()) await user.messageCountUp();
+    if(!user.getUser()) await user.createUser();
+
+    user.messageCountUp();
 
     if (settings.randomMessages) await messageCheck(message);
 
@@ -97,7 +100,7 @@ export default async (client: IlluminatiClient, message: Message) => {
                 // Command call event
                     client.events.emit("commandCall", command);
 
-                const queue = client.player.nodes.get(message.guild);
+                const queue = client.player.nodes.get<PlayerMetadata>(message.guild);
 
                 client.lastMessage = message;
 
@@ -106,7 +109,6 @@ export default async (client: IlluminatiClient, message: Message) => {
                     message.channel.sendTyping();
                     await validateArgs(command.evalSchema)(args);
                     await command
-                        // @ts-ignore
                         .run(message, args, settings, client, { guild, user, queue })
                         .then(() => {
                             user.addCommandUse(command.name);

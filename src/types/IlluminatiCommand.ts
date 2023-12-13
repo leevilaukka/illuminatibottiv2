@@ -1,4 +1,4 @@
-    export enum Categories {
+export enum Categories {
     general = "Yleiset",
     music = "Musiikki",
     math = "Matematiikka",

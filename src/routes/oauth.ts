@@ -3,7 +3,7 @@ import { OAuth2Routes } from "discord.js";
 import { Router } from "express";
 import { z } from "zod";
 import { validate } from "./middlewares";
-import { OauthProviders } from ".";
+import { Paths } from ".";
 
 const jsonToUrlParams = (data: Record<string, any>) => {
     const params = new URLSearchParams();
@@ -26,7 +26,7 @@ router.get("/", (_, res) => {
 // Get spotify auth credentials
 router.get("/spotify", (req, res) => {
     const authOptions = {
-        url: OauthProviders.Spotify.auth,
+        url: Paths.OauthProviders.Spotify.auth,
         headers: {
             Authorization: `Basic ${Buffer.from(
                 `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`

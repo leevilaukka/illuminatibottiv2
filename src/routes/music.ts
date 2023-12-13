@@ -229,7 +229,7 @@ const upload = multer({
         cb(null, true);
     },
     limits: {
-        fileSize: 1024 * 1024 * 50,
+        fileSize: 1024 * 1024 * 100,
         files: 1
     }
 });
@@ -242,18 +242,24 @@ router.post(
     // linkUser,
     async ({ client, body, file, channel }, res) => {
         try {
+            if (!file) {
+                return res.status(400).json({
+                    error: "No file provided",
+                });
+            }
+            
             await client.player.play(channel.id, file.path, {
                 searchEngine: QueryType.FILE,
                 requestedBy: client.user,
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
-                        channel: client.channels.cache.get(channel.id),
+                        channel: channel
                     },
                 },
             });
 
-            res.json({
+            res.status(200).json({
                 message: "Playing track",
             });
         } catch (e) {
