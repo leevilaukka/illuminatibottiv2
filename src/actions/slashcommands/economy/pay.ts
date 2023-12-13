@@ -5,11 +5,19 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
     data: new SlashCommandBuilder()
         .setName("pay")
         .setDescription("Pay a user")
-        .addUserOption(option => option.setName("user").setDescription("User to pay").setRequired(true))
-        .addIntegerOption(option => option.setName("amount").setDescription("Amount to pay").setRequired(true))
+        .addUserOption(option => 
+            option
+                .setName("user")
+                .setDescription("User to pay")
+                .setRequired(true))
+        .addIntegerOption(option => 
+            option
+                .setName("amount")
+                .setDescription("Amount to pay")
+                .setRequired(true))
         .toJSON(),
     async execute(client, interaction) {
-        const user = interaction.options.getUser('user', true);
+        const toPay = new client.userManager(interaction.options.getUser('user', true));
         const amount = interaction.options.getInteger('amount', true);
 
         if (amount < 0) {
@@ -17,18 +25,17 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
             return;
         }
 
-        if (amount > 1000000) {
-            await interaction.reply("You can't pay more than 1 million!");
-            return;
-        }
-
-        if (user.bot) {
+        if (toPay.user.bot) {
             await interaction.reply("You can't pay a bot!");
             return;
         }
+
+        if (!await toPay.userData) {
+            await interaction.reply("You can't pay someone who hasn't joined Illuminati!");
+            return;
+        }
         
-        const [toPay, from] = [new client.userManager(user), new client.userManager(interaction.user)];
-    
+        const from = new client.userManager(interaction.user);
 
         const userBalance = (await from.getStats()).money
 
@@ -37,10 +44,9 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
             return;
         }
 
-        await from.addMoney(-amount);
-        await toPay.addMoney(amount);
+        from.tradeMoney(toPay, amount, interaction);
 
-        await interaction.reply(`You paid ${user} ${amount}!`);
+        await interaction.reply(`You paid ${toPay.username} ${amount}!`);
     },
 }
 

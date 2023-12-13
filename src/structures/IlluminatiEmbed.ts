@@ -21,7 +21,6 @@ import { IlluminatiClient, Errors } from ".";
  * @param {object} [data] - Data to set in the rich embed
  * @param {IlluminatiClient} client - Discord Bot Client
  */
-
 export default class IlluminatiEmbed extends EmbedBuilder {
     private initiator: Message | ChatInputCommandInteraction;
     private client: IlluminatiClient;
@@ -64,6 +63,7 @@ export default class IlluminatiEmbed extends EmbedBuilder {
 
         return this;
     }
+
     setRows<T extends AnyComponentBuilder>(...rows: ActionRowBuilder<T>[]) {
         this.rows = rows;
         return this;

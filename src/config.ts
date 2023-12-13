@@ -1,4 +1,4 @@
-import { Embed } from "discord.js";
+import { Embed, TimestampStylesString } from "discord.js";
 import { IlluminatiEmbed } from "./structures";
 import { ObjectId } from "mongodb";
 import { Url } from "url";
@@ -50,6 +50,7 @@ export type GuildSettings = {
             coordinates: [number, number];
         };
     }[];
+    timestampStyle: TimestampStylesString;
     disabledCommands: string[];
     removedMemberChannel: string;
     deletedMessages: DeletedMessage[];
@@ -129,6 +130,7 @@ const config = {
             startSkipTime: null as number | null,
             firstArtistOnly: false,
         },
+        timestampStyle: "t" as TimestampStylesString,
     },
 } as const;
 

@@ -1,3 +1,4 @@
+import { TimestampStyles, time } from "discord.js";
 import { IlluminatiJob } from ".";
 
 import Package from "../models/Package";
@@ -22,7 +23,11 @@ const job: IlluminatiJob = {
                 if(shippingLastStatusTime.getTime() > pkg.lastUpdated.getTime()) {
                     const owner = await client.users.fetch(pkg.owner);
     
-                    owner.send(`Your package ${pkg.code} has been updated to ${shipment.status.status}!`);
+                    owner.send(`Your package ${pkg.code} has been updated to ${shipment.status.status} at ${time(new Date(shipment.status.timestamp), TimestampStyles.ShortDateTime)}!`);
+                }
+
+                if (shipment.status.status === "DELIVERED") {
+                    Package.deleteOne({ code: pkg.code });
                 }
             }).catch((err) => {
                 if (err.response.status === 404) {

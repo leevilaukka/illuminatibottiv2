@@ -10,6 +10,7 @@ const handleChatInput = async (client: IlluminatiClient, interaction: ChatInputC
     if (!command) return;
 
     await command.execute(client, interaction);
+    new client.userManager(interaction.user).addCommandUse(`/${commandName}`);
 };
 
 const handleAutocomplete = async (client: IlluminatiClient, interaction: AutocompleteInteraction) => {

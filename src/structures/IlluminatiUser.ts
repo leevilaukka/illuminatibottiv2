@@ -1,4 +1,4 @@
-import Discord, { Message, User } from "discord.js"
+import Discord, { InteractionResponse, Message, User } from "discord.js"
 import IUser from "../models/User"
 import { IlluminatiClient, IlluminatiEmbed } from ".";
 import { Document } from "mongoose";
@@ -14,6 +14,8 @@ type MusicQuizStats = Partial<{
     totalGames: number;
     totalWins: number;
 }>;
+
+type TradeInitiator = Discord.Message | Discord.ChatInputCommandInteraction;
 
 type UserStats = {
     money: number;
@@ -40,8 +42,8 @@ type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiU
 
 
 class IlluminatiUser<T extends User> extends Discord.User {
-    private user: T;
-    private userData: UserPromise;
+    user: T;
+    userData: UserPromise;
 
     constructor(user: T) {
         super(user.client, user.toJSON() as RawUserData);
@@ -249,33 +251,31 @@ class IlluminatiUser<T extends User> extends Discord.User {
      * @param amount Amount to give
      * @param message Message object
      */
-
-    async tradeMoney(giveTo: User, amount: number, message: Discord.Message): Promise<Message | UserPromise[]> {
-        if (giveTo.bot) return message.reply("boteille ei voi antaa rahaa");
+    async tradeMoney<T extends TradeInitiator>(giveTo: User, amount: number, initiator: T): UserPromise {
+        if (giveTo.bot) throw new Error("Et voi antaa rahaa botille!");
 
         const data = await this.getUser();
         const giveToUser = await new IlluminatiUser(giveTo).getUser();
 
-        if (!giveToUser) return message.reply("tuntematon käyttäjä! Pyydä käyttäjää lähettämään jokin viesti ja kokeile sitten uudelleen.");
+        if (!giveToUser) throw new Error("tuntematon käyttäjä! Pyydä käyttäjää lähettämään jokin viesti ja kokeile sitten uudelleen.");
 
         // Check object types
-        if (typeof data !== "object") return;
-        if (typeof giveToUser !== "object") return;
+        if (typeof data !== "object" || typeof giveToUser !== "object") return;
 
         // Check if user has enough money
-        if (data.stats.money < amount) return message.reply("ei riittävästi varoja!");
+        if (data.stats.money < amount) throw new Error("ei riittävästi varoja!");
 
         // Trade money
         data.stats.money -= amount;
         giveToUser.stats.money += amount;
         data.save().then(() => {
             giveToUser.save().then(() => {
-                message.channel.send(`${this.user.username} antoi ${amount} kolikkoa henkilölle ${giveTo.username}`);
+                initiator.channel.send(`${this.user.username} antoi ${amount} kolikkoa henkilölle ${giveTo.username}`);
             });
 
             return [data, giveToUser];
-        }).catch((e: any) => {
-            throw new DatabaseError(e)
+        }).catch((e: Error) => {
+            initiator.reply(e.message);
         });
     }
 

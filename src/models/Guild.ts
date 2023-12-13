@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 import config, { GuildSettings } from "../config.js";
 import { IlluminatiEmbed } from "../structures/index.js";
-import { Events } from "discord.js";
+import { Events, TimestampStyles } from "discord.js";
 
 const pointSchema = new Schema({
     type: {
@@ -83,6 +83,11 @@ const GuildSchema = new Schema<GuildSettings & GuildProperties>({
     prefix: {
         type: String,
         default: config.defaultSettings.prefix,
+    },
+    timestampStyle: {
+        type: String,
+        enum: Object.values(TimestampStyles),
+        default: null,
     },
     volume: {
         type: Number,

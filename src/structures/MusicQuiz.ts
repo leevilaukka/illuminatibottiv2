@@ -29,6 +29,7 @@ class MusicQuiz {
     private timer: NodeJS.Timeout;
     scores: Collection<string, number>;
     collector: MessageCollector;
+    private locked: boolean;
     
     private playlistUrl: string;
     private currentSongInfo: {
@@ -40,7 +41,6 @@ class MusicQuiz {
     private guessTimeout: number;
     private currentIndex: number;
     private playlist: SearchResult; 
-    private skipStartTimeVariance: number;
 
     players: Collection<string, PlayerType>;
     vc: VoiceChannel;
@@ -77,23 +77,18 @@ class MusicQuiz {
         }
 
         this.correctAnswer = [false, false];
-
-        this.skipStartTimeVariance = randomNumberBetween(0, 5000);
+        this.locked = false;
 
         this.vc = (this.interaction.member as GuildMember).voice.channel as VoiceChannel;
 
         this.guessTimeouts = new Collection<string, NodeJS.Timeout>();
-        this.guessTimeout = 500;
+        this.guessTimeout = 800;
 
-        this.players = new Collection<string, PlayerType>();
 
-        this.timer = setTimeout(() => {
-            this.rightAnswer();
-            this.nextSong();
-        }, settings.timeout);
+        this.timer = setTimeout(async () => await this.advanceSong(), settings.timeout);
 
         this.scores = new Collection<string, number>();
-
+        this.players = new Collection<string, PlayerType>();
 
         this.init();
     }
@@ -178,17 +173,25 @@ class MusicQuiz {
         this.playSong(song, true);
     }
 
+    async advanceSong() {
+        if (this.locked) return;
+        this.locked = true;
+        this.rightAnswer().then(() =>  {
+            this.nextSong();
+            this.locked = false;
+        });
+    }
+
     async playSong(songUrl: string, skip: boolean = false) {
         this.currentSongInfo = await getPreview(songUrl);
 
         this.songUrls = this.songUrls.filter(url => url !== songUrl);
-        console.log("playSong:", this.songUrls, this.songUrls.length)
 
         if (!this.currentSongInfo) {
             const content = "No song info found, skipping song.";
             console.error(content); 
             this.interaction.channel.send({ content });
-            return this.nextSong();
+            return await this.nextSong();
         }
 
         this.collector = 
@@ -204,22 +207,23 @@ class MusicQuiz {
                     queueHidden: true,
                 }
             }
-        }).catch(err => {
+        }).catch(async err => {
             console.error(err);
             // If error, play next song
             this.interaction.channel.send({ content: "Error playing song, skipping song." });
-            return this.nextSong();
-        }).then(res => {
+            return await this.nextSong();
+        }).then(async res => {
             // If no song was found, play next song
             if (!res) {
                 console.error("No song found, skipping song.");
                 this.interaction.channel.send({ content: "No song found, skipping song." });
-                return this.nextSong();
+                return await this.nextSong();
             }
+
             // Set timer for next song
             this.timer.refresh()
 
-            this.options.skipStartTime > 5 && res.queue.node.seek(this.options.skipStartTime * 1000 + Math.random() * this.skipStartTimeVariance);
+            this.options.skipStartTime > 5 && await res.queue.node.seek(this.options.skipStartTime * 1000 + Math.random() * randomNumberBetween(0, 5000));
 
             this.client.isDevelopment && console.log(this.currentSongInfo);
             // Check if song is already playing
@@ -236,8 +240,14 @@ class MusicQuiz {
             return;
         }
 
+        if (this.locked) return;
+
         if (message.content.toLowerCase() === "stop!!") {
-            return this.stop();
+            return await this.stop();
+        }
+
+        if (message.content.toLowerCase() === "skip!!") {
+            return await this.handleSkip(message);
         }
 
         // Check if user has tried to answer already
@@ -256,12 +266,12 @@ class MusicQuiz {
 
         const similarities = [compareTwoStrings(message.content.toLowerCase(), title.toLowerCase()), compareTwoStrings(message.content.toLowerCase(), artist.toLowerCase())];
 
-        if (this.client.isDevelopment) {
-            console.log(similarities);
-        }
-
+        const correct = (type: QuizAnswerType) => similarities[type] > this.options.answerThresholds[type] && !this.correctAnswer[type];
+        
+        if (this.client.isDevelopment) console.log(similarities);
+        
         // Check if answer is correct
-        if (similarities[QuizAnswerType.TITLE] > this.options.answerThresholds[QuizAnswerType.TITLE] && !this.correctAnswer[QuizAnswerType.TITLE]) {
+        if (correct(QuizAnswerType.TITLE)) {
             if (!this.scores.has(message.member.id)) {
                 this.scores.set(message.member.id, 0);
             }
@@ -280,7 +290,7 @@ class MusicQuiz {
             message.reply(`Correct! You now have ${this.scores.get(message.member.id)} points!`);
             message.react('🎵');
 
-        } else if (similarities[QuizAnswerType.ARTIST] > this.options.answerThresholds[QuizAnswerType.ARTIST] && !this.correctAnswer[QuizAnswerType.ARTIST]) {
+        } else if (correct(QuizAnswerType.ARTIST)) {
             if (!this.scores.has(message.member.id)) {
                 this.scores.set(message.member.id, 0);
             }
@@ -300,9 +310,7 @@ class MusicQuiz {
         }
 
         // Check if both answers are correct
-        if (this.correctAnswer[QuizAnswerType.TITLE] && this.correctAnswer[QuizAnswerType.ARTIST]) {
-            this.rightAnswer().then(() => this.nextSong());
-        }
+        if (this.correctAnswer[QuizAnswerType.TITLE] && this.correctAnswer[QuizAnswerType.ARTIST]) await this.advanceSong();
     }
 
     async stop() {
@@ -317,11 +325,31 @@ class MusicQuiz {
         queue?.node.stop();
 
         // Send scores
-        this.interaction.channel.send({ content: "Thanks for playing! Here are the results!", embeds: [await this.getScores()] });
+        await this.interaction.channel.send({ content: "Thanks for playing! Here are the results!", embeds: [await this.getScores()] });
 
         this.client.quizzes.delete(this.interaction.guildId);
 
         this.scores.clear();
+    }
+
+    async handleSkip(message: Message) {
+        const requiredVotes = Math.ceil(this.vc.members.size / 2);
+        const skipMessage = await message.channel.send({ content: `Vote to skip the song! (${requiredVotes} votes required)` });
+    
+        const collector = skipMessage.createReactionCollector({ filter: (reaction, user) => reaction.emoji.name === "⏭️" && user.id != message.author.id, time: 10000 })
+        .on('collect', async (reactions) => {
+            if (reactions.count >= requiredVotes) {
+                await message.channel.send({ content: "Skipping song!" });
+                await this.advanceSong();
+                collector.stop();
+            }
+        })
+        .on('end', async () => {
+            await skipMessage.delete();
+            await message.delete();
+        });
+
+        await skipMessage.react("⏭️");
     }
 
     async getScores() {
