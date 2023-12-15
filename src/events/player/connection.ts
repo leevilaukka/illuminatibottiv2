@@ -1,5 +1,5 @@
 import { StreamDispatcher } from "discord-player";
-import { PlayerEvent } from "../../types/PlayerEvent";
+import { PlayerEvent } from "../../types/PlayerMetadata";
 
 const evt: PlayerEvent = (_, queue, connection) => {
     if (!(connection instanceof StreamDispatcher)) return;

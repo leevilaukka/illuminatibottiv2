@@ -1,4 +1,4 @@
-import { PlayerEvent } from "../../types/PlayerEvent"
+import { PlayerEvent } from "../../types/PlayerMetadata"
 
 const evt: PlayerEvent = (client, queue, message) => {
     client.isDevelopment && console.log("PLAYER_DEBUG:", message)
