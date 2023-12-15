@@ -1,4 +1,4 @@
-import { PlayerEvent } from "../../types/PlayerEvent";
+import { PlayerEvent } from "../../types/PlayerMetadata";
 
 const evt: PlayerEvent = async (client, queue) => {
     const leaveOnEmpty = (await new client.guildManager(queue.guild).getGuild()).leaveOnEmpty;

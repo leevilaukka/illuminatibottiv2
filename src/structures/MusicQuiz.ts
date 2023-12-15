@@ -218,6 +218,7 @@ class MusicQuiz {
                 return await this.nextSong();
             }
 
+            
             // Set timer for next song
             this.timer.refresh()
 

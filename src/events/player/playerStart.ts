@@ -2,7 +2,7 @@ import { Track } from "discord-player";
 import { ActivityType, Colors, Message } from "discord.js";
 import { IlluminatiEmbed } from "../../structures";
 import { BotError } from "../../structures/Errors";
-import { PlayerEvent } from "../../types/PlayerEvent";
+import { PlayerEvent } from "../../types/PlayerMetadata";
 
 const evt: PlayerEvent = async (client, queue, track: Track) => {
     if (!queue.metadata.message) {
