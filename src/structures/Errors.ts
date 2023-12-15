@@ -1,5 +1,6 @@
 import { Player } from "discord-player";
 import { Command } from "../types";
+import MusicQuiz from "./MusicQuiz";
 
 /**
  * @class
@@ -105,6 +106,19 @@ export class CommandError extends ErrorWithStack {
     }
 }
 
+export class MusicQuizError extends ErrorWithStack {
+    private Quiz: MusicQuiz;
+    constructor(message: string, quiz: MusicQuiz) {
+        super(message);
+        this.name = "MusicQuizError";
+        this.Quiz = quiz;
+    }
+
+    get quiz() {
+        return this.Quiz;
+    }
+}
+
 export default {
     BotError,
     UserError,
@@ -112,5 +126,6 @@ export default {
     ErrorWithStack,
     PlayerError,
     DatabaseError,
-    CommandError
+    CommandError,
+    MusicQuizError,
 }

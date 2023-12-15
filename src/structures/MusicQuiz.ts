@@ -3,6 +3,7 @@ import IlluminatiClient from './IlluminatiClient';
 import { compareTwoStrings } from 'string-similarity';
 import { SearchResult } from 'discord-player';
 import IlluminatiUser from './IlluminatiUser';
+import { BotError, MusicQuizError } from '../structures/Errors';
 
 const { getPreview } = require("spotify-url-info")(fetch);
 
@@ -188,9 +189,7 @@ class MusicQuiz {
         this.songUrls = this.songUrls.filter(url => url !== songUrl);
 
         if (!this.currentSongInfo) {
-            const content = "No song info found, skipping song.";
-            console.error(content); 
-            this.interaction.channel.send({ content });
+            this.interaction.channel.send({ content: "No song info found, skipping song." });
             return await this.nextSong();
         }
 
@@ -215,7 +214,6 @@ class MusicQuiz {
         }).then(async res => {
             // If no song was found, play next song
             if (!res) {
-                console.error("No song found, skipping song.");
                 this.interaction.channel.send({ content: "No song found, skipping song." });
                 return await this.nextSong();
             }
@@ -236,81 +234,85 @@ class MusicQuiz {
     }
 
     async checkAnswer(message: Message) {
-        if (message.author.bot) {
-            return;
-        }
-
-        if (this.locked) return;
-
-        if (message.content.toLowerCase() === "stop!!") {
-            return await this.stop();
-        }
-
-        if (message.content.toLowerCase() === "skip!!") {
-            return await this.handleSkip(message);
-        }
-
-        // Check if user has tried to answer already
-        if (this.guessTimeouts.has(message.member.id)) {
-            return
-        }
-
-        // Clean song title
-        const title = this.cleanSongName(this.currentSongInfo.track);
-        const artist = this.options.firstArtistOnly && this.getFirstArtist(this.currentSongInfo.artist) || this.currentSongInfo.artist;
-
-        // Set timeout
-        this.guessTimeouts.set(message.member.id, setTimeout(() => {
-            this.guessTimeouts.delete(message.member.id);
-        }, this.guessTimeout));
-
-        const similarities = [compareTwoStrings(message.content.toLowerCase(), title.toLowerCase()), compareTwoStrings(message.content.toLowerCase(), artist.toLowerCase())];
-
-        const correct = (type: QuizAnswerType) => similarities[type] > this.options.answerThresholds[type] && !this.correctAnswer[type];
-        
-        if (this.client.isDevelopment) console.log(similarities);
-        
-        // Check if answer is correct
-        if (correct(QuizAnswerType.TITLE)) {
-            if (!this.scores.has(message.member.id)) {
-                this.scores.set(message.member.id, 0);
+        try {
+            if (message.author.bot) {
+                return;
             }
-
-            if (!this.players.has(message.member.id)) {
-                this.addPlayer(message.member as GuildMember);
+    
+            if (this.locked) return;
+    
+            if (message.content.toLowerCase() === "stop!!") {
+                return await this.stop();
             }
-
-            this.correctAnswer[QuizAnswerType.TITLE] = true;
-
-            // Add points to user
-            this.scores.set(message.member.id, this.scores.get(message.member.id) + this.options.points[QuizAnswerType.TITLE]);
-            this.players.get(message.member.id).stats.totalPoints += this.options.points[QuizAnswerType.TITLE];
-            this.players.get(message.member.id).stats.correctAnswers++;
-
-            message.reply(`Correct! You now have ${this.scores.get(message.member.id)} points!`);
-            message.react('🎵');
-
-        } else if (correct(QuizAnswerType.ARTIST)) {
-            if (!this.scores.has(message.member.id)) {
-                this.scores.set(message.member.id, 0);
+    
+            if (message.content.toLowerCase() === "skip!!") {
+                return await this.handleSkip(message);
             }
-
-            this.correctAnswer[QuizAnswerType.ARTIST] = true;
-
-            // Add points to user
-            this.scores.set(message.member.id, this.scores.get(message.member.id) + this.options.points[QuizAnswerType.ARTIST]);
-            this.players.get(message.member.id).stats.totalPoints += this.options.points[QuizAnswerType.ARTIST];
-            this.players.get(message.member.id).stats.correctAnswers++;
-
-            message.reply(`Correct! You now have ${this.scores.get(message.member.id)} points!`);
-            message.react('🧑‍🎤');
-        } else {
-            message.react('👎');
-            this.players.get(message.member.id).stats.incorrectAnswers++;
+    
+            // Check if user has tried to answer already
+            if (this.guessTimeouts.has(message.member.id)) {
+                return
+            }
+    
+            // Clean song title
+            const title = this.cleanSongName(this.currentSongInfo.track);
+            const artist = this.options.firstArtistOnly && this.getFirstArtist(this.currentSongInfo.artist) || this.currentSongInfo.artist;
+    
+            // Set timeout
+            this.guessTimeouts.set(message.member.id, setTimeout(() => {
+                this.guessTimeouts.delete(message.member.id);
+            }, this.guessTimeout));
+    
+            const similarities = [compareTwoStrings(message.content.toLowerCase(), title.toLowerCase()), compareTwoStrings(message.content.toLowerCase(), artist.toLowerCase())];
+    
+            const correct = (type: QuizAnswerType) => similarities[type] > this.options.answerThresholds[type] && !this.correctAnswer[type];
+            
+            if (this.client.isDevelopment) console.log(similarities);
+            
+            // Check if answer is correct
+            if (correct(QuizAnswerType.TITLE)) {
+                if (!this.scores.has(message.member.id)) {
+                    this.scores.set(message.member.id, 0);
+                }
+    
+                if (!this.players.has(message.member.id)) {
+                    this.addPlayer(message.member as GuildMember);
+                }
+    
+                this.correctAnswer[QuizAnswerType.TITLE] = true;
+    
+                // Add points to user
+                this.scores.set(message.member.id, this.scores.get(message.member.id) + this.options.points[QuizAnswerType.TITLE]);
+                this.players.get(message.member.id).stats.totalPoints += this.options.points[QuizAnswerType.TITLE];
+                this.players.get(message.member.id).stats.correctAnswers++;
+    
+                message.reply(`Correct! You now have ${this.scores.get(message.member.id)} points!`);
+                message.react('🎵');
+    
+            } else if (correct(QuizAnswerType.ARTIST)) {
+                if (!this.scores.has(message.member.id)) {
+                    this.scores.set(message.member.id, 0);
+                }
+    
+                this.correctAnswer[QuizAnswerType.ARTIST] = true;
+    
+                // Add points to user
+                this.scores.set(message.member.id, this.scores.get(message.member.id) + this.options.points[QuizAnswerType.ARTIST]);
+                this.players.get(message.member.id).stats.totalPoints += this.options.points[QuizAnswerType.ARTIST];
+                this.players.get(message.member.id).stats.correctAnswers++;
+    
+                message.reply(`Correct! You now have ${this.scores.get(message.member.id)} points!`);
+                message.react('🧑‍🎤');
+            } else {
+                message.react('👎');
+                this.players.get(message.member.id).stats.incorrectAnswers++;
+            }
+    
+            // Check if both answers are correct
+            if (this.correctAnswer[QuizAnswerType.TITLE] && this.correctAnswer[QuizAnswerType.ARTIST]) await this.advanceSong();
+        } catch (error) {
+            throw new MusicQuizError(error, this);
         }
-
-        // Check if both answers are correct
-        if (this.correctAnswer[QuizAnswerType.TITLE] && this.correctAnswer[QuizAnswerType.ARTIST]) await this.advanceSong();
     }
 
     async stop() {
