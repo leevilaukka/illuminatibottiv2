@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, Interaction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { AutocompleteInteraction, ChatInputCommandInteraction, Interaction, MessageComponentInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import { IlluminatiClient } from "../../structures";
 
 const handleChatInput = async (client: IlluminatiClient, interaction: ChatInputCommandInteraction) => {    
@@ -33,6 +33,11 @@ const handleUserContextMenu = async (client: IlluminatiClient, interaction: User
     await command.execute(client, interaction);
 };
 
+const handleComponentInteraction = (client: IlluminatiClient, interaction: MessageComponentInteraction) => {
+    const command = IlluminatiClient.getCommand(interaction.customId.split(":")[0])
+    command.interaction(client, interaction)
+}
+
 export default async (client: IlluminatiClient, interaction: Interaction)  => {    
     try {
         if(interaction.isAutocomplete()) {
@@ -46,6 +51,10 @@ export default async (client: IlluminatiClient, interaction: Interaction)  => {
         if(interaction.isChatInputCommand()) {
             handleChatInput(client, interaction);
         } 
+
+        if(interaction.isStringSelectMenu()) {
+            handleComponentInteraction(client, interaction)
+        }
     } catch (error) {
         console.error(error);
 
