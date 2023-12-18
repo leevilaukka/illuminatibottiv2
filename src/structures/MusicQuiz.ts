@@ -31,6 +31,7 @@ class MusicQuiz {
     scores: Collection<string, number>;
     collector: MessageCollector;
     private locked: boolean;
+    fullScore: number;
     
     private playlistUrl: string;
     private currentSongInfo: {
@@ -91,6 +92,8 @@ class MusicQuiz {
         this.scores = new Collection<string, number>();
         this.players = new Collection<string, PlayerType>();
 
+        this.fullScore = (settings.rounds * settings.points[0]) + (settings.rounds * settings.points[1])
+
         this.init();
     }
     
@@ -139,7 +142,7 @@ class MusicQuiz {
 
     cleanSongName(songName: string) {
         songName = songName.split(" - ")[0];
-        songName = songName.replace(/[\(\[](feat|ft|with|featuring)[^\)\]]+?[\)\]]/g, "");
+        songName = songName.replace(/[\(\[](feat|ft|with|featuring|remastered)[^\)\]]+?[\)\]]/g, "");
         if(songName.includes(" feat")) songName = songName.replace(/feat[^$]+$/g, "");
         songName = songName.replace(/\s{2,}/g, " ");
         
@@ -364,7 +367,12 @@ class MusicQuiz {
 
         // Create embed
         const embed = new EmbedBuilder()
-            .addFields(scores.map(score => ({ name: this.client.users.cache.get(score[0]).tag, value: score[1].toString()})))
+            .addFields(scores.map(score => (
+                { 
+                    name: this.client.users.cache.get(score[0]).tag,
+                    value: score[1] === this.fullScore && `${score[1].toString()} - FC :medal:` || score[1].toString() 
+                }
+            )))
             .setTitle("Results!")
             .setColor('Default')
         

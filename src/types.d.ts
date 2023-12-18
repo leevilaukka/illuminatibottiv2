@@ -5,6 +5,7 @@ import {
     CommandInteraction,
     ContextMenuCommandBuilder,
     Guild,
+    Interaction,
     Message,
     MessageComponentInteraction,
     MessageInteraction,
@@ -148,6 +149,7 @@ interface Command {
     ) => Promise<CommandResponse>;
     onInit?: (client: IlluminatiClient) => void;
     cleanUp?: (client: IlluminatiClient) => void;
+    interaction?: (client: IlluminatiClient, interaction: MessageComponentInteraction) => void;
 }
 
 type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
