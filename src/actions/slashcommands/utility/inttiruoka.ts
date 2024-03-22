@@ -54,10 +54,16 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
         .addStringOption(option => option.setName("ravintola").setDescription("Ravintola").setRequired(true).addChoices(...restaurants))
         .addStringOption(option => option.setName("ruoka").setDescription("Maastoruoka, varusmiesruoka tai henkilöstölounas")
         .setChoices(
-            {name: "Maastoruoka", value: "Maastoruoka"},
+            {
+                name: "Maastoruoka", value: "Maastoruoka"
+            },
             {name: "Varusmiesruoka", value: "Varusmiesruoka"},
         )
         .setRequired(true))
+        .addBooleanOption(option => option
+            .setName("kokoviikko")
+            .setDescription("Lähetä koko viikon lista")
+        )
         .toJSON(),
     async execute(client, interaction) {
         const ravintola = interaction.options.getString("ravintola");
@@ -72,21 +78,38 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
 
         embed.setTitle(response.title);
         embed.setURL(response.link);  
-        embed.setDescription(`Ruokalista viikolle ${moment().week()} \n
-        \`\`\`VL - Vähälaktoosinen, L - Laktoositon, M - Maidoton, G - Gluteeniton, SY - Sydänmerkki-ruoka\n\nHenkilökunnalta saat lisätietoja tarjottavista ruoista ja niiden soveltuvuuksista eri ruokavalioihin.\n\nLeijona Catering varaa oikeuden muutoksiin ruokalistassa.\`\`\``);
-
+        
         const ruoka = interaction.options.getString("ruoka");
+        const fullWeek = interaction.options.getBoolean("kokoviikko")
 
         if (!items.length) return interaction.reply({content: "Ei ruokaa!", ephemeral: true});
 
-        items.filter(item => item.title.includes(ruoka)).forEach(item => {
-            const newPage = new IlluminatiEmbed(interaction, client);
-            newPage.setTitle(item.title);
-            newPage.setDescription(parseContentSnippet(item.contentSnippet));
+        embed.setDescription(
+        `Ruokalista viikolle ${moment().week()} \n
+        \`\`\`VL - Vähälaktoosinen, L - Laktoositon, M - Maidoton, G - Gluteeniton, SY - Sydänmerkki-ruoka
+        
+        Henkilökunnalta saat lisätietoja tarjottavista ruoista ja niiden soveltuvuuksista eri ruokavalioihin.
+        Leijona Catering varaa oikeuden muutoksiin ruokalistassa.\`\`\``
+        );
 
-            embed.addPage(newPage);
-        });        
+        if(fullWeek) {
+            items.filter(item => item.title.includes(ruoka)).forEach(item => {
+                const newPage = new IlluminatiEmbed(interaction, client);
+                newPage.setTitle(item.title);
+                newPage.setDescription(parseContentSnippet(item.contentSnippet));
+    
+                embed.addPage(newPage);
+            });      
+        } else {
+            const content = items.find(item => item.title.includes(new Date().toLocaleDateString("fi-FI", {
+                dateStyle: "medium"
+            })))
             
+            console.log(content)
+
+            embed.setDescription(parseContentSnippet(content.contentSnippet))
+        }
+
         embed.send();
         interaction.reply({content: "Lähetetään viesti", ephemeral: true });
     }

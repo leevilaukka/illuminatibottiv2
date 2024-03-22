@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import { User } from "../../models";
+import { User } from "../../../models";
 import { AnyZodObject, z } from "zod";
 
 const checkQueue: RequestHandler = async (req, res, next) => {
@@ -10,9 +10,11 @@ const checkQueue: RequestHandler = async (req, res, next) => {
     req.client.logger.log(`[API] Queue for ${guildID} is ${queue}`);
 
     if (!queue) {
-        return res.status(206).json({
-            error: "No queue found",
-        });
+        return next(
+            new Error("Queue not found", {
+                cause: "Queue not found in cache",
+            })
+        );
     }
 
     req.queue = queue;
@@ -26,9 +28,11 @@ const checkGuild: RequestHandler = (req, res, next) => {
     );
 
     if (!guild) {
-        return res.status(206).json({
-            error: "Guild not found in cache",
-        });
+        return next(
+            new Error("Guild not found", {
+                cause: "Guild not found in cache",
+            })
+        );
     }
 
     req.guild = guild;
@@ -42,9 +46,11 @@ const checkChannel: RequestHandler = (req, res, next) => {
     );
 
     if (!channel) {
-        return res.status(206).json({
-            error: "Channel not found.",
-        });
+        return next(
+            new Error("Channel not found", {
+                cause: "Channel not found in cache",
+            })
+        );
     }
 
     req.channel = channel;
@@ -53,8 +59,8 @@ const checkChannel: RequestHandler = (req, res, next) => {
 };
 
 const linkUser: RequestHandler = async (req, res, next) => {
-    if (!req.params.userID && !req.body.userID) {
-        next(); 
+    if (!req.params.userID || !req.body.userID) {
+        return next(new Error("No userID provided"));
     }
     const user = req.client.users.cache.get(
         req.params.userID || req.body.userID
@@ -81,12 +87,8 @@ const validate =
             });
             return next();
         } catch (error) {
-            return res.status(400).json(error);
+            return next(error);
         }
     };
-
-    
-
-
 
 export { checkQueue, checkGuild, checkChannel, linkUser, validate };

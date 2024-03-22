@@ -1,4 +1,4 @@
-import { Model, model, Schema } from "mongoose";
+import { Model, model, Schema, Types } from "mongoose";
 import { IlluminatiUserTypes } from "../structures/IlluminatiUser";
 import { User } from "discord.js";
 import { IlluminatiClient } from "../structures";
@@ -8,9 +8,13 @@ interface IUserMethods {
     isBirthday: () => boolean;
 }
 
-type IlluminatiUserModel = Model<IlluminatiUserTypes, {}, IUserMethods>
+type IlluminatiUserModel = Model<IlluminatiUserTypes, {}, IUserMethods>;
 
-const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, IlluminatiUserModel, IUserMethods>({
+const IlluminatiUserSchema = new Schema<
+    IlluminatiUserTypes,
+    IlluminatiUserModel,
+    IUserMethods
+>({
     discordID: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     stats: {
@@ -20,10 +24,12 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, IlluminatiUserModel
             default: {},
         },
         messageCount: { type: Number, default: 0 },
-        lastMessageAt: { type : Date, default: Date.now()},
-        level: { type: Number, default: 0 },
-        xp: { type: Number, default: 0 },
-        nextLevelXP: { type: Number, default: 0 },
+        lastMessageAt: { type: Date, default: Date.now() },
+        experience: {
+            xp: { type: Number, default: 0 },
+            level: { type: Number, default: 0 },
+            nextLevelXP: { type: Number, default: 0 },
+        },
         money: { type: Number, default: 0 },
         premium: { type: Boolean, default: false },
         dailyStreak: { type: Number, default: 0 },
@@ -34,17 +40,27 @@ const IlluminatiUserSchema = new Schema<IlluminatiUserTypes, IlluminatiUserModel
             totalAnswers: { type: Number, default: 0 },
             totalPoints: { type: Number, default: 0 },
             totalWins: { type: Number, default: 0 },
+            totalGames: { type: Number, default: 0 },
         },
     },
-})
-
-IlluminatiUserSchema.method<IlluminatiUserTypes>("getDiscordUser", async function (client: IlluminatiClient) {
-    return await client.users.fetch(this.discordID);
-    
+    discordAuth: { type: Types.ObjectId, ref: "Auth" },
 });
+
+IlluminatiUserSchema.method<IlluminatiUserTypes>(
+    "getDiscordUser",
+    async function (client: IlluminatiClient) {
+        return await client.users.fetch(this.discordID);
+    }
+);
 
 IlluminatiUserSchema.method<IlluminatiUserTypes>("isBirthday", function () {
-    return this.stats.birthday.getDate() === new Date().getDate() && this.stats.birthday.getMonth() === new Date().getMonth();
+    return (
+        this.stats.birthday.getDate() === new Date().getDate() &&
+        this.stats.birthday.getMonth() === new Date().getMonth()
+    );
 });
 
-export default model<IlluminatiUserTypes, IlluminatiUserModel>("User", IlluminatiUserSchema);
+export default model<IlluminatiUserTypes, IlluminatiUserModel>(
+    "User",
+    IlluminatiUserSchema
+);

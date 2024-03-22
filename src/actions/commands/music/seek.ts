@@ -3,18 +3,11 @@ import { UserError } from '../../../structures/Errors'
 import { Command } from '../../../types'
 import { Categories } from '../../../types/IlluminatiCommand'
 
-type Args = z.infer<typeof schema>
-
-const schema = z.object({
-    args: z.tuple([z.number()])
-})
-
-const command: Command = {
+const command: Command<1> = {
     name: 'seek',
     description: 'Seek to a certain time in the song',
     category: Categories.music,
-    evalSchema: schema,
-    run(message, args: Args["args"], settings, client, meta) {
+    run(message, args, settings, client, meta) {
         if (meta.queue.metadata.queueHidden) {
             return
         }
@@ -25,7 +18,7 @@ const command: Command = {
         const queue = meta.queue
         if (!queue) throw new UserError('There is no music playing.')
 
-        queue.node.seek(time * 1000)
+        queue.node.seek(Number(time) * 1000)
 
         return message.reply(`Seeked to ${time} seconds.`)
     }

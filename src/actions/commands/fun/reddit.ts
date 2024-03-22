@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { IlluminatiEmbed, Errors } from "../../../structures";
-import { Command } from "../../../types";
+import { Command, GuildCommand } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 import {
     ActionRowBuilder,
@@ -12,31 +12,22 @@ import {
     time,
 } from "discord.js";
 
-const schema = z.object({
-    args: z.tuple([z.string()]).rest(z.string()),
-});
+    
 
-type Args = z.infer<typeof schema>;
 
-const command: Command = {
+const command: GuildCommand<2> = {
     name: "reddit",
     aliases: ["r", "r/"],
     description: "Lähettää annetusta subredditistä satunnaisen postauksen",
     category: Categories.other,
     guildOnly: true,
     usage: "<subreddit>",
-    evalSchema: schema,
-    async run(
-        message: Message & { channel: TextChannel },
-        args: Args["args"],
-        settings,
-        client
-    ) {
+    async run(message, args, settings, client) {
         const sender = message;
 
         // Command arguments
         const [subreddit, skipnsfw] = args;
-        
+
         // Dynamically get random reddit post from given subreddit
         client.axios
             .get(`https://www.reddit.com/r/${subreddit}/random.json`)

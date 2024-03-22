@@ -1,6 +1,7 @@
+import { codeBlock } from "discord.js";
 import { Command } from "../../../types";
 
-const command: Command = {
+const command: Command<1> = {
     name: "runjob",
     aliases: ["rj"],
     ownerOnly: true,
@@ -16,7 +17,7 @@ const command: Command = {
         const runner = job.run(client)
         const res = await runner(new Date());
 
-        message.channel.send(`Job ${jobName} ran with result ${res}`);
+        message.channel.send(`Job ${jobName} ran with result\n${codeBlock(res)}`);
     },
 };
 

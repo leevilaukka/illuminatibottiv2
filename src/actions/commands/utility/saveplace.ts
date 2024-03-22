@@ -2,7 +2,7 @@ import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 import Guild from "../../../models/Guild";
 
-const command: Command = {
+const command: Command<3> = {
     name: "saveplace",
     description: "Tallenna paikkoja koordinaattien mukaan!",
     category: Categories.maps,

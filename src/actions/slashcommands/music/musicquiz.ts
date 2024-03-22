@@ -33,6 +33,10 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                 .setDescription("Give points for first artist only")
                 .setRequired(false)
             )
+            .addBooleanOption(option => option
+                .setName("guessyear")
+                .setDescription("Guess year also :D")
+            )
         )
         .addSubcommand(subcommand => subcommand
             .setName("stop")
@@ -113,8 +117,9 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                 case "points": {
                     const titlePoints = interaction.options.getNumber("titlepoints", true);
                     const artistPoints = interaction.options.getNumber("artistpoints", true);
+                    const yearPoints = interaction.options.getNumber("yearpoints", true);
 
-                    defaultSettings.points = [titlePoints, artistPoints];
+                    defaultSettings.points = [titlePoints, artistPoints, yearPoints];
                     await guild.batchUpdateGuild({ musicQuiz: defaultSettings });
 
                     interaction.reply({ content: `Set default points to ${titlePoints} for title and ${artistPoints} for artist`});
@@ -142,8 +147,13 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                 const quiz = new MusicQuiz(interaction, playlists, client, {
                     timeout: interaction.options.getNumber("timeout") * 1000 || 30000,
                     rounds: interaction.options.getNumber("rounds") || defaultSettings.rounds || 10, 
-                    points: [interaction.options.getNumber("titlepoints") || defaultSettings.points[0] || 2 , interaction.options.getNumber("artistpoints") || defaultSettings.points[1] || 1],
+                    points: [
+                        interaction.options.getNumber("titlepoints")    || defaultSettings.points[0]   || 2 ,
+                        interaction.options.getNumber("artistpoints")   || defaultSettings.points[1]  || 1,
+                        interaction.options.getNumber("yearpoints")     || defaultSettings.points[2]    || 1
+                    ],
                     firstArtistOnly: interaction.options.getBoolean("firstartistonly") || defaultSettings.firstArtistOnly || false,
+                    guessYear: interaction.options.getBoolean("guessyear") || false
                 });
 
                 const embed = new IlluminatiEmbed(interaction, client)

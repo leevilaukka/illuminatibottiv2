@@ -1,6 +1,7 @@
 import { Player } from "discord-player";
 import { Command } from "../types";
 import MusicQuiz from "./MusicQuiz";
+import { Interaction, Message } from "discord.js";
 
 /**
  * @class
@@ -94,15 +95,22 @@ export class NotFoundError extends DatabaseError {
  * @extends ErrorWithStack
  */
 export class CommandError extends ErrorWithStack {
-    private Command: Command; 
-    constructor(message: string, command: Command) {
+    private Iniator: Command | Interaction; 
+    constructor(message: string, iniator: Command | Interaction) {
         super(message);
         this.name = "CommandError";
-        this.Command = command;
+        this.Iniator = iniator;
     }
 
-    get command() {
-        return this.Command;
+    get iniator() {
+        return this.Iniator;
+    }
+}
+
+export class CommandNotImplementedError extends CommandError {
+    constructor(message: string, iniator: Command | Interaction) {
+        super(message, iniator)
+        this.name = "CommandNotImplemented"
     }
 }
 

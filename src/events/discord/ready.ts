@@ -1,4 +1,5 @@
-import { REST, Routes } from "discord.js";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types"
 import { IlluminatiClient } from "../../structures";
 
 

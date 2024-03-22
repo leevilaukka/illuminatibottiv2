@@ -63,7 +63,7 @@ export type GuildSettings = {
     musicQuiz: {
         playlists: string[];
         timeout: number;
-        points: [number, number];
+        points: [number, number, number];
         rounds: number;
         wins: Map<string, number>;
         answerThresholds: [number, number];
@@ -120,7 +120,7 @@ const config = {
         lastUsedVoiceChannel: "",
         musicQuiz: {
             rounds: 10 as number,
-            points: [2, 1] as [number, number],
+            points: [2, 1, 1] as [number, number, number],
             playlists: [
                 "https://open.spotify.com/playlist/3BnxpQEIcpsEIB0eY8WfJB?si=cfd96cb1202a4d4b"
             ] as string[],

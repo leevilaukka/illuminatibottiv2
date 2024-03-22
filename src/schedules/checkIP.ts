@@ -4,7 +4,7 @@ const job: IlluminatiJob = {
     name: "checkIP",
     schedule: "*/15 * * * *",
     run: (client) => async () => {
-        client.updateIP();
+        return client.updateIP();
     },
 };
 

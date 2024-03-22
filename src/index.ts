@@ -5,7 +5,7 @@ import { Errors, IlluminatiClient } from "./structures";
 import mongoose from "mongoose";
 import setupImports from "./setupImports";
 
-import { ErrorEvent } from "discord.js";
+import { ActivityType, ErrorEvent } from "discord.js";
 
 // Setup client
 const client = new IlluminatiClient({
@@ -15,8 +15,8 @@ const client = new IlluminatiClient({
         status: "online",
         activities: [
             {
-                name: "over the Illuminati",
-                type: 3,
+                name: "Isoveli valvoo 🔺",
+                type: ActivityType.Custom,
             },
         ],
     },
@@ -25,10 +25,12 @@ const client = new IlluminatiClient({
 // STARTUP
 (async () => {
     // Check if ownerID given
-    if (!client.config.ownerID && !client.isDevelopment)
+    if (!client.config.ownerID && !client.isDevelopment) {
         throw new Errors.BotError(
             "No ownerID given! Check your env variables."
         );
+    }
+        
 
     await setupImports(client).then(() => console.log("Imports setup done!"));
 
@@ -70,9 +72,10 @@ const client = new IlluminatiClient({
                 console.log("Ready! ✔");
             }
         })
-        .catch((err: ErrorEvent) => {
+        .catch((err: Error) => {
             if (err.message.includes("invalid token")) {
-                throw new Errors.BotError("Invalid token!");
+                console.error("Invalid token!");
+                process.exitCode = 1
             } else {
                 throw new Errors.BotError(err.message);
             }

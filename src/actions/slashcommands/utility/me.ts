@@ -61,7 +61,7 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                     },
                     {
                         name: "Win Rate",
-                        value: `${((musicQuizStats.totalWins / musicQuizStats.totalAnswers) * 100).toFixed(2)}%`,
+                        value: `${((musicQuizStats.totalWins / musicQuizStats.totalGames) * 100).toFixed(2)}%`,
                         inline: true,
                     },
                     {
@@ -86,6 +86,8 @@ const command: SlashCommand<ChatInputCommandInteraction> = {
                     .setDescription("Here are your music quiz stats!")
                     .addFields(fields)
                     .send();
+
+                break
             }
             case "commands": {
                 const user = new client.userManager(interaction.user);

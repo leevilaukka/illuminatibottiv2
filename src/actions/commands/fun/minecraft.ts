@@ -97,7 +97,7 @@ const command: Command = {
                     );
                 }
             case "say":
-                const mcmessage = argsToString(rest);
+                const mcmessage = argsToString(rest as any);
                 try {
                     await rconClient.connect();
                     await rconClient
