@@ -6,13 +6,13 @@ type PathsKeys = keyof typeof paths;
 
 export const FetchBuilder = (
     base: PathsKeys,
+    init?: RequestInit,
     params?: [
         {
             name: string;
             value: string;
         }
-    ],
-    init?: RequestInit
+    ]
 ) => {
     const basePath = paths[base];
 

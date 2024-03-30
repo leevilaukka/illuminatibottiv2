@@ -239,7 +239,7 @@ router.post(
     checkGuild,
     checkChannel,
     // linkUser,
-    async ({ client, body, file, channel }, res) => {
+    async ({ client, body, file, channel }: any, res) => {
         try {
             if (!file) {
                 return res.status(400).json({

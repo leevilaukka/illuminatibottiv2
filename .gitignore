@@ -9,4 +9,6 @@ package-lock.json
 /uploads
 config.json
 /.run
-```
+.env.*
+docker*
+

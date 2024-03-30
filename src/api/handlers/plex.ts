@@ -33,17 +33,18 @@ interface Metadata {
     summary: string;
 }
 
-export const fetchPlex = FetchBuilder("plex", [
+export const fetchPlex = FetchBuilder("plex", 
+    {
+        headers: {
+            "Accept": "application/json"
+        }
+    },
+    [
     {
         name: "X-Plex-Token",
         value: process.env.PLEX_TOKEN
     },
-],
-{
-    headers: {
-        "Accept": "application/json"
-    }
-})
+])
 
 
 export const getAllLibraries = async () => {
