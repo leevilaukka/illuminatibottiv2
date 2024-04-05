@@ -177,6 +177,7 @@ const setupExpress = async (client: IlluminatiClient) => {
 
 const initPlayer = async (client: IlluminatiClient) => {
     client.player = new Player(client, {
+        skipFFmpeg: false,
         ytdlOptions: {
             filter: "audioonly",
             highWaterMark: 1 << 25,
