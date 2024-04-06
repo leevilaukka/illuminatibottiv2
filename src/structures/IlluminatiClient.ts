@@ -11,6 +11,7 @@ import {
     CommandOptionDataTypeResolvable,
 } from "discord.js";
 
+
 import fs from "fs"
 
 // DiscordPlayer
@@ -40,7 +41,7 @@ import MusicQuiz from "./MusicQuiz";
  */
 export default class IlluminatiClient extends Client {
     // Types
-    static commands: Collection<string, Command> = new Collection();
+    static commands: Collection<string, Command<number>> = new Collection();
     static slashCommands: Collection<string, SlashCommand> = new Collection();
   
     jobs: Collection<string, IlluminatiJob> = new Collection<string, IlluminatiJob>();
@@ -105,7 +106,7 @@ export default class IlluminatiClient extends Client {
      * Get command by name
      * @method getCommand
      */
-    static getCommand(name: string): Types.Command {
+    static getCommand(name: string): Types.Command<number> {
         return (
             this.commands.get(name) ||
             this.commands.find(
@@ -133,7 +134,7 @@ export default class IlluminatiClient extends Client {
      * })
      */
 
-    static get Commands(): Types.Command[] {
+    static get Commands(): Types.Command<number>[] {
         return [...this.commands.values()];
     }
 
@@ -147,7 +148,7 @@ export default class IlluminatiClient extends Client {
      * @returns Object with all the commands and interactions
      */
     static get Interactables(): {
-        commands: Types.Command[];
+        commands: Types.Command<number>[];
     } {
         return {
             commands: [...this.Commands],
@@ -222,6 +223,11 @@ export default class IlluminatiClient extends Client {
             fs.writeFileSync(`${cwd()}/config.json`, JSON.stringify(newConfig, null, 4));
 
             this.events.emit("ipUpdate", this.domainData.ip);
+
+            return {
+                changed: true,
+                value: newip.data.ip
+            }
         }
     }
 

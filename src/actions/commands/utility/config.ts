@@ -4,14 +4,14 @@ import { IlluminatiEmbed } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
 
-const command: Command = {
+const command: Command<2> = {
     name: "config",
     description: "Tarkastele ja vaihda botin asetuksia palvelimellasi",
     guildOnly: true,
     aliases: ["asetus", "asetukset"],
     permissions: ["ManageGuild"],
     category: Categories.config,
-    async run(message, args: string[], settings, client, { guild }) {
+    async run(message, args, settings, client, { guild }) {
         const setting = args[0] as keyof GuildSettings;
 
         const embed = new IlluminatiEmbed(message, client, {

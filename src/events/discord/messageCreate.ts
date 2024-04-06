@@ -8,8 +8,8 @@ import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
-import { validateArgs } from "../../utils";
 import { PlayerMetadata } from "PlayerMetadata";
+import { FixedSizeArray } from "../../types";
 
 const cooldowns: Collection<
     string /*command name*/,
@@ -50,7 +50,7 @@ export default async (client: IlluminatiClient, message: Message) => {
 
     const [, matchedPrefix] = message.content.match(prefixRegex);
 
-    const args: string[] = message.content
+    const args: any = message.content
         .slice(matchedPrefix.length)
         .trim()
         .split(/ +/);
@@ -107,7 +107,6 @@ export default async (client: IlluminatiClient, message: Message) => {
                 //Execute command and catch errors
                 try {
                     message.channel.sendTyping();
-                    await validateArgs(command.evalSchema)(args);
                     await command
                         .run(message, args, settings, client, { guild, user, queue })
                         .then(() => {

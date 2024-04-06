@@ -11,7 +11,7 @@ type MusicQuizStats = Partial<{
     incorrectAnswers: number;
     totalAnswers: number;
     totalPoints: number;
-    totalGames: number;
+        totalGames: number;
     totalWins: number;
 }>;
 
@@ -19,9 +19,11 @@ type TradeInitiator = Discord.Message | Discord.ChatInputCommandInteraction;
 
 type UserStats = {
     money: number;
-    level: number;
-    xp: number;
-    nextLevelXP: number;
+    experience: {
+        level: number;
+        xp: number;
+        nextLevelXP: number;
+    }
     messageCount: number;
     lastMessageAt: Date;
     commandsUsed: Map<string, number>;
@@ -36,6 +38,13 @@ export type IlluminatiUserTypes = {
     discordID: string;
     username: string;
     stats: UserStats;
+    discordAuth: {
+        token_type: string,
+        access_token: string,
+        expires_in: number,
+        refresh_token: string,
+        scope: string
+    }
 }
 
 type UserPromise = Promise<Document<any, any, IlluminatiUserTypes> & IlluminatiUserTypes>
@@ -77,7 +86,7 @@ class IlluminatiUser<T extends User> extends Discord.User {
         return null;
     }
         
-    async updateUser  (data: Partial<IlluminatiUserTypes>): Promise<void | UserPromise> {
+    async updateUser(data: Partial<IlluminatiUserTypes>): Promise<void | UserPromise> {
         const userData = await this.userData;
         if (typeof userData !== "object") throw new BotError(`User does not exist: ${this.user.id}`);
 
@@ -193,11 +202,14 @@ class IlluminatiUser<T extends User> extends Discord.User {
      * Add message to users message counter
      */
 
+    
+
     async messageCountUp(): Promise<void | UserPromise> {
         const userData = await this.getUser();
         if (typeof userData !== "object") return;
         userData.stats.messageCount++;
-
+        userData.stats.lastMessageAt = new Date()
+        
         return userData.save().catch((e: any) => {
             throw new DatabaseError(e)
         });
@@ -307,12 +319,12 @@ class IlluminatiUser<T extends User> extends Discord.User {
                 },
                 {
                     name: "Taso",
-                    value: `${userData.stats.level}`,
+                    value: `${userData.stats.experience.level}`,
                     inline: true,
                 },
                 {
                     name: "XP",
-                    value: `${userData.stats.xp} / ${userData.stats.nextLevelXP}`,
+                    value: `${userData.stats.experience.xp} / ${userData.stats.experience.nextLevelXP}`,
                     inline: true,
                 },
                 {

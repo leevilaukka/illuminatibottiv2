@@ -7,7 +7,7 @@ import {
 import { ChannelType, Message } from "discord.js";
 
 import { IlluminatiClient } from "../structures";
-import { CommandArguments, Command } from "../types";
+import { Command, FixedSizeArray } from "../types";
 import { Config } from "../config";
 
 // Check if command can be run
@@ -16,7 +16,7 @@ export const commandChecks = async (
     command: Command,
     message: Message,
     settings: any,
-    args: CommandArguments,
+    args: FixedSizeArray<number>,
     config: Config
 ) => {
     // Not a command

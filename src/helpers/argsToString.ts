@@ -1,6 +1,6 @@
-import { CommandArguments } from "../types";
+import { FixedSizeArray } from "../types";
 
-const argsToString = (args: CommandArguments): string => {
+const argsToString = (args: FixedSizeArray<number>): string => {
     const regExp = /,/gi;
     return args.toString().replace(regExp, " ")
 };

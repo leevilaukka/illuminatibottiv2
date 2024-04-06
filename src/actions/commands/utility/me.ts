@@ -1,6 +1,6 @@
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
-const command: Command = {
+const command: Command<0> = {
     name: "me",
     aliases: ["mä"],
     description: "View your profile",

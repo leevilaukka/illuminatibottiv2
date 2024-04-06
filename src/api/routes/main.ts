@@ -1,5 +1,5 @@
 import express from "express";
-import Shortlink from "../models/Shortlink";
+import Shortlink from "../../models/Shortlink";
 import pm2 from "pm2";
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.get("/sh/:shortlink", async (req, res) => {
         });
     }
 
-    shortlinkData.uses =+ 1;
+    shortlinkData.uses = +1;
     shortlinkData.save();
 
     res.redirect(shortlinkData.url);
@@ -64,11 +64,11 @@ router.post("/sh", async (req, res) => {
     if (shortlink) {
         return res.status(400).json({
             error: "Code already exists, try again",
-            retry: {    
+            retry: {
                 url: url,
                 userID: userID,
                 to: "/api/sh",
-            }
+            },
         });
     }
 
@@ -179,7 +179,5 @@ router.get("/teapot", (req, res) => {
         });
     });
 }); */
-    
-
 
 export default router;

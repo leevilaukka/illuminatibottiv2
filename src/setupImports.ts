@@ -1,17 +1,13 @@
-import {
-    GuildQueueEvents,
-    Player,
-} from "discord-player";
+import { GuildQueueEvents, Player } from "discord-player";
 import express, { RequestHandler } from "express";
 import fs from "fs";
-import routes from "./routes";
+import routes from "./api/routes";
 import { IlluminatiClient, Errors } from "./structures";
 import cors from "cors";
 import schedules from "./schedules";
 import { Command, EventType, SlashCommand } from "./types";
 import { YouTubeExtractor } from "@discord-player/extractor";
 import path from "path";
-
 
 const importMap = {
     player: {
@@ -45,10 +41,7 @@ export const importEvents = (client: IlluminatiClient) => {
                             );
                             break;
                         case "discord":
-                            client.on(
-                                evtName,
-                                evt.bind(null, client)
-                            );
+                            client.on(evtName, evt.bind(null, client));
                             break;
                         case "process":
                             process.on(evtName, evt.bind(null, client));
@@ -67,15 +60,20 @@ export const importEvents = (client: IlluminatiClient) => {
 };
 
 // Slash command import
-const slashCommandFolders = fs.readdirSync(`${__dirname}/actions/slashcommands/`);
+const slashCommandFolders = fs.readdirSync(
+    `${__dirname}/actions/slashcommands/`
+);
 
 export const slashCommandImports = async () => {
     try {
         console.group("Loading slash commands...");
         for await (const folder of slashCommandFolders) {
-            const slashCommandFiles = fs.readdirSync(`${__dirname}/actions/slashcommands/${folder}`).filter((file: string) => file.endsWith(".js"));
+            const slashCommandFiles = fs
+                .readdirSync(`${__dirname}/actions/slashcommands/${folder}`)
+                .filter((file: string) => file.endsWith(".js"));
             for await (const file of slashCommandFiles) {
-                const command: SlashCommand = require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
+                const command: SlashCommand =
+                    require(`${__dirname}/actions/slashcommands/${folder}/${file}`).default;
                 IlluminatiClient.slashCommands.set(command.data.name, command);
                 console.log(`Loaded slash cmd: ${file}`);
             }
@@ -85,7 +83,6 @@ export const slashCommandImports = async () => {
         console.error(error);
     }
 };
-
 
 // Command import
 const commandFolders = fs.readdirSync(`${__dirname}/actions/commands/`);
@@ -155,12 +152,10 @@ const setupExpress = async (client: IlluminatiClient) => {
             })
         );
 
-        app.use(
-            (req, res, next) => {
-                req.client = client;
-                next();
-            }
-        );
+        app.use((req, res, next) => {
+            req.client = client;
+            next();
+        });
 
         app.use(express.json());
 
@@ -182,6 +177,7 @@ const setupExpress = async (client: IlluminatiClient) => {
 
 const initPlayer = async (client: IlluminatiClient) => {
     client.player = new Player(client, {
+        skipFFmpeg: false,
         ytdlOptions: {
             filter: "audioonly",
             highWaterMark: 1 << 25,

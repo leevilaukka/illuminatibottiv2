@@ -15,22 +15,27 @@ export interface IlluminatiJob {
     onInit?: (client: IlluminatiClient) => void;
 }
 
+const jobRunner = (job: IlluminatiJob, client: IlluminatiClient) => {
+    client.events.emit("ranJob", job)
+    return job.run(client)
+}
+
 const importSchedules = async (client: IlluminatiClient) => {
     try {
         for await (const job of jobs) {
             const jobFileName = `${__dirname}/${job}`
             
             import(jobFileName).then(({ default: job }: {default: IlluminatiJob}) => {
-                console.log(`Loaded schedule: ${job.name}`)
                 if (job.devOnly && process.env.NODE_ENV !== 'development') return;
                 if (!job.schedule) throw new Error(`Schedule not defined for ${job.name} at ${jobFileName}`)
                 if (typeof job.run !== "function") throw new Error(`Run function not defined for ${job.name} at ${jobFileName}`)
-                
-                schedule.scheduleJob(job.schedule, job.run(client))
+
+                schedule.scheduleJob(job.schedule, jobRunner(job, client))
                 client.jobs.set(job.name, job);
-                
+                client.isDevelopment && console.log(`Loaded schedule: ${job.name}`)
+
                 job.onInit?.(client);
-            });  
+            });
         }
     } catch (error) {
         throw new ErrorWithStack(error);

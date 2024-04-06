@@ -1,4 +1,7 @@
 import {
+    ApplicationCommandAutocompleteStringOption,
+    ApplicationCommandAutocompleteStringOptionData,
+    AutocompleteFocusedOption,
     AutocompleteInteraction,
     ButtonInteraction,
     Channel,
@@ -15,6 +18,7 @@ import {
     SelectMenuInteraction,
     SlashCommandAttachmentOption,
     SlashCommandBuilder,
+    TextChannel,
     User,
 } from "discord.js";
 import { RawInteractionData } from "discord.js/typings/rawDataTypes";
@@ -32,6 +36,7 @@ import UserFunctions, {
 import { GuildQueue } from "discord-player";
 import { AnyZodObject, ZodAny, ZodAnyDef, ZodArray, z } from "zod";
 import { PlayerQueue } from "PlayerMetadata";
+import { extend } from "lodash";
 
 type BotError = {
     error: Error;
@@ -92,11 +97,6 @@ type DHLResponse = {
 };
 
 // Command types
-
-type CommandArguments = string[];
-
-type ArgTypes = ("string" | "number")[];
-
 type SlashOptions = {
     name: string;
     type: string;
@@ -112,7 +112,7 @@ type CommandMeta = {
         channel: Channel;
         author?: User;
         message?: Message;
-        command?: Command;
+        command?: Command<number>;
         fromAPI?: boolean;
         guild?: Guild;
         queueHidden?: boolean;
@@ -126,13 +126,31 @@ type CommandResponse =
     | Message
     | void;
 
-interface Command {
-    name: string;
+type FixedSizeArray<N extends number> = {
+    //@ts-expect-error not sure how to fix this but the type still works if we just ignore the error
+    readonly [k in Enumerate<N>]: string;
+} & { length: N } & Readonly<string[]>;
+
+interface GuildCommand<ArgCount extends number> extends Command<ArgCount>  {
+    guildOnly: true,
+    run: (
+        message: Message & {
+            channel: TextChannel
+        },
+        args: FixedSizeArray<ArgCount>,
+        settings: GuildSettings,
+        client: IlluminatiClient,
+        meta: CommandMeta
+    ) => Promise<CommandResponse>;
+}
+
+interface Command<ArgCount extends number = number> {
+    name: string
     aliases?: string[];
     description?: string;
-    guildOnly?: boolean;
     args?: boolean;
     usage?: string;
+    guildOnly?: boolean
     category: Categories | keyof typeof Categories;
     cooldown?: number;
     outOfOrder?: boolean;
@@ -142,19 +160,25 @@ interface Command {
     evalSchema?: AnyZodObject;
     run: (
         message: Message,
-        args: any[],
+        args: FixedSizeArray<ArgCount>,
         settings: GuildSettings,
         client: IlluminatiClient,
         meta: CommandMeta
     ) => Promise<CommandResponse>;
     onInit?: (client: IlluminatiClient) => void;
     cleanUp?: (client: IlluminatiClient) => void;
-    interaction?: (client: IlluminatiClient, interaction: MessageComponentInteraction) => void;
+    interaction?: (
+        client: IlluminatiClient,
+        interaction: MessageComponentInteraction
+    ) => void;
 }
 
-type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
-type CommandJSONBodyTypes = RESTPostAPIChatInputApplicationCommandsJSONBody | RESTPostAPIApplicationCommandsJSONBody;
 
+
+type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
+type CommandJSONBodyTypes =
+    | RESTPostAPIChatInputApplicationCommandsJSONBody
+    | RESTPostAPIApplicationCommandsJSONBody;
 
 interface SlashCommand<InteractionType = CommandInteraction> {
     data: CommandBuilders | CommandJSONBodyTypes;
@@ -165,7 +189,7 @@ interface SlashCommand<InteractionType = CommandInteraction> {
     autocomplete?: (
         client: IlluminatiClient,
         interaction: AutocompleteInteraction
-    ) => Promise<any>;        
+    ) => Promise<any>;
 }
 
 // Express types

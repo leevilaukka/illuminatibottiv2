@@ -7,8 +7,8 @@ import {
     validate,
 } from "./middlewares";
 import { QueryType, useHistory } from "discord-player";
-import Playlist from "../models/Playlist";
-import { Guild } from "../models";
+import Playlist from "../../models/Playlist";
+import { Guild } from "../../models";
 import { z } from "zod";
 import multer from "multer";
 import { validateRequestBody } from "zod-express-middleware";
@@ -161,10 +161,9 @@ router.get("/queue/:id", checkQueue, ({ queue }, res) => {
     });
 });
 
-const playSchema = 
-    z.object({
-        query: z.string()
-    })
+const playSchema = z.object({
+    query: z.string(),
+});
 
 // Add a track to the queue
 router.post(
@@ -215,11 +214,11 @@ router.post(
     }
 );
 
-const upload = multer({ 
+const upload = multer({
     storage: multer.diskStorage({
         filename: (req, file, cb) => {
             cb(null, `${file.originalname}`);
-        }
+        },
     }),
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("audio/")) {
@@ -230,8 +229,8 @@ const upload = multer({
     },
     limits: {
         fileSize: 1024 * 1024 * 100,
-        files: 1
-    }
+        files: 1,
+    },
 });
 
 router.post(
@@ -247,14 +246,14 @@ router.post(
                     error: "No file provided",
                 });
             }
-            
+
             await client.player.play(channel.id, file.path, {
                 searchEngine: QueryType.FILE,
                 requestedBy: client.user,
                 nodeOptions: {
                     metadata: {
                         fromAPI: true,
-                        channel: channel
+                        channel: channel,
                     },
                 },
             });
@@ -375,14 +374,18 @@ router.post("/repeat/", checkQueue, ({ queue, body: { repeat } }, res) => {
 });
 
 // TODO: Move to /controls
-router.post("/seek/", checkQueue, async ({ body: { position }, queue }, res) => {
-    await queue.node.seek(position);
+router.post(
+    "/seek/",
+    checkQueue,
+    async ({ body: { position }, queue }, res) => {
+        await queue.node.seek(position);
 
-    res.json({
-        position,
-        track: queue.currentTrack,
-    });
-});
+        res.json({
+            position,
+            track: queue.currentTrack,
+        });
+    }
+);
 
 // TODO: Move to /controls
 router.post("/jump/", checkQueue, ({ body: { index }, queue }, res) => {
@@ -444,7 +447,7 @@ router.get("/:id/filters/", checkQueue, ({ queue }, res) => {
         current: queue.currentTrack,
     });
 });
-
+-
 router.post(
     "/filters/toggle/",
     checkQueue,

@@ -1,13 +1,13 @@
 import { IlluminatiClient } from "../../../structures";
 import { Command } from "../../../types";
 import { Categories } from "../../../types/IlluminatiCommand";
-const command: Command = {
+const command: Command<1> = {
     name: "reload",
     description: "Reloads a command",
     args: true,
     category: Categories.config,
     outOfOrder: true,
-    run(message, args: string[], settings, client) {
+    run(message, args, settings, client) {
         const commandName = args[0].toLowerCase();
         const command =
             IlluminatiClient.commands.get(commandName) ||

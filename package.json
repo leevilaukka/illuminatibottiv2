@@ -1,6 +1,6 @@
 {
     "name": "illuminatibotti2.0",
-    "version": "6.1.56",
+    "version": "6.1.58",
     "description": "Custom (mostly) Finnish Discord.js bot made with TypeScript",
     "main": "bot.js",
     "scripts": {
@@ -39,7 +39,7 @@
         "cors": "^2.8.5",
         "discord-api-types": "^0.22.0",
         "discord-player": "^6.3.0",
-        "discord.js": "^14.8.0",
+        "discord.js": "^14.14.1",
         "do-wrapper": "^4.5.1",
         "express": "^4.18.2",
         "express-rate-limit": "^6.8.0",
