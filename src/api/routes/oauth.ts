@@ -84,6 +84,34 @@ const discordCallbackSchema = z.object({
     }),
 });
 
+router.post("/activity  ", (req, res) => {
+    const params = jsonToUrlParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code: req.body.code,
+        redirect_uri: REDIRECT_URI,
+        scope: "identify",
+    });
+
+    axios
+        .post<IlluminatiUserTypes["discordAuth"]>(
+            `${OAuth2Routes.tokenURL}`,
+            params,
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            }
+        )
+        .then(async ({ data }) => {
+            return res.json({
+                access_token: data.access_token
+            })
+        })
+        .catch((error) => handleError(res, { error, code: 500 }));
+})
+
 router.get("/discord/callback", validate(discordCallbackSchema), (req, res) => {
     const params = jsonToUrlParams({
         client_id: process.env.DISCORD_CLIENT_ID,
