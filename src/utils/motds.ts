@@ -4,7 +4,7 @@ import { IlluminatiClient } from "../structures";
 export default (client: IlluminatiClient) =>
     [
         {
-            name: "Made in TypeScript!",
+            name: "Written in TypeScript!",
             type: ActivityType.Custom,
         },
         {
@@ -16,7 +16,7 @@ export default (client: IlluminatiClient) =>
             type: ActivityType.Custom,
         },
         {
-            name: "Docker support coming soon™️",
+            name: "Soon™️",
             type: ActivityType.Custom,
         },
         {
@@ -37,6 +37,14 @@ export default (client: IlluminatiClient) =>
         },
         {
             name: "Juu että sillä lailla..",
+            type: ActivityType.Custom
+        },
+        {
+            name: `@${client.owner.then(user => user.displayName)}:n TJ on tänään ${Math.round((new Date("09/18/2024").getTime() - new Date().getTime()) / (1000 * 3600 * 24))} :DDD`,
+            type: ActivityType.Custom
+        },
+        {
+            name: "Jehu.",
             type: ActivityType.Custom
         }
     ] as ActivityOptions[];

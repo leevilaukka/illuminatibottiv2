@@ -3,13 +3,13 @@ import { Command } from "../../../types";
 
 import _ from "lodash";
 
-const command: Command = {
+const command: Command<1> = {
     name: "testEmbed",
     aliases: ["testembed"],
     description: "Testaa embedien luontia",
     category: "utility",
     async run(message, args, settings, client, { guild }) {
-        const [ pageCount ] = args;
+        const pageCount = args[0];
 
         const count = parseInt(pageCount) || 3;
 
