@@ -42,5 +42,9 @@ export default (client: IlluminatiClient) =>
         {
             name: `@${client.owner.then(user => user.displayName)}:n TJ on tänään ${Math.round((new Date("09/18/2024").getTime() - new Date().getTime()) / (1000 * 3600 * 24))} :DDD`,
             type: ActivityType.Custom
+        },
+        {
+            name: "Jehu.",
+            type: ActivityType.Custom
         }
     ] as ActivityOptions[];
