@@ -171,9 +171,7 @@ interface Command<ArgCount extends number = number> {
         client: IlluminatiClient,
         interaction: MessageComponentInteraction
     ) => void;
-}
-
-
+} 
 
 type CommandBuilders = SlashCommandBuilder | ContextMenuCommandBuilder;
 type CommandJSONBodyTypes =
