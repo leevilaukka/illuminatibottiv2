@@ -18,7 +18,6 @@ const checkQueue: RequestHandler = async (req, res, next) => {
     }
 
     req.queue = queue;
-
     next();
 };
 
@@ -36,7 +35,6 @@ const checkGuild: RequestHandler = (req, res, next) => {
     }
 
     req.guild = guild;
-
     next();
 };
 
@@ -54,7 +52,6 @@ const checkChannel: RequestHandler = (req, res, next) => {
     }
 
     req.channel = channel;
-
     next();
 };
 
@@ -76,8 +73,7 @@ const linkUser: RequestHandler = async (req, res, next) => {
     next();
 };
 
-const validate =
-    (schema: AnyZodObject) =>
+const validate = (schema: AnyZodObject) =>
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             await schema.parseAsync({

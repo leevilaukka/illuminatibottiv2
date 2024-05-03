@@ -19,10 +19,11 @@ router.get("/:id", checkGuild, ({ client, params, guild }, res) => {
 router.get("/:id/channels", checkGuild, async ({ client, params, guild }, res) => {
     const lastUsed = client.channels.cache.get((await new client.guildManager(guild).getGuild()).lastUsedVoiceChannel);
 
+    const textFilter = (c: Channel) => c.type === ChannelType.GuildText
     const voiceFilter = (c: Channel) => c.type === ChannelType.GuildVoice
 
     return res.json({
-        text: guild.channels.cache.filter((c) => c.type === ChannelType.GuildText).map((c) => c.toJSON()),
+        text: guild.channels.cache.filter(textFilter).map((c) => c.toJSON()),
         voice: guild.channels.cache.filter(voiceFilter).map((c) => c.toJSON()),
         lastUsed: lastUsed?.toJSON()
     });
