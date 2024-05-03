@@ -6,7 +6,7 @@ const job: IlluminatiJob = {
     name: "motd",
     schedule: process.env.MOTD_CRON || "*/1 * * * *",
     run: (client) => async () => {
-        const randomMotd = randomArray(motds(client));
+        const randomMotd = randomArray(await motds(client));
         client.user.setActivity(randomMotd);
     },
 };

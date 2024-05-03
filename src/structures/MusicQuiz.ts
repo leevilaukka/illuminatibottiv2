@@ -3,7 +3,6 @@ import {
     Collection,
     EmbedBuilder,
     GuildMember,
-    Interaction,
     Message,
     MessageCollector,
     User,
@@ -13,12 +12,14 @@ import IlluminatiClient from "./IlluminatiClient";
 import { compareTwoStrings } from "string-similarity";
 import { SearchResult } from "discord-player";
 import IlluminatiUser from "./IlluminatiUser";
-import { BotError, MusicQuizError } from "../structures/Errors";
+import { MusicQuizError } from "../structures/Errors";
 
 const { getPreview } = require("spotify-url-info")(fetch);
 
+import _ from "lodash";
+
 async function getSpotify(url: string): Promise<SpotifyPreview> {
-    return await getPreview(url)
+    return await getPreview(url);
 }
 
 type SpotifyPreview = {
@@ -37,7 +38,7 @@ type SpotifyPreview = {
 enum QuizAnswerType {
     TITLE,
     ARTIST,
-    YEAR
+    YEAR,
 }
 
 type PlayerType = {
@@ -79,7 +80,7 @@ class MusicQuiz {
         skipStartTime?: number;
         answerThresholds?: [number, number, number];
         firstArtistOnly?: boolean;
-        guessYear: boolean
+        guessYear: boolean;
     };
 
     constructor(
@@ -101,12 +102,14 @@ class MusicQuiz {
 
         this.options = {
             timeout: settings.timeout || 30000,
-            points: settings.points || [2 /** Title */, 1 /** Artist */, 1 /** Year */],
+            points: settings.points || [
+                2 /** Title */, 1 /** Artist */, 1 /** Year */,
+            ],
             rounds: settings.rounds || 10,
             skipStartTime: settings.skipStartTime || null,
             answerThresholds: settings.answerThresholds || [0.7, 0.75, 1],
             firstArtistOnly: settings.firstArtistOnly || false,
-            guessYear: settings.guessYear || false
+            guessYear: settings.guessYear || false,
         };
 
         this.correctAnswer = [false, false, !this.options.guessYear];
@@ -148,8 +151,7 @@ class MusicQuiz {
         });
 
         // Add the same number of songs as rounds to songUrls
-        this.songUrls = this.playlist.tracks
-            .sort(() => Math.random() - 0.5)
+        this.songUrls = _.shuffle(this.playlist.tracks)
             .splice(0, this.options.rounds)
             .map((track) => track.url);
 
@@ -184,7 +186,7 @@ class MusicQuiz {
     }
 
     async updatePlayerScore(message: Message, answerType: QuizAnswerType) {
-        const reactionTable = ["🎶","👨‍🎤","📅"]
+        const reactionTable = ["🎶", "👨‍🎤", "📅"];
 
         if (!this.scores.has(message.member.id)) {
             this.scores.set(message.member.id, 0);
@@ -199,8 +201,7 @@ class MusicQuiz {
         // Add points to user
         this.scores.set(
             message.member.id,
-            this.scores.get(message.member.id) +
-                this.options.points[answerType]
+            this.scores.get(message.member.id) + this.options.points[answerType]
         );
         this.players.get(message.member.id).stats.totalPoints +=
             this.options.points[answerType];
@@ -212,7 +213,7 @@ class MusicQuiz {
             )} points!`
         );
 
-        message.react(reactionTable[answerType])
+        message.react(reactionTable[answerType]);
     }
 
     cleanSongName(songName: string) {
@@ -268,11 +269,15 @@ class MusicQuiz {
 
     async handlePoll(
         message: Message,
-        callback: () => Promise<void>,
-        info?: {
+        callback: () => Promise<void> | void,
+        info: {
             message: string;
             emoji: string;
             requiredVotes: number;
+        } = {
+            emoji: "",
+            message: "",
+            requiredVotes: Math.ceil(this.vc.members.size / 2)
         }
     ) {
         const pollMessage = await message.channel.send({
@@ -301,97 +306,95 @@ class MusicQuiz {
     }
 
     async playSong(songUrl: string, skip: boolean = false) {
-        this.currentSongInfo = await getSpotify(songUrl);
-
-        this.songUrls = this.songUrls.filter((url) => url !== songUrl);
-
-        if (!this.currentSongInfo) {
-            this.interaction.channel.send({
-                content: "No song info found, skipping song.",
-            });
-            return await this.nextSong();
-        }
-
-        this.collector = this.interaction.channel
-            .createMessageCollector({
-                filter: (m) => !m.author.bot,
-                time: this.options.timeout,
-            })
-            .on("collect", async (m) => await this.checkAnswer(m));
-
-        // Play song
-        this.client.player
-            .play(this.vc, songUrl, {
-                requestedBy: this.client.user,
-                nodeOptions: {
-                    metadata: {
-                        channel: this.interaction.channel,
-                        queueHidden: true,
-                    },
-                },
-            })
-            .catch(async (err) => {
-                console.error(err);
-                // If error, play next song
+        try {
+            this.currentSongInfo = await getSpotify(songUrl);
+    
+            this.songUrls = this.songUrls.filter((url) => url !== songUrl);
+    
+            if (!this.currentSongInfo) {
                 this.interaction.channel.send({
-                    content: "Error playing song, skipping song.",
+                    content: "No song info found, skipping song.",
                 });
                 return await this.nextSong();
-            })
-            .then(async (res) => {
-                // If no song was found, play next song
-                if (!res) {
+            }
+    
+            this.collector = this.interaction.channel
+                .createMessageCollector({
+                    filter: (m) => !m.author.bot,
+                    time: this.options.timeout,
+                })
+                .on("collect", async (m) => await this.checkAnswer(m));
+    
+            // Play song
+            this.client.player
+                .play(this.vc, songUrl, {
+                    requestedBy: this.client.user,
+                    nodeOptions: {
+                        metadata: {
+                            channel: this.interaction.channel,
+                            queueHidden: true,
+                        },
+                    },
+                })
+                .catch(async (err) => {
+                    console.error(err);
+                    // If error, play next song
                     this.interaction.channel.send({
-                        content: "No song found, skipping song.",
+                        content: "Error playing song, skipping song.",
                     });
                     return await this.nextSong();
-                }
-
-                // Set timer for next song
-                this.timer.refresh();
-
-                this.options.skipStartTime > 5 &&
-                    (await res.queue.node.seek(
-                        this.options.skipStartTime * 1000 +
-                            Math.random() * randomNumberBetween(0, 5000)
-                    ));
-
-                this.client.isDevelopment && console.log(this.currentSongInfo);
-                // Check if song is already playing
-                if (skip) {
-                    // Move song to top of queue
-                    // res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
-                    res.queue.node.skip();
-                }
-            });
+                })
+                .then(async (res) => {
+                    // If no song was found, play next song
+                    if (!res) {
+                        this.interaction.channel.send({
+                            content: "No song found, skipping song.",
+                        });
+                        return await this.nextSong();
+                    }
+    
+                    // Set timer for next song
+                    this.timer.refresh();
+    
+                    this.options.skipStartTime > 5 &&
+                        (await res.queue.node.seek(
+                            this.options.skipStartTime * 1000 +
+                                Math.random() * randomNumberBetween(0, 5000)
+                        ));
+    
+                    this.client.isDevelopment && console.log(this.currentSongInfo);
+                    // Check if song is already playing
+                    if (skip) {
+                        // Move song to top of queue
+                        // res.queue.moveTrack(res.queue.tracks.data.length - 1, 0);
+                        res.queue.node.skip();
+                    }
+                });
+        } catch (error) {
+            throw new MusicQuizError(`PlaySong: ${error}`, this)
+        }
     }
 
     async checkAnswer(message: Message) {
         try {
-            if (message.author.bot) {
-                return;
-            }
-
             if (this.locked) return;
 
-            const { content } = message
+            const { content } = message;
 
-            if (content.toLowerCase() === "stop!!") {
+            if (content.toLowerCase() === "stop!!")
                 return await this.handlePoll(message, this.stop, {
                     message: "Vote to stop quiz!",
                     emoji: "🏁",
                     requiredVotes: Math.ceil(this.vc.members.size / 2),
                 });
-            }
 
-            if (content.toLowerCase() === "skip!!") {
+            if (content.toLowerCase() === "skip!!") 
                 return await this.handlePoll(message, this.advanceSong, {
                     message: "Vote to skip song!",
                     emoji: "⏭️",
                     requiredVotes: Math.ceil(this.vc.members.size / 2),
                 });
-            }
-
+            
             // Check if user has tried to answer already
             if (this.guessTimeouts.has(message.member.id)) {
                 return;
@@ -404,7 +407,9 @@ class MusicQuiz {
                     this.getFirstArtist(this.currentSongInfo.artist)) ||
                 this.currentSongInfo.artist;
 
-            const releaseYear = new Date(this.currentSongInfo.date).getFullYear().toString()
+            const releaseYear = new Date(this.currentSongInfo.date)
+                .getFullYear()
+                .toString();
 
             // Set timeout
             this.guessTimeouts.set(
@@ -415,14 +420,8 @@ class MusicQuiz {
             );
 
             const similarities = [
-                compareTwoStrings(
-                    content.toLowerCase(),
-                    title.toLowerCase()
-                ),
-                compareTwoStrings(
-                    content.toLowerCase(),
-                    artist.toLowerCase()
-                ),
+                compareTwoStrings(content.toLowerCase(), title.toLowerCase()),
+                compareTwoStrings(content.toLowerCase(), artist.toLowerCase()),
             ];
 
             const correct = (type: QuizAnswerType) =>
@@ -435,23 +434,22 @@ class MusicQuiz {
             if (correct(QuizAnswerType.TITLE)) {
                 this.updatePlayerScore(message, QuizAnswerType.TITLE);
             } else if (correct(QuizAnswerType.ARTIST)) {
-                this.updatePlayerScore(message, QuizAnswerType.ARTIST)            
-            } else if (this.options.guessYear && (content === releaseYear)) {
-                this.updatePlayerScore(message, QuizAnswerType.YEAR)
-                this.correctAnswer[QuizAnswerType.YEAR] = true
+                this.updatePlayerScore(message, QuizAnswerType.ARTIST);
+            } else if (this.options.guessYear && content === releaseYear) {
+                this.updatePlayerScore(message, QuizAnswerType.YEAR);
+                this.correctAnswer[QuizAnswerType.YEAR] = true;
             } else {
                 message.react("👎");
                 this.players.get(message.member.id).stats.incorrectAnswers++;
             }
 
-
-
             // Check if both answers are correct
             if (
                 this.correctAnswer[QuizAnswerType.TITLE] &&
-                this.correctAnswer[QuizAnswerType.ARTIST] && (
-                    this.options.guessYear ? this.correctAnswer[QuizAnswerType.YEAR] : true 
-                )
+                this.correctAnswer[QuizAnswerType.ARTIST] &&
+                (this.options.guessYear
+                    ? this.correctAnswer[QuizAnswerType.YEAR]
+                    : true)
             )
                 await this.advanceSong();
         } catch (error) {
@@ -504,8 +502,6 @@ class MusicQuiz {
 
         this.players.forEach(async (player) => {
             if (!player.user) return;
-
-
             if (scores[0][0] === player.user.id) {
                 return await this.updatePlayerStats(player.user, true);
             }
@@ -534,8 +530,10 @@ class MusicQuiz {
                 },
                 {
                     name: "Year",
-                    value: new Date(this.currentSongInfo.date).getFullYear().toString()
-                }
+                    value: new Date(this.currentSongInfo.date)
+                        .getFullYear()
+                        .toString(),
+                },
             ])
             .setFooter({
                 text: `Song ${this.currentIndex + 1}/${this.options.rounds}`,
@@ -555,14 +553,13 @@ class MusicQuiz {
         const { stats } = this.players.get(member.id);
         const userStats = await member.getStats();
 
-        const totalAnswers = stats.correctAnswers + stats.incorrectAnswers
+        const totalAnswers = stats.correctAnswers + stats.incorrectAnswers;
 
         await member.updateUserStats({
             musicQuiz: {
                 totalPoints:
                     userStats.musicQuiz.totalPoints + stats.totalPoints,
-                totalAnswers:
-                    userStats.musicQuiz.totalAnswers + totalAnswers,
+                totalAnswers: userStats.musicQuiz.totalAnswers + totalAnswers,
                 correctAnswers:
                     userStats.musicQuiz.correctAnswers + stats.correctAnswers,
                 incorrectAnswers:

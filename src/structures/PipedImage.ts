@@ -1,6 +1,6 @@
 import fs from 'fs';
 import Discord from 'discord.js';
-
+import { resolve } from 'path';
 
 /** 
  * @name AttachmentWriterWrapper
@@ -25,7 +25,7 @@ class AttachmentWriterWrapper {
     private _attachment: Discord.AttachmentBuilder;
 
     constructor(path?: string, name?: string) {
-        this._path = path || `./temp/${Math.random().toString(36).substring(7)}.png`;
+        this._path = path || resolve(`./temp/${Math.random().toString(36).substring(7)}.png`);
         this._attachment = new Discord.AttachmentBuilder(this._path, {
             name: name || "image",
         });

@@ -3,17 +3,17 @@ import {
     ErrorWithStack,
     UserError,
 } from "../../structures/Errors";
-import Discord, { ChannelType, Collection, Message } from "discord.js";
+import Discord, { ChannelType, Collection, Message, User } from "discord.js";
 import config, { GuildSettings } from "../../config";
 import { commandChecks } from "../../helpers/commandChecks";
 import messageCheck from "../../helpers/messageCheck";
 import { IlluminatiClient } from "../../structures";
 import { PlayerMetadata } from "PlayerMetadata";
-import { FixedSizeArray } from "../../types";
+import { Command } from "../../types";
 
 const cooldowns: Collection<
-    string /*command name*/,
-    Collection<string /*user*/, number /*time*/>
+    Command["name"],
+    Collection<User["id"], number /*time*/>
 > = new Discord.Collection();
 
 export default async (client: IlluminatiClient, message: Message) => {
@@ -35,9 +35,9 @@ export default async (client: IlluminatiClient, message: Message) => {
 
     if(!user.getUser()) await user.createUser();
 
-    user.messageCountUp();
+    await user.messageCountUp();
 
-    if (settings.randomMessages) await messageCheck(message);
+    if (settings.randomMessages) messageCheck(message);
 
     // Regex for mention
     const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -54,7 +54,7 @@ export default async (client: IlluminatiClient, message: Message) => {
         .slice(matchedPrefix.length)
         .trim()
         .split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase() as Command["name"];
 
     const command = IlluminatiClient.getCommand(commandName);
 
@@ -98,7 +98,7 @@ export default async (client: IlluminatiClient, message: Message) => {
                 }
 
                 // Command call event
-                    client.events.emit("commandCall", command);
+                client.events.emit("commandCall", command);
 
                 const queue = client.player.nodes.get<PlayerMetadata>(message.guild);
 

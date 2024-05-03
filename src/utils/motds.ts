@@ -1,13 +1,13 @@
 import { ActivityOptions, ActivityType, User } from "discord.js";
 import { IlluminatiClient } from "../structures";
 
-export default (client: IlluminatiClient) =>
+export default async (client: IlluminatiClient) =>
     [
         {
             name: "Written in TypeScript!",
             type: ActivityType.Custom,
         },
-        {
+        { 
             name: "Aamuja :DD",
             type: ActivityType.Custom,
         },
@@ -40,7 +40,7 @@ export default (client: IlluminatiClient) =>
             type: ActivityType.Custom
         },
         {
-            name: `@${client.owner.then(user => user.displayName)}:n TJ on tänään ${Math.round((new Date("09/18/2024").getTime() - new Date().getTime()) / (1000 * 3600 * 24))} :DDD`,
+            name: `@${(await client.owner).displayName}:n TJ on tänään ${Math.round((new Date("09/18/2024").getTime() - new Date().getTime()) / (1000 * 3600 * 24))} :DDD`,
             type: ActivityType.Custom
         },
         {
