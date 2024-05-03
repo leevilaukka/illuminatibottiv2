@@ -276,7 +276,7 @@ const autocompleteSchema = z.object({
     }),
 });
 
-router.post(
+router.post<"/autocomplete", unknown, unknown, z.infer<typeof autocompleteSchema>["body"]>(
     "/autocomplete",
     checkQueue,
     validate(autocompleteSchema),
@@ -314,13 +314,14 @@ const actionSchema = z.object({
     }),
 });
 
-router.post(
+router.post<unknown, unknown, z.infer<typeof actionSchema>["body"]>(
     "/controls/:id",
     checkQueue,
     validate(actionSchema),
     async ({ queue, body }, res) => {
         const action = body.action;
         try {
+            // @ts-ignore
             const actionResult = await queue.node[action](
                 body.data || undefined
             );
@@ -527,10 +528,10 @@ router.post(
 router.post(
     "/playlists/save/",
     checkQueue,
-    ({ client, queue, body: { name } }, res) => {
+    ({ queue, body: { name } }, res) => {
         const tracks = queue.tracks.map((track) => track.toJSON());
 
-        Playlist.findOne({ name: name }).then((playlist) => {
+        Playlist.findOne({ name }).then((playlist) => {
             if (playlist) {
                 playlist.tracks = tracks;
                 playlist.save();

@@ -1,27 +1,18 @@
 import {
-    ApplicationCommandAutocompleteStringOption,
-    ApplicationCommandAutocompleteStringOptionData,
-    AutocompleteFocusedOption,
     AutocompleteInteraction,
-    ButtonInteraction,
     Channel,
     CommandInteraction,
     ContextMenuCommandBuilder,
     Guild,
-    Interaction,
     Message,
     MessageComponentInteraction,
-    MessageInteraction,
     PermissionResolvable,
     RESTPostAPIApplicationCommandsJSONBody,
     RESTPostAPIChatInputApplicationCommandsJSONBody,
-    SelectMenuInteraction,
-    SlashCommandAttachmentOption,
     SlashCommandBuilder,
     TextChannel,
     User,
 } from "discord.js";
-import { RawInteractionData } from "discord.js/typings/rawDataTypes";
 import { Categories } from "IlluminatiCommand";
 import { GuildSettings } from "./config";
 import {
@@ -29,14 +20,11 @@ import {
     IlluminatiGuild,
     IlluminatiUser,
 } from "./structures";
-import GuildFunctions from "./structures/IlluminatiGuild";
-import UserFunctions, {
+import {
     IlluminatiUserTypes,
 } from "./structures/IlluminatiUser";
 import { GuildQueue } from "discord-player";
-import { AnyZodObject, ZodAny, ZodAnyDef, ZodArray, z } from "zod";
-import { PlayerQueue } from "PlayerMetadata";
-import { extend } from "lodash";
+import { AnyZodObject} from "zod";
 
 type BotError = {
     error: Error;
